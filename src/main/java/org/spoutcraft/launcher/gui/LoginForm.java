@@ -106,7 +106,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/favicon.png")));
 		setResizable(false);
 
-		setTitle("Spoutcraft Launcher");
+		setTitle("Technic Launcher");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -680,7 +680,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 	public void windowClosed(WindowEvent e) {
 		if (success == LauncherFrame.ERROR_IN_LAUNCH) {
-			System.out.println("Exiting the Spoutcraft Launcher");
+			System.out.println("Exiting the Technic Launcher");
 			System.exit(0);
 		}
 	}

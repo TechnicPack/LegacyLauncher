@@ -9,7 +9,7 @@ import org.bukkit.util.config.Configuration;
 
 public class SpoutcraftYML {
 	private static volatile boolean updated = false;
-	private static File spoutcraftYML = new File(PlatformUtils.getWorkingDirectory(), "spoutcraft" + File.separator + "spoutcraft.yml");
+	private static File spoutcraftYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "technic.yml");
 	private static Object key = new Object();
 
 	public static Configuration getSpoutcraftYML() {
@@ -22,7 +22,7 @@ public class SpoutcraftYML {
 	public static void updateSpoutcraftYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("spoutcraft.yml", "http://mirror3.getspout.org/spoutcraft.yml", null);
+				String urlName = MirrorUtils.getMirrorUrl("technic.yml", "http://urcraft.com/technic/technic.yml", null);
 				if (urlName != null) {
 	
 					try {

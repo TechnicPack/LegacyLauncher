@@ -10,7 +10,7 @@ import org.bukkit.util.config.Configuration;
 
 public class MinecraftYML {
 	private static volatile boolean updated = false;
-	private static File minecraftYML = new File(PlatformUtils.getWorkingDirectory(), "spoutcraft" + File.separator + "minecraft.yml");
+	private static File minecraftYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "minecraft.yml");
 	private static String latest = null;
 	private static String recommended = null;
 	private static Object key = new Object();
@@ -46,7 +46,7 @@ public class MinecraftYML {
 	public static void updateMinecraftYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("minecraft.yml", "http://mirror3.getspout.org/minecraft.yml", null);
+				String urlName = MirrorUtils.getMirrorUrl("minecraft.yml", "http://urcraft.com/technic/minecraft.yml", null);
 				if (urlName != null) {
 					try {
 						

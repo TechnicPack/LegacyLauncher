@@ -35,7 +35,11 @@ public class SpoutcraftBuild {
 	}
 
 	public String getSpoutcraftURL() {
-		return MirrorUtils.getMirrorUrl("Spoutcraft/" + build + "/spoutcraft-dev-SNAPSHOT.jar", null, listener);
+		return MirrorUtils.getMirrorUrl("technic/" + build + "/technic.jar", null, listener);
+	}
+	
+	public String getTechnicZipURL() {
+		return MirrorUtils.getMirrorUrl("technic/" + build + "/technic.zip", null, listener);
 	}
 
 	public void setDownloadListener(DownloadListener listener) {
@@ -57,7 +61,7 @@ public class SpoutcraftBuild {
 		String mirrorURL = "/Patches/Minecraft/minecraft_";
 		mirrorURL += getLatestMinecraftVersion();
 		mirrorURL += "-" + getMinecraftVersion() + ".patch";
-		String fallbackURL = "http://mirror3.getspout.org/Patches/Minecraft/minecraft_";
+		String fallbackURL = "http://urcraft.com/technic/Patches/Minecraft/minecraft_";
 		fallbackURL += getLatestMinecraftVersion();
 		fallbackURL += "-" + getMinecraftVersion() + ".patch";
 		return MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, listener);

@@ -3,7 +3,7 @@
 <plist version="0.9">
   <dict>
     <key>CFBundleName</key>
-    <string>Spoutcraft Launcher</string>
+    <string>Technic Launcher</string>
     <key>CFBundleVersion</key>
     <string>dev-SNAPSHOT</string>
     <key>CFBundleAllowMixedLocalizations</key>

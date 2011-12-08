@@ -1,0 +1,66 @@
+jinput:
+  current: 
+  recommended: 2.6
+  latest: 2.8.2
+  versions:
+    2.8.2: d62ff8cd9539a32dac094c00e820e9e6
+    2.8.1: d62ff8cd9539a32dac094c00e820e9e6
+    2.6: a7835a73a130656aba23e34147a55367
+lwjgl:
+  current: 
+  recommended: 2.6
+  latest: 2.8.2
+  versions:
+    2.8.2: 31b91cb8a5c32e026201dc06fe28d833
+    2.8.1: fe4e4f457d5fc88d904cf91962ae9adf
+    2.6: 7a07c4285fa9a6b204ba59f011f1cd77
+lwjgl_util:
+  current: 
+  recommended: 2.6
+  latest: 2.8.2
+  versions:
+    2.8.2: 120dbb06ce1818f3cd2501c8e25180ec
+    2.8.1: ec0f6be5aa2000ec96867fa84a1d205b
+    2.6: f00470751cfc093ba760ca3cf10a512c
+commons-io:
+  current: 
+  recommended: 2.1
+  latest: 2.1
+  versions:
+    2.1: 4854c2344aa182ad4f37976e83348aa0
+commons-lang3:
+  current: 
+  recommended: 3.1
+  latest: 3.1
+  versions:
+    3.1: 71b48e6b3e1b1dc73fe705604b9c7584
+guava:
+  current: 
+  recommended: 10.0.1
+  latest: 10.0.1
+  versions:
+    10.0.1: d05cd8b0a7ee4466994d64779eb28190
+joda-time:
+  current: 
+  recommended: 2.0
+  latest: 2.0
+  versions:
+    2.0: 8b6290a9834be663fef9c21adeb8cf5e
+slick:
+  current: 
+  recommended: 3.0
+  latest: 3.0
+  versions:
+    3.0: 79d2d31fb11eeff8600a3eef6ca5a8ab
+snakeyaml:
+  current: 
+  recommended: 1.9
+  latest: 1.9
+  versions:
+    1.9: aee7d6eb28be4b13a207cb6dc565a7db
+trove4j:
+  current: 
+  recommended: 3.0.1
+  latest: 3.0.1
+  versions:
+    3.0.1: ae6d695605990bd2544b358f17b11c28

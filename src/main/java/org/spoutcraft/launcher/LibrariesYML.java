@@ -11,7 +11,7 @@ import org.bukkit.util.config.Configuration;
 
 public class LibrariesYML {
 	private static volatile boolean updated = false;
-	private static File librariesYML = new File(PlatformUtils.getWorkingDirectory(), "spoutcraft" + File.separator + "libraries.yml");
+	private static File librariesYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "libraries.yml");
 	private static Object key = new Object();
 
 	public static Configuration getLibrariesYML() {
@@ -24,7 +24,7 @@ public class LibrariesYML {
 	public static void updateLibrariesYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("libraries.yml", "http://mirror3.getspout.org/libraries.yml", null);
+				String urlName = MirrorUtils.getMirrorUrl("libraries.yml", "http://urcraft.com/technic/libraries.yml", null);
 				if (urlName != null) {
 	
 					try {

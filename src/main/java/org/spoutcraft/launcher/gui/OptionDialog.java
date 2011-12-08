@@ -77,14 +77,14 @@ public class OptionDialog extends JDialog implements ActionListener {
 	 * Create the dialog.
 	 */
 	public OptionDialog() {
-		setTitle("Spoutcraft Settings");
+		setTitle("Technic Settings");
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(devBuilds);
 		group.add(recBuilds);
 		group.add(customBuilds);
 		
-		buildInfo.setText("Spoutcraft Launcher Build " + Main.build);
+		buildInfo.setText("Technic Launcher Build " + Main.build);
 		buildInfo.setOpaque(true);
 		buildInfo.setForeground(Color.DARK_GRAY);
 		buildInfo.setToolTipText("Created by the Spout Development Team. Licensed under the LGPL. Source code is available at www.github.com/SpoutDev" );
@@ -93,11 +93,11 @@ public class OptionDialog extends JDialog implements ActionListener {
 		devBuilds.setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
 		recBuilds.setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
 		clipboardCheckbox.setToolTipText("Allows server mods to see the contents of your clipboard.");
-		backupCheckbox.setToolTipText("Backs up your Spoutcraft SP worlds after each Spoutcraft update");
+		backupCheckbox.setToolTipText("Backs up your Technic SP worlds after each Technic update");
 		retryLoginCheckbox.setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
 		latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
-		clearCache.setToolTipText("Clears the cached minecraft and spoutcraft files, forcing a redownload on your next login");
-		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Spoutcraft. Assigning more memory than you have may cause crashes.");
+		clearCache.setToolTipText("Clears the cached minecraft and Technic files, forcing a redownload on your next login");
+		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Technic. Assigning more memory than you have may cause crashes.");
 		
 		if (SettingsUtil.isRecommendedBuild()) {
 			devBuilds.setSelected(false);
@@ -141,7 +141,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		
 		JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
 		
-		JLabel selectBuild = new JLabel("Select Spoutcraft build: ");
+		JLabel selectBuild = new JLabel("Select Technic build: ");
 		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -295,7 +295,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(getParent(), "Successfully cleared the cache.");
 			}
 			else {
-				JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure spoutcraft files are open.\nIf all else fails, close the launcher, restart it, and try again.");
+				JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Technic files are open.\nIf all else fails, close the launcher, restart it, and try again.");
 			}
 		}
 		else if (id.equals(customBuilds.getText()) || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {

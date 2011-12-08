@@ -1,0 +1,9 @@
+current: 
+recommended: 1.0.0
+latest: 1.0.0
+versions:
+  1.0.0:
+    jinput: a7835a73a130656aba23e34147a55367
+    lwjgl: 7a07c4285fa9a6b204ba59f011f1cd77
+    lwjgl_util: f00470751cfc093ba760ca3cf10a512c
+    minecraft: 3820d222b95d0b8c520d9596a756a6e6

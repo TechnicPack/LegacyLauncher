@@ -43,7 +43,7 @@ public class LauncherFrame extends Frame implements WindowListener{
 	//private static SettingsHandler settings = new SettingsHandler("defaults/spoutcraft.properties", new File(PlatformUtils.getWorkingDirectory(), "spoutcraft" + File.separator + "spoutcraft.properties"));
 
 	public LauncherFrame() {
-		super("Spoutcraft");
+		super("Technic");
 		super.setVisible(true);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation((dim.width-870)/2, (dim.height-518)/2);
@@ -131,7 +131,7 @@ public class LauncherFrame extends Frame implements WindowListener{
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		System.out.println("Exiting Spoutcraft");
+		System.out.println("Exiting Technic");
 		System.exit(0);
 	}
 

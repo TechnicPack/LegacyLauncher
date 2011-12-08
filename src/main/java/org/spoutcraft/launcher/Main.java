@@ -56,7 +56,7 @@ public class Main {
 				params.add(arg);
 			}
 			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
-				params.add("-Xdock:name=\"Spoutcraft\"");
+				params.add("-Xdock:name=\"Technic\"");
 				
 				try {
 					File icon = new File(PlatformUtils.getWorkingDirectory(), "icon.icns");
@@ -108,21 +108,21 @@ public class Main {
 		if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
 			try{
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
-				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Spoutcraft");
+				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Technic");
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception ignore) { }
 		}
 		PlatformUtils.getWorkingDirectory().mkdirs();
 
-		new File(PlatformUtils.getWorkingDirectory(), "spoutcraft").mkdir();
+		new File(PlatformUtils.getWorkingDirectory(), "technic").mkdir();
 
 		SystemConsoleListener listener = new SystemConsoleListener();
 
 		listener.initialize();
 		
 		System.out.println("------------------------------------------");
-		System.out.println("Spoutcraft Launcher is starting....");
-		System.out.println("Spoutcraft Launcher Build: " + getBuild());
+		System.out.println("Technic Launcher is starting....");
+		System.out.println("Technic Launcher Build: " + getBuild());
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

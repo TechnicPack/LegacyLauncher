@@ -1,0 +1,15 @@
+launcher: 001
+current: 001
+recommended: 001
+latest: 001
+builds:
+    001:
+        minecraft: 1.0.0
+        libraries:
+            commons-io: 2.1
+            commons-lang3: 3.1
+            guava: 10.0.1
+            joda-time: 2.0
+            slick: 0.3
+            snakeyaml: 1.9
+            trove4j: 3.0.1

@@ -38,6 +38,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -59,7 +60,7 @@ public class GameUpdater implements DownloadListener {
 	public static final File binCacheDir = new File(binDir, "cache");
 	public static final File updateDir = new File(PlatformUtils.getWorkingDirectory(), "temp");
 	public static final File backupDir = new File(PlatformUtils.getWorkingDirectory(), "backups");
-	public static final File spoutcraftDir = new File(PlatformUtils.getWorkingDirectory(), "spoutcraft");
+	public static final File spoutcraftDir = new File(PlatformUtils.getWorkingDirectory(), "technic");
 	public static final File savesDir = new File(PlatformUtils.getWorkingDirectory(), "saves");
 
 	/* Minecraft Updating Arguments */
@@ -263,20 +264,42 @@ public class GameUpdater implements DownloadListener {
 			copy(mcCache, updateMC);
 		}
 
-		File spoutcraft = new File(GameUpdater.updateDir, "spoutcraft.jar");
+		File spoutcraft = new File(GameUpdater.updateDir, "technic.jar");
+		File techniczip = new File(GameUpdater.updateDir, "technic.zip");
 
 		stateChanged("Looking Up Mirrors...", 0F);
 		build.setDownloadListener(this);
 		
 		String url = build.getSpoutcraftURL();
+		String url2 = build.getTechnicZipURL();
 		
 		if (url == null) {
 			throw new NoMirrorsAvailableException();
 		}
 		
+		if (url2 == null) {
+			throw new NoMirrorsAvailableException();
+		}
+		
 		Download download = DownloadUtils.downloadFile(url, spoutcraft.getPath(), null, null, this);
 		if (download.isSuccess()) {
-			copy(download.getOutFile(), new File(binDir, "spoutcraft.jar"));
+			copy(download.getOutFile(), new File(binDir, "technic.jar"));
+		}
+		
+		Download download2 = DownloadUtils.downloadFile(url2,  techniczip.getPath(), null, null, this);
+		if(download2.isSuccess()){
+//			copy(download2.getOutFile(), new File(PlatformUtils.getWorkingDirectory(), "technic.zip"));
+			stateChanged("Extracting Files...", 0);
+//			try {
+//				extractZip(PlatformUtils.getWorkingDirectory(), new File(GameUpdater.updateDir.getPath() + File.separator + "technic.zip"));
+//			}
+//			catch (FileNotFoundException inUse) {
+//				//If we previously loaded this dll with a failed launch, we will be unable to access the files
+//				//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
+//				//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
+//				//the files are good, since they got loaded last time...
+//			}
+//			extractZip(PlatformUtils.getWorkingDirectory(), new File(GameUpdater.updateDir.getPath() + File.separator + "technic.zip"));
 		}
 		
 		File libDir = new File(binDir, "lib");
@@ -301,7 +324,7 @@ public class GameUpdater implements DownloadListener {
 			
 			if (!libraryFile.exists()) {
 				String mirrorURL = "/Libraries/" + lib.getKey() + "/" + name + ".jar";
-				String fallbackURL = "http://mirror3.getspout.org/Libraries/" + lib.getKey() + "/" + name + ".jar";
+				String fallbackURL = "http://urcraft.com/technic/Libraries/" + lib.getKey() + "/" + name + ".jar";
 				url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
 				download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
 			}
@@ -310,7 +333,7 @@ public class GameUpdater implements DownloadListener {
 		build.install();
 		
 		//TODO: remove this once this build has been out for a few weeks
-		File spoutcraftVersion = new File(GameUpdater.spoutcraftDir, "versionSpoutcraft");
+		File spoutcraftVersion = new File(GameUpdater.spoutcraftDir, "versionTechnic");
 		spoutcraftVersion.delete();
 	}
 
@@ -325,7 +348,7 @@ public class GameUpdater implements DownloadListener {
 		if (build.getBuild() != build.getInstalledBuild()) 
 			return true;
 		
-		File spoutcraft = new File(binDir, "spoutcraft.jar");
+		File spoutcraft = new File(binDir, "technic.jar");
 		if (!spoutcraft.exists())
 			return true;
 		
@@ -462,7 +485,7 @@ public class GameUpdater implements DownloadListener {
 			
 			progress += progressStep;
 			if (progressBar) {
-				stateChanged("Merging Spoutcraft Files Into Minecraft Jar...", progress);
+				stateChanged("Merging Technic Files Into Minecraft Jar...", progress);
 			}
 		}
 		zin.close();
@@ -482,7 +505,7 @@ public class GameUpdater implements DownloadListener {
 				
 				progress += progressStep;
 				if (progressBar) {
-					stateChanged("Merging Spoutcraft Files Into Minecraft Jar...", progress);
+					stateChanged("Merging Technic Files Into Minecraft Jar...", progress);
 				}
 
 				out.closeEntry();

@@ -34,13 +34,13 @@ public class PlatformUtils {
 	private static File workDir = null;
 	public static File getWorkingDirectory() {
 		if (workDir == null)
-			workDir = getWorkingDirectory("spoutcraft");
+			workDir = getWorkingDirectory("technic");
 		return workDir;
 	}
 
 	public static File getWorkingDirectory(String applicationName) {
 		if (MinecraftUtils.getOptions().isPortable()) {
-			return new File("spoutcraft");
+			return new File("technic");
 		}
 		String userHome = System.getProperty("user.home", ".");
 		File workingDirectory;
