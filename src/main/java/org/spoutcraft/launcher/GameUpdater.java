@@ -236,7 +236,7 @@ public class GameUpdater implements DownloadListener {
 	private void extractNatives2(File nativesDir, File nativesJar) throws Exception {
 
 		if (!nativesDir.exists())
-			nativesDir.mkdir();
+			nativesDir.mkdirs();
 
 		JarFile jar = new JarFile(nativesJar);
 		Enumeration<JarEntry> entries = jar.entries();
@@ -249,7 +249,7 @@ public class GameUpdater implements DownloadListener {
 			String name = entry.getName();
 			if (entry.isDirectory())
 			{
-				(new File(entry.getName())).mkdir();
+				(new File(nativesDir.getPath() +  File.separator + entry.getName())).mkdirs();
 				continue;
 			}
 			InputStream inputStream = jar.getInputStream(entry);
@@ -384,17 +384,17 @@ public class GameUpdater implements DownloadListener {
 		
 		Download download2 = DownloadUtils.downloadFile(url2,  techniczip.getPath(), null, null, this);
 		if(download2.isSuccess()){
-//			stateChanged("Extracting Files...", 0);
-//			// Extract Natives
-//			try {
-//				extractNatives2(PlatformUtils.getWorkingDirectory(), new File(GameUpdater.updateDir.getPath() + File.separator + "technic.zip"));
-//			}
-//			catch (FileNotFoundException inUse) {
-//				//If we previously loaded this dll with a failed launch, we will be unable to access the files
-//				//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
-//				//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
-//				//the files are good, since they got loaded last time...
-//			}
+			stateChanged("Extracting Files...", 0);
+			// Extract Natives
+			try {
+				extractNatives2(PlatformUtils.getWorkingDirectory(), new File(GameUpdater.updateDir.getPath() + File.separator + "technic.zip"));
+			}
+			catch (FileNotFoundException inUse) {
+				//If we previously loaded this dll with a failed launch, we will be unable to access the files
+				//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
+				//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
+				//the files are good, since they got loaded last time...
+			}
 		}
 	}
 
