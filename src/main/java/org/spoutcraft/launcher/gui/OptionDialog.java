@@ -57,7 +57,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 	
 	JRadioButton customBuilds = new JRadioButton("Manual build selection");
 	
-	JCheckBox clipboardCheckbox = new JCheckBox("Allow access to your clipboard");
+//	JCheckBox clipboardCheckbox = new JCheckBox("Allow access to your clipboard");
 	
 	JCheckBox backupCheckbox = new JCheckBox("Include worlds when doing automated backup");
 	
@@ -92,7 +92,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		customBuilds.setToolTipText("Only use if you know what you are doing!");
 		devBuilds.setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
 		recBuilds.setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
-		clipboardCheckbox.setToolTipText("Allows server mods to see the contents of your clipboard.");
+//		clipboardCheckbox.setToolTipText("Allows server mods to see the contents of your clipboard.");
 		backupCheckbox.setToolTipText("Backs up your Technic SP worlds after each Technic update");
 		retryLoginCheckbox.setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
 		latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
@@ -120,7 +120,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		devBuilds.addActionListener(this);
 		buildsCombo.addActionListener(this);
 		
-		clipboardCheckbox.setSelected(SettingsUtil.isClipboardAccess());
+//		clipboardCheckbox.setSelected(SettingsUtil.isClipboardAccess());
 		backupCheckbox.setSelected(SettingsUtil.isWorldBackup());
 		retryLoginCheckbox.setSelected(SettingsUtil.getLoginTries() > 1);
 		latestLWJGLCheckbox.setSelected(SettingsUtil.isLatestLWJGL());
@@ -156,7 +156,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 						.addComponent(devBuilds)
 						.addComponent(recBuilds)
 						.addComponent(customBuilds)
-						.addComponent(clipboardCheckbox)
+//						.addComponent(clipboardCheckbox)
 						.addComponent(backupCheckbox)
 						.addComponent(retryLoginCheckbox)
 						.addComponent(latestLWJGLCheckbox)
@@ -171,7 +171,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		
 		Font font = new Font("Arial", Font.PLAIN, 11);
 		backupCheckbox.setFont(font);
-		clipboardCheckbox.setFont(font);
+//		clipboardCheckbox.setFont(font);
 		devBuilds.setFont(font);
 		recBuilds.setFont(font);
 		retryLoginCheckbox.setFont(font);
@@ -189,7 +189,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 					.addComponent(customBuilds)
 					.addComponent(retryLoginCheckbox)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(clipboardCheckbox)
+//					.addComponent(clipboardCheckbox)
 					.addComponent(backupCheckbox)
 					.addComponent(latestLWJGLCheckbox)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -250,7 +250,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		if (id.equals("OK")) {
 			SettingsUtil.setDevelopmentBuild(devBuilds.isSelected());
 			SettingsUtil.setRecommendedBuild(recBuilds.isSelected());
-			SettingsUtil.setClipboardAccess(clipboardCheckbox.isSelected());
+//			SettingsUtil.setClipboardAccess(clipboardCheckbox.isSelected());
 			SettingsUtil.setWorldBackup(backupCheckbox.isSelected());
 			SettingsUtil.setLoginTries(retryLoginCheckbox.isSelected());
 			if (SettingsUtil.getMemorySelection() > 5) {

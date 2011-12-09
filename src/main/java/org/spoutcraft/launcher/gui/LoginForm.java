@@ -59,6 +59,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	HashMap<String, UserPasswordInformation> usernames = new HashMap<String, UserPasswordInformation>();
 	public boolean mcUpdate = false;
 	public boolean spoutUpdate = false;
+	public boolean technicUpdate = false;
 	public static UpdateDialog updateDialog;
 	private static String pass = null;
 	public static String[] values = null;
@@ -564,6 +565,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 						} catch (Exception e) {
 							spoutUpdate = false;
 						}
+						
+						publish("Checking for Technic update...\n");
+						try {
+							technicUpdate = spoutUpdate;
+						} catch (Exception e) {
+							technicUpdate = false;
+						}
 						return true;
 					}
 					
@@ -572,8 +580,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 							updateDialog.setToUpdate("Minecraft");
 						} else if (spoutUpdate) {
 							updateDialog.setToUpdate("Spoutcraft");
+						} else if (technicUpdate) {
+							updateDialog.setToUpdate("Technic");
 						}
-						if (mcUpdate || spoutUpdate) {
+						if (mcUpdate || spoutUpdate || technicUpdate) {
 							LoginForm.updateDialog.setVisible(true);
 						} else {
 							runGame();
@@ -611,6 +621,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 					if (spoutUpdate) {
 						gameUpdater.updateSpoutcraft();
+					}
+					if (technicUpdate) {
+						gameUpdater.updateTechnic();
 					}
 				}
 				catch (NoMirrorsAvailableException e) {
