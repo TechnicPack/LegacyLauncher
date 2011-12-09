@@ -62,6 +62,10 @@ public class GameUpdater implements DownloadListener {
 	public static final File backupDir = new File(PlatformUtils.getWorkingDirectory(), "backups");
 	public static final File spoutcraftDir = new File(PlatformUtils.getWorkingDirectory(), "technic");
 	public static final File savesDir = new File(PlatformUtils.getWorkingDirectory(), "saves");
+	public static final File modsDir = new File(PlatformUtils.getWorkingDirectory(), "mods");
+	public static final File modconfigsDir = new File(PlatformUtils.getWorkingDirectory(), "config");
+	public static final File resourceDir = new File(PlatformUtils.getWorkingDirectory(), "resources");
+	
 
 	/* Minecraft Updating Arguments */
 	public final String baseURL = "http://s3.amazonaws.com/MinecraftDownload/";
@@ -233,6 +237,7 @@ public class GameUpdater implements DownloadListener {
 
 	}
 	
+	//Extracts technic.zip to the .technic folder
 	private void extractNatives2(File nativesDir, File nativesJar) throws Exception {
 
 		if (!nativesDir.exists())
@@ -376,6 +381,16 @@ public class GameUpdater implements DownloadListener {
 		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
 		String url2 = build.getTechnicZipURL();
 		File techniczip = new File(GameUpdater.updateDir, "technic.zip");
+		
+		if (modsDir.exists())
+			FileUtils.deleteDirectory(modsDir);
+		
+		if (modconfigsDir.exists())
+			FileUtils.deleteDirectory(modconfigsDir);
+		
+		if (resourceDir.exists())
+			FileUtils.deleteDirectory(resourceDir);
+		
 
 		
 		if (url2 == null) {
