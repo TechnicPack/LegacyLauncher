@@ -395,9 +395,6 @@ public class GameUpdater implements DownloadListener {
 //				//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
 //				//the files are good, since they got loaded last time...
 //			}
-//			catch (Exception e)
-//			{
-//			}
 		}
 	}
 
