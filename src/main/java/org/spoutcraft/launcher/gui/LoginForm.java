@@ -120,7 +120,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		JLabel lblLogo = new JLabel("");
 		lblLogo.setBounds(8, 0, 294, 99);
-		lblLogo.setIcon(new ImageIcon(LoginForm.class.getResource("/org/spoutcraft/launcher/spoutcraft.png")));
+		lblLogo.setIcon(new ImageIcon(LoginForm.class.getResource("/org/spoutcraft/launcher/technic.png")));
 
 		JLabel lblMinecraftUsername = new JLabel("Minecraft Username: ");
 		lblMinecraftUsername.setFont(new Font("Arial", Font.PLAIN, 11));
