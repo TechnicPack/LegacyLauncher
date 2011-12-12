@@ -23,7 +23,7 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object>{
 	@Override
 	protected Object doInBackground() throws Exception {
 		try {
-			URL url = new URL("http://urcraft.com/changelog/");
+			URL url = new URL("http://urcraft.com/technic/changelog/");
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 			if (HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
 				editorPane.setVisible(false);

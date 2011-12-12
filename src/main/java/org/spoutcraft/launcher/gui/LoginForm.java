@@ -49,6 +49,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	private JComboBox usernameField = new JComboBox();
 	private JButton loginButton = new JButton("Login");
 	JButton optionsButton = new JButton("Options");
+	JButton modsButton = new JButton("Mods");
 	private JCheckBox rememberCheckbox = new JCheckBox("Remember");
 	private JButton loginSkin1;
 	private List<JButton> loginSkin1Image;
@@ -67,6 +68,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 	public static final GameUpdater gameUpdater = new GameUpdater();
 	OptionDialog options = new OptionDialog();
+	ModsDialog mods = new ModsDialog();
 
 	Container loginPane = new Container();
 	Container offlinePane = new Container();
@@ -100,6 +102,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		optionsButton.setFont(new Font("Arial", Font.PLAIN, 11));
 		optionsButton.setOpaque(false);
 		optionsButton.addActionListener(this);
+		modsButton.setFont(new Font("Arial", Font.PLAIN, 11));
+		modsButton.setOpaque(false);
+		modsButton.addActionListener(this);
 		usernameField.setFont(new Font("Arial", Font.PLAIN, 11));
 		usernameField.addActionListener(this);
 		usernameField.setOpaque(false);
@@ -217,6 +222,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		rememberCheckbox.setBounds(144, 66, 93, 23);
 		contentPane.add(lblLogo);
 		optionsButton.setBounds(272, 41, 86, 23);
+		modsButton.setBounds(15, 66, 93, 23);
 		contentPane.add(loginSkin1);
 		contentPane.add(loginSkin2);
 
@@ -229,6 +235,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		loginPane.add(rememberCheckbox);
 		loginPane.add(purchaseAccount);
 		loginPane.add(optionsButton);
+		loginPane.add(modsButton);
 		contentPane.add(loginPane);
 
 		JLabel offlineMessage = new JLabel("Could not connect to minecraft.net");
@@ -272,12 +279,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		File backgroundImage = new File(cacheDir, "launcher_background.jpg");
 		(new BackgroundImageWorker(backgroundImage, background)).execute();
 
-		Vector<Component> order = new Vector<Component>(5);
+		Vector<Component> order = new Vector<Component>(6);
 		order.add(usernameField.getEditor().getEditorComponent());
 		order.add(passwordField);
 		order.add(rememberCheckbox);
 		order.add(loginButton);
 		order.add(optionsButton);
+		order.add(modsButton);
 
 		setFocusTraversalPolicy(new SpoutFocusTraversalPolicy(order));
 		
@@ -405,6 +413,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		} else if (eventId.equals("Options")) {
 			options.setVisible(true);
 			options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
+		} else if (eventId.equals("Mods")) {
+			mods.setVisible(true);
+			mods.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
 		} else if (eventId.equals("comboBoxChanged")) {
 			updatePasswordField();
 		}
@@ -439,6 +450,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		}
 		this.loginButton.setEnabled(false);
 		this.optionsButton.setEnabled(false);
+		this.modsButton.setEnabled(false);
 		this.loginSkin1.setEnabled(false);
 		this.loginSkin2.setEnabled(false);
 		options.setVisible(false);
@@ -513,6 +525,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				}
 				loginButton.setEnabled(true);
 				optionsButton.setEnabled(true);
+				modsButton.setEnabled(true);
 				loginSkin1.setEnabled(true);
 				loginSkin2.setEnabled(true);
 				this.cancel(true);
@@ -635,6 +648,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					error = true;
 					loginButton.setEnabled(true);
 					optionsButton.setEnabled(true);
+					modsButton.setEnabled(true);
 					loginSkin1.setEnabled(true);
 					loginSkin2.setEnabled(true);
 					this.cancel(true);
@@ -676,6 +690,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		else if (result == LauncherFrame.ERROR_IN_LAUNCH){
 			loginButton.setEnabled(true);
 			optionsButton.setEnabled(true);
+			modsButton.setEnabled(true);
 			loginSkin1.setEnabled(true);
 			loginSkin2.setEnabled(true);
 			progressBar.setVisible(false);
