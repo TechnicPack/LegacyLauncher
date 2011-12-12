@@ -381,16 +381,6 @@ public class GameUpdater implements DownloadListener {
 		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
 		String url2 = build.getTechnicZipURL();
 		File techniczip = new File(GameUpdater.updateDir, "technic.zip");
-		
-		if (modsDir.exists())
-			FileUtils.deleteDirectory(modsDir);
-		
-		if (modconfigsDir.exists())
-			FileUtils.deleteDirectory(modconfigsDir);
-		
-		if (resourceDir.exists())
-			FileUtils.deleteDirectory(resourceDir);
-		
 
 		
 		if (url2 == null) {
@@ -494,6 +484,15 @@ public class GameUpdater implements DownloadListener {
 			(new BackupCleanupThread(existingBackups)).start();
 			zip.createNewFile();
 			addFilesToExistingZip(zip, getFiles(PlatformUtils.getWorkingDirectory(), exclude, rootDir), rootDir, false);
+			
+			if (modsDir.exists())
+				FileUtils.deleteDirectory(modsDir);
+			
+			if (modconfigsDir.exists())
+				FileUtils.deleteDirectory(modconfigsDir);
+			
+			if (resourceDir.exists())
+				FileUtils.deleteDirectory(resourceDir);
 		}
 	}
 
