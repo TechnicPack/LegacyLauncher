@@ -47,4 +47,23 @@ public class ModsDialog extends JDialog implements ActionListener
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	public void actionPerformed(ActionEvent evt) {
+		String id = evt.getActionCommand();
+		
+		if(id.equals("Install"))
+		{
+			
+		}
+		
+		
+		
+	}
+	
+
 }

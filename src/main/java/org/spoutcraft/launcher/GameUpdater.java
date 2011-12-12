@@ -58,6 +58,7 @@ public class GameUpdater implements DownloadListener {
 	/* Files */
 	public static final File binDir = new File(PlatformUtils.getWorkingDirectory(), "bin");
 	public static final File binCacheDir = new File(binDir, "cache");
+	public static final File cacheDir = new File(PlatformUtils.getWorkingDirectory(), "cache");
 	public static final File updateDir = new File(PlatformUtils.getWorkingDirectory(), "temp");
 	public static final File backupDir = new File(PlatformUtils.getWorkingDirectory(), "backups");
 	public static final File spoutcraftDir = new File(PlatformUtils.getWorkingDirectory(), "technic");

@@ -84,6 +84,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				MinecraftYML.updateMinecraftYMLCache();
 				SpoutcraftYML.updateSpoutcraftYMLCache();
 				LibrariesYML.updateLibrariesYMLCache();
+				ModsYML.updateModsYMLCache();
 				return null;
 			}
 			
