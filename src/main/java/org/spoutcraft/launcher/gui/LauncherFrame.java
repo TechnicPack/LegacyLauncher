@@ -77,7 +77,7 @@ public class LauncherFrame extends Frame implements WindowListener{
 			return ERROR_IN_LAUNCH;
 		}
 		if (applet == null) {
-			String message = "Failed to launch Spoutcraft!";
+			String message = "Failed to launch Technic!";
 			this.setVisible(false);
 			JOptionPane.showMessageDialog(getParent(), message);
 			this.dispose();

@@ -64,6 +64,8 @@ public class GameUpdater implements DownloadListener {
 	public static final File spoutcraftDir = new File(PlatformUtils.getWorkingDirectory(), "technic");
 	public static final File savesDir = new File(PlatformUtils.getWorkingDirectory(), "saves");
 	public static final File modsDir = new File(PlatformUtils.getWorkingDirectory(), "mods");
+	public static final File technicModsDir = new File(PlatformUtils.getWorkingDirectory(), "mods-technic");
+	public static final File technicSavesDir = new File(PlatformUtils.getWorkingDirectory(), "saves-technic");
 	public static final File modconfigsDir = new File(PlatformUtils.getWorkingDirectory(), "config");
 	public static final File resourceDir = new File(PlatformUtils.getWorkingDirectory(), "resources");
 	
@@ -477,6 +479,7 @@ public class GameUpdater implements DownloadListener {
 			exclude.add(GameUpdater.backupDir);
 			if (!SettingsUtil.isWorldBackup()) {
 				exclude.add(GameUpdater.savesDir);
+				exclude.add(GameUpdater.technicSavesDir);
 			}
 			exclude.add(GameUpdater.updateDir);
 			exclude.add(SystemConsoleListener.logDir);
@@ -485,6 +488,9 @@ public class GameUpdater implements DownloadListener {
 			(new BackupCleanupThread(existingBackups)).start();
 			zip.createNewFile();
 			addFilesToExistingZip(zip, getFiles(PlatformUtils.getWorkingDirectory(), exclude, rootDir), rootDir, false);
+			
+			if (technicModsDir.exists())
+				FileUtils.deleteDirectory(technicModsDir);
 			
 			if (modsDir.exists())
 				FileUtils.deleteDirectory(modsDir);

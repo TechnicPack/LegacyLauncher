@@ -1,4 +1,5 @@
 /*
+
  * This file is part of Spoutcraft Launcher (http://wiki.getspout.org/).
  * 
  * Spoutcraft Launcher is free software: you can redistribute it and/or modify
@@ -173,6 +174,15 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		purchaseAccount.setText("<html><u>Need an account?</u></html>");
 		purchaseAccount.setFont(new Font("Arial", Font.PLAIN, 11));
 		purchaseAccount.setForeground(new Color(0, 0, 255));
+		
+		JLabel wikiLink = new HyperlinkJLabel("<html><u>Technic Wiki</u></html>", "http://wiki.technicpack.net/index.php?title=Main_Page");
+		wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
+		wikiLink.setBounds(233, 85, 109, 14);
+		
+		wikiLink.setText("<html><u>Technic Wiki</u></html>");
+		wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
+		wikiLink.setForeground(new Color(0, 0, 255));
+		
 		usernameField.setBounds(143, 14, 119, 25);
 		rememberCheckbox.setFont(new Font("Arial", Font.PLAIN, 11));
 
@@ -227,7 +237,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		contentPane.add(loginSkin1);
 		contentPane.add(loginSkin2);
 
-		loginPane.setBounds(473, 362, 372, 99);
+		loginPane.setBounds(473, 362, 372, 106);
 		loginPane.add(lblPassword);
 		loginPane.add(lblMinecraftUsername);
 		loginPane.add(passwordField);
@@ -235,6 +245,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		loginPane.add(loginButton);
 		loginPane.add(rememberCheckbox);
 		loginPane.add(purchaseAccount);
+		loginPane.add(wikiLink);
 		loginPane.add(optionsButton);
 		loginPane.add(modsButton);
 		contentPane.add(loginPane);
