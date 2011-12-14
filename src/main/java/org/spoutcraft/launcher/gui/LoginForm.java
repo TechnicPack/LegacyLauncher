@@ -69,7 +69,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 	public static final GameUpdater gameUpdater = new GameUpdater();
 	OptionDialog options = new OptionDialog();
-	ModsDialog mods = new ModsDialog();
+	ModsDialog mods = new ModsDialog(ModsYML.getTechnicMods());
 
 	Container loginPane = new Container();
 	Container offlinePane = new Container();

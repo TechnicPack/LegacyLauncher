@@ -21,6 +21,8 @@ public class UpdateDialog extends JDialog implements ActionListener {
 	private LoginForm lf;
 	
 	public void setToUpdate(String str) {
+		if(str == "Spoutcraft")
+			label.setText(label.getText().replace("%TO_UPDATE%", "Technic"));
 		label.setText(label.getText().replace("%TO_UPDATE%", str));
 	}
 	
