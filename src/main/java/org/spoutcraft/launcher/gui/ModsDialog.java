@@ -6,6 +6,10 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -28,6 +32,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
+import javax.swing.JToggleButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -39,33 +44,53 @@ import javax.swing.JLabel;
 public class ModsDialog extends JDialog implements ActionListener
 {
 	private final JPanel contentPanel = new JPanel();
-	protected JCheckBox[] modOptions;
+	protected JToggleButton[] modLists;
+	protected Map<Integer, ButtonGroup> groups;
 
 	/**
 	 * Create the dialog.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
-	public ModsDialog(String[][] modNameList) {
+	public ModsDialog(List<Map<String, String>> modNameList) {
 		setTitle("Select Mods to Install");
 		setBounds(100, 100, 616, 492);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new BorderLayout());
 		contentPanel.setOpaque(false);
 		
+		groups = new HashMap<Integer, ButtonGroup>();
+
 		if(modNameList != null)
 		{
-			modOptions = new JCheckBox[modNameList.length];
-			for (int i = 0; i < modNameList.length; i++)
+			modLists = new JToggleButton[modNameList.size()];
+			JToggleButton item = null;
+			
+			for (int i = 0; i < modNameList.size(); i++)
 			{
-				modOptions[i] = new JCheckBox(modNameList[i][0], false);
-				modOptions[i].setOpaque(false);
-				modOptions[i].setFocusPainted(false);
-				modOptions[i].setHorizontalAlignment(SwingConstants.LEFT);
+				Map<String, String> modDetails = modNameList.get(i);
+				if (modDetails.containsKey("groupid"))
+				{
+					item = new JRadioButton(modDetails.get("name"), false);
+					int groupid = Integer.parseInt(modDetails.get("groupid"));
+					if (!groups.containsKey(groupid))
+					{
+						groups.put(groupid, new ButtonGroup());
+					}
+					groups.get(groupid).add(item);
+				}
+				else
+					item = new JCheckBox(modDetails.get("name"), false);
+				
+				item.setOpaque(false);
+				item.setFocusPainted(false);
+				item.setHorizontalAlignment(SwingConstants.LEFT);
+				
+				modLists[i] = item;
 			}
 		}
 		else
 		{
-			modOptions = new JCheckBox[0];
+			modLists = new JCheckBox[0];
 		}
 		
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -75,10 +100,10 @@ public class ModsDialog extends JDialog implements ActionListener
 			modList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			modList.setModel(new AbstractListModel() {
 				public int getSize() {
-					return modOptions.length;
+					return modLists.length;
 				}
 				public Object getElementAt(int index) {
-					return modOptions[index];
+					return modLists[index];
 				}
 			});
 			contentPanel.add(modList);

@@ -1,6 +1,9 @@
 package org.spoutcraft.launcher;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,34 +49,30 @@ public class ModsYML {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static String[][] getTechnicMods()
+	public static List<Map<String, String>> getTechnicMods()
 	{
 		Configuration config = getModsYML();
 		Map<Integer, Object> mods = (Map<Integer, Object>) config.getProperty("mods");
 		
-		if(mods != null)
-		{
-			try
-			{
-			String results[][] = new String[mods.size()][];
-			int index = 0;
-			for (Integer i : mods.keySet())
-			{
-				Map<String, String> map = (Map<String, String>) mods.get(i);
-				results[index][0] = String.valueOf(map.get("name"));
-				results[index][1] = String.valueOf(map.get("description"));
-				results[index][2] = String.valueOf(map.get("installtype"));
-				results[index][3] = String.valueOf(map.get("filenames"));
-				index++;
-			}
-			return results;
-			}
-			catch(Exception e)
-			{
-				
-			}
-		}
-		return null;
+		List<Map<String, String>> modList = new ArrayList<Map<String, String>>();
 		
+		Map<String, String> modDetails = null;
+		int index = 0;
+		for (Integer i : mods.keySet())
+		{
+			Map<String, String> map = (Map<String, String>) mods.get(i);
+			
+			modDetails = new HashMap<String, String>();
+			modDetails.put("name", String.valueOf(map.get("name")));
+			modDetails.put("description", String.valueOf(map.get("description")));
+			modDetails.put("installtype", String.valueOf(map.get("installtype")));
+			modDetails.put("filenames", String.valueOf(map.get("filenames")));
+			if (map.containsKey("groupid"))
+				modDetails.put("groupid", String.valueOf(map.get("groupid")));
+			
+			modList.add(modDetails);
+		}
+		
+		return modList;		
 	}
 }

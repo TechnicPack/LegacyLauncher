@@ -21,7 +21,7 @@ public class CheckBoxList extends JList
                int index = locationToIndex(e.getPoint());
 
                if (index != -1) {
-                  JCheckBox checkbox = (JCheckBox)
+            	   JToggleButton checkbox = (JToggleButton)
                               getModel().getElementAt(index);
                   checkbox.setSelected(
                                      !checkbox.isSelected());
@@ -40,7 +40,7 @@ public class CheckBoxList extends JList
                     JList list, Object value, int index,
                     boolean isSelected, boolean cellHasFocus)
       {
-         JCheckBox checkbox = (JCheckBox) value;
+    	  JToggleButton checkbox = (JToggleButton) value;
          checkbox.setBackground(isSelected ?
                  getSelectionBackground() : getBackground());
          checkbox.setForeground(isSelected ?
