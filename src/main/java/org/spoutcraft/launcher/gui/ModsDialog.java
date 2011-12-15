@@ -63,6 +63,10 @@ public class ModsDialog extends JDialog implements ActionListener
 				modOptions[i].setHorizontalAlignment(SwingConstants.LEFT);
 			}
 		}
+		else
+		{
+			modOptions = new JCheckBox[0];
+		}
 		
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{

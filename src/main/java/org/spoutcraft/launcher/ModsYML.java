@@ -55,7 +55,8 @@ public class ModsYML {
 		{
 			try
 			{
-			String[][] results = new String[mods.size()][];
+//			String[][] results = new String[mods.size()][];
+			String results[][] = new String[mods.size()][];
 			int index = 0;
 			for (Integer i : mods.keySet())
 			{

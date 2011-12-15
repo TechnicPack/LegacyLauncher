@@ -69,9 +69,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 	public static final GameUpdater gameUpdater = new GameUpdater();
 	OptionDialog options = new OptionDialog();
-//	ModsDialog mods = new ModsDialog(ModsYML.getTechnicMods());
 	ModsDialog mods = new ModsDialog(ModsYML.getTechnicMods());
 
+	
 	Container loginPane = new Container();
 	Container offlinePane = new Container();
 
@@ -428,7 +428,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
 		} else if (eventId.equals("Mods")) {
 			mods.setVisible(true);
-			mods.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
 		} else if (eventId.equals("comboBoxChanged")) {
 			updatePasswordField();
 		}
