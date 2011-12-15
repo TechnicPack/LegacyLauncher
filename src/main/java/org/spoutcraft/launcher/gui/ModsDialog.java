@@ -18,6 +18,7 @@ import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MinecraftDownloadUtils;
 import org.spoutcraft.launcher.MinecraftYML;
+import org.spoutcraft.launcher.ModsYML;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.SpoutcraftYML;
 
@@ -51,13 +52,16 @@ public class ModsDialog extends JDialog implements ActionListener
 		contentPanel.setLayout(new BorderLayout());
 		contentPanel.setOpaque(false);
 		
-		modOptions = new JCheckBox[modNameList.length];
-		for (int i = 0; i < modNameList.length; i++)
+		if(modNameList != null)
 		{
-			modOptions[i] = new JCheckBox(modNameList[i][1], false);
-			modOptions[i].setOpaque(false);
-			modOptions[i].setFocusPainted(false);
-			modOptions[i].setHorizontalAlignment(SwingConstants.LEFT);
+			modOptions = new JCheckBox[modNameList.length];
+			for (int i = 0; i < modNameList.length; i++)
+			{
+				modOptions[i] = new JCheckBox(modNameList[i][0], false);
+				modOptions[i].setOpaque(false);
+				modOptions[i].setFocusPainted(false);
+				modOptions[i].setHorizontalAlignment(SwingConstants.LEFT);
+			}
 		}
 		
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

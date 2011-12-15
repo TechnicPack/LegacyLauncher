@@ -53,25 +53,25 @@ public class ModsYML {
 		
 		if(mods != null)
 		{
+			try
+			{
 			String[][] results = new String[mods.size()][];
 			int index = 0;
 			for (Integer i : mods.keySet())
 			{
-				//i is the number of the mod, while index is i-1
-//				results[index] = i.toString();
-				Map<String, Object> map = (Map<String, Object>) mods.get(i);
-				String name = String.valueOf(map.get("name"));
-				String description = String.valueOf(map.get("description"));
-				String installtype = String.valueOf(map.get("installtype"));
-				String filenames = String.valueOf(map.get("filenames"));
-				results[index][0] = i.toString();
-				results[index][1] = name;
-				results[index][2] = description;
-				results[index][3] = installtype;
-				results[index][4] = filenames;
+				Map<String, String> map = (Map<String, String>) mods.get(i);
+				results[index][0] = String.valueOf(map.get("name"));
+				results[index][1] = String.valueOf(map.get("description"));
+				results[index][2] = String.valueOf(map.get("installtype"));
+				results[index][3] = String.valueOf(map.get("filenames"));
 				index++;
 			}
 			return results;
+			}
+			catch(Exception e)
+			{
+				
+			}
 		}
 		return null;
 		
