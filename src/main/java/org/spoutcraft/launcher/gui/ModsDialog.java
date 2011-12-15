@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.spoutcraft.launcher.ModsYML;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.SpoutcraftYML;
 
+import javax.swing.AbstractButton;
 import javax.swing.AbstractListModel;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -139,11 +141,18 @@ public class ModsDialog extends JDialog implements ActionListener
 			}
 		}
 	}
+	
+	public List<Boolean> ModsSelected = new ArrayList<Boolean>();
 
 	public void actionPerformed(ActionEvent evt) {
 		String id = evt.getActionCommand(); 
 		if (id.equals("OK")) {
-			
+			ModsSelected.clear();
+			for (int i = 0; i < modLists.length; i++)
+			{
+				AbstractButton button = modLists[i];
+				ModsSelected.add(button.isSelected());
+			}
 			
 			this.setVisible(false);
 			this.dispose();
