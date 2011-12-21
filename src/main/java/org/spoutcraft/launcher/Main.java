@@ -35,15 +35,15 @@ public class Main {
 	public static int build = -1;
 	public static String currentPack;
 	static File recursion;
-	public static String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
-	public static String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
-
+	
+	
 	public Main() throws Exception {
 		main(new String[0]);
 	}
 
 	public static void reboot(String memory) {
 		try {
+			String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
 			int mem = 1 << 9 + SettingsUtil.getMemorySelection();
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
@@ -173,6 +173,7 @@ public class Main {
 			} catch (Exception ignore) { }
 		}
 		PlatformUtils.getWorkingDirectory().mkdirs();
+		String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
 		if(modpackFilename != null)
 		{
 			new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString()).mkdir();
