@@ -35,6 +35,8 @@ public class Main {
 	public static int build = -1;
 	public static String currentPack;
 	static File recursion;
+	public static String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
+	public static String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
 
 	public Main() throws Exception {
 		main(new String[0]);
@@ -69,9 +71,18 @@ public class Main {
 				params.add("-Xdock:name=\"Technic\"");
 				
 				try {
-					File icon = new File(PlatformUtils.getWorkingDirectory(), ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("filename").toString() + "_icon.icns");
-					GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/" + ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("filename").toString() + "_icon.icns"), new FileOutputStream(icon));
-					params.add("-Xdock:icon=" + icon.getCanonicalPath());
+					if(modpackFilename != null)
+					{
+						File icon = new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString() + "_icon.icns");
+						GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_icon.icns"), new FileOutputStream(icon));
+						params.add("-Xdock:icon=" + icon.getCanonicalPath());
+					}
+					else
+					{
+						File icon = new File(PlatformUtils.getWorkingDirectory(), "technic_icon.icns");
+						GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/technic_icon.icns"), new FileOutputStream(icon));
+						params.add("-Xdock:icon=" + icon.getCanonicalPath());
+					}
 				}
 				catch (Exception ignore) { }
 			}
@@ -162,9 +173,10 @@ public class Main {
 			} catch (Exception ignore) { }
 		}
 		PlatformUtils.getWorkingDirectory().mkdirs();
-
-//		new File(PlatformUtils.getWorkingDirectory(), "technic").mkdir();
-		new File(PlatformUtils.getWorkingDirectory(), ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("name").toString()).mkdir();
+		if(modpackFilename != null)
+		{
+			new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString()).mkdir();
+		}
 		new File(PlatformUtils.getWorkingDirectory(), "launcher").mkdir();
 
 		SystemConsoleListener listener = new SystemConsoleListener();
@@ -174,9 +186,8 @@ public class Main {
 		System.out.println("------------------------------------------");
 		System.out.println("Launcher is starting....");
 		System.out.println("Launcher Build: " + getBuild());
-//		System.out.println(ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("name").toString() + " Launcher is starting....");
-//		System.out.println(ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("name").toString() + " Launcher Build: " + getBuild());
 
+		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
