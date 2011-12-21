@@ -25,6 +25,8 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JOptionPane;
 
+import org.spoutcraft.launcher.ModPacksYML;
+import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.Launcher;
 import org.spoutcraft.launcher.MinecraftAppletEnglober;
 import org.spoutcraft.launcher.MinecraftUtils;
@@ -35,10 +37,13 @@ public class LauncherFrame extends Frame implements WindowListener{
 	private static final long serialVersionUID = 4524937541564722358L;
 	private MinecraftAppletEnglober minecraft;
 	private LoginForm loginForm = null;
+	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
+	public String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
 	
 	public static final int RETRYING_LAUNCH = -1;
 	public static final int ERROR_IN_LAUNCH = 0;
 	public static final int SUCCESSFUL_LAUNCH = 1;
+	
 	
 	//private static SettingsHandler settings = new SettingsHandler("defaults/spoutcraft.properties", new File(PlatformUtils.getWorkingDirectory(), "spoutcraft" + File.separator + "spoutcraft.properties"));
 
@@ -50,7 +55,14 @@ public class LauncherFrame extends Frame implements WindowListener{
 		this.setSize(new Dimension(870, 518));
 		this.setResizable(true);
 		this.addWindowListener(this);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/favicon.png")));
+		if(modpackFilename == null)
+			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/favicon.png")));
+		else
+		{
+			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_favicon.png" )));
+			if(modpackName != null)
+				setTitle(modpackName.toString());
+		}
 	}
 	
 	public void setLoginForm(LoginForm form) {
@@ -77,7 +89,7 @@ public class LauncherFrame extends Frame implements WindowListener{
 			return ERROR_IN_LAUNCH;
 		}
 		if (applet == null) {
-			String message = "Failed to launch Technic!";
+			String message = "Failed to launch Launcher!";
 			this.setVisible(false);
 			JOptionPane.showMessageDialog(getParent(), message);
 			this.dispose();
@@ -131,7 +143,7 @@ public class LauncherFrame extends Frame implements WindowListener{
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		System.out.println("Exiting Technic");
+		System.out.println("Exiting Launcher");
 		System.exit(0);
 	}
 

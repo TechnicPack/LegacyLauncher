@@ -33,6 +33,7 @@ public class Main {
 	
 	static String[] args_temp;
 	public static int build = -1;
+	public static String currentPack;
 	static File recursion;
 
 	public Main() throws Exception {
@@ -40,6 +41,52 @@ public class Main {
 	}
 
 	public static void reboot(String memory) {
+		try {
+			int mem = 1 << 9 + SettingsUtil.getMemorySelection();
+			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+			ArrayList<String> params = new ArrayList<String>();
+			if (PlatformUtils.getPlatform() == PlatformUtils.OS.windows) {
+				params.add("javaw"); // Windows-specific
+			} else {
+				params.add("java"); // Linux/Mac/whatever
+			}
+			if(memory == ("-Xmx" + mem + "m"))
+			{
+				params.add(memory);
+			}
+			else
+			{
+				params.add("-Xmx" + mem + "m");
+				params.add(memory);
+			}
+			params.add("-classpath");
+			params.add(pathToJar);
+			params.add("org.spoutcraft.launcher.Main");
+			for (String arg : args_temp) {
+				params.add(arg);
+			}
+			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
+				params.add("-Xdock:name=\"Technic\"");
+				
+				try {
+					File icon = new File(PlatformUtils.getWorkingDirectory(), ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("filename").toString() + "_icon.icns");
+					GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/" + ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("filename").toString() + "_icon.icns"), new FileOutputStream(icon));
+					params.add("-Xdock:icon=" + icon.getCanonicalPath());
+				}
+				catch (Exception ignore) { }
+			}
+			ProcessBuilder pb = new ProcessBuilder(params);
+			Process process = pb.start();
+			if(process == null)
+				throw new Exception("!");
+			System.exit(0);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void reboot(String memory, String modpack)
+	{
 		try {
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
@@ -49,6 +96,7 @@ public class Main {
 				params.add("java"); // Linux/Mac/whatever
 			}
 			params.add(memory);
+			params.add(modpack);
 			params.add("-classpath");
 			params.add(pathToJar);
 			params.add("org.spoutcraft.launcher.Main");
@@ -74,6 +122,7 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	public static void main(String[] args) throws Exception {
 		Options options = new Options();
@@ -114,15 +163,19 @@ public class Main {
 		}
 		PlatformUtils.getWorkingDirectory().mkdirs();
 
-		new File(PlatformUtils.getWorkingDirectory(), "technic").mkdir();
+//		new File(PlatformUtils.getWorkingDirectory(), "technic").mkdir();
+		new File(PlatformUtils.getWorkingDirectory(), ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("name").toString()).mkdir();
+		new File(PlatformUtils.getWorkingDirectory(), "launcher").mkdir();
 
 		SystemConsoleListener listener = new SystemConsoleListener();
 
 		listener.initialize();
 		
 		System.out.println("------------------------------------------");
-		System.out.println("Technic Launcher is starting....");
-		System.out.println("Technic Launcher Build: " + getBuild());
+		System.out.println("Launcher is starting....");
+		System.out.println("Launcher Build: " + getBuild());
+//		System.out.println(ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("name").toString() + " Launcher is starting....");
+//		System.out.println(ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()-1).get("name").toString() + " Launcher Build: " + getBuild());
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

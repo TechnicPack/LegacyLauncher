@@ -57,7 +57,7 @@ public class ModsYML {
 		List<Map<String, String>> modList = new ArrayList<Map<String, String>>();
 		
 		Map<String, String> modDetails = null;
-		int index = 0;
+//		int index = 0;
 		for (Integer i : mods.keySet())
 		{
 			Map<String, String> map = (Map<String, String>) mods.get(i);

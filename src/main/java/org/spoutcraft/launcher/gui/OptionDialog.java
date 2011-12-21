@@ -22,6 +22,9 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -34,6 +37,7 @@ import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MinecraftDownloadUtils;
 import org.spoutcraft.launcher.MinecraftYML;
+import org.spoutcraft.launcher.ModPacksYML;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.SpoutcraftYML;
 
@@ -67,6 +71,8 @@ public class OptionDialog extends JDialog implements ActionListener {
 	
 	JComboBox memoryCombo = new JComboBox();
 	
+	JComboBox packCombo = new JComboBox();
+	
 	JButton clearCache = new JButton("Clear Cache");
 	
 	JLabel buildInfo = new JLabel();
@@ -98,6 +104,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
 		clearCache.setToolTipText("Clears the cached minecraft and Technic files, forcing a redownload on your next login");
 		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Technic. Assigning more memory than you have may cause crashes.");
+		packCombo.setToolTipText("Select which mod pack to use with the launcher.");
 		
 		if (SettingsUtil.isRecommendedBuild()) {
 			devBuilds.setSelected(false);
@@ -140,6 +147,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		memoryCombo.setSelectedIndex(SettingsUtil.getMemorySelection());
 		
 		JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
+		JLabel lblPack = new JLabel("Select Mod Pack: ");
 		
 		JLabel selectBuild = new JLabel("Select Technic build: ");
 		
@@ -156,6 +164,10 @@ public class OptionDialog extends JDialog implements ActionListener {
 						.addComponent(devBuilds)
 						.addComponent(recBuilds)
 						.addComponent(customBuilds)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+								.addComponent(lblPack)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 //						.addComponent(clipboardCheckbox)
 						.addComponent(backupCheckbox)
 						.addComponent(retryLoginCheckbox)
@@ -187,6 +199,9 @@ public class OptionDialog extends JDialog implements ActionListener {
 					.addComponent(devBuilds)
 					.addComponent(recBuilds)
 					.addComponent(customBuilds)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblPack))
 					.addComponent(retryLoginCheckbox)
 					.addPreferredGap(ComponentPlacement.RELATED)
 //					.addComponent(clipboardCheckbox)
@@ -238,6 +253,55 @@ public class OptionDialog extends JDialog implements ActionListener {
 			}
 			updateBuildsCombo();
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void updateModPackList()
+	{
+		if(packCombo.getItemCount() == 0)
+		{
+//			List<Map<String, String>> modpackList = ModPacksYML.getModPacks();
+			if (ModPacksYML.getModPacks() != null)
+			{
+				for(int i=0; i < ModPacksYML.getModPacks().size(); i++)
+				{
+//					Map<String, String> map = (Map<String, String>) modpackList.get(i);
+//					packCombo.addItem(map.get("name").toString());
+					if(ModPacksYML.getModPacks().get(i).get("name") != null)
+						packCombo.addItem(ModPacksYML.getModPacks().get(i).get("name").toString());
+				}
+			}
+			else
+			{
+				if(ModPacksYML.getModPacks().get(0).get("name") != null)
+					packCombo.addItem(ModPacksYML.getModPacks().get(0).get("name").toString());
+				else
+					packCombo.addItem("Technic");
+			}
+			updateModPacksCombo();
+		}
+	}
+	
+	public void updateModPacksCombo()
+	{
+		if(ModPacksYML.getModPacks().size() > 1)
+			packCombo.setEnabled(true);
+		
+		if(!SettingsUtil.isModPack())
+		{
+			packCombo.setSelectedIndex(0);
+			SettingsUtil.setModPackSelection(0);
+		}
+		else
+		{
+			int id = SettingsUtil.getModPackSelection();
+			if(id > 0);
+			{
+				SettingsUtil.setModPackSelection(SettingsUtil.getModPackSelection());
+				packCombo.setSelectedIndex(id);
+			}
+		}
+		
 	}
 	
 	@Override

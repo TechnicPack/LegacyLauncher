@@ -3,7 +3,7 @@ package org.spoutcraft.launcher;
 import java.io.File;
 
 public class SettingsUtil {
-	private static SettingsHandler settings = new SettingsHandler("defaults/technic.properties", new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "technic.properties"));
+	private static SettingsHandler settings = new SettingsHandler("defaults/launcher.properties", new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "launcher.properties"));
 	
 	static {
 		settings.load();
@@ -57,12 +57,18 @@ public class SettingsUtil {
 		setProperty("devupdate", value);
 	}
 	
-	public static boolean isClipboardAccess() {
-		return isProperty("clipboardaccess");
+	public static boolean isModPack() {
+		return isProperty("modpack");
 	}
 	
-	public static void setClipboardAccess(boolean value) {
-		setProperty("clipboardaccess", value);
+	public static int getModPackSelection()
+	{
+		return getProperty("modpack", 0);
+	}
+	
+	public static void setModPackSelection(int value)
+	{
+		setProperty("modpack", value);
 	}
 	
 	public static int getMemorySelection() {

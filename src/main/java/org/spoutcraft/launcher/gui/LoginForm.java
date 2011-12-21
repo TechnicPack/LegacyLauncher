@@ -66,6 +66,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	private static String pass = null;
 	public static String[] values = null;
 	private int success = LauncherFrame.ERROR_IN_LAUNCH;
+	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
+	public String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
 
 	public static final GameUpdater gameUpdater = new GameUpdater();
 	OptionDialog options = new OptionDialog();
@@ -87,11 +89,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				SpoutcraftYML.updateSpoutcraftYMLCache();
 				LibrariesYML.updateLibrariesYMLCache();
 				ModsYML.updateModsYMLCache();
+				ModPacksYML.updateModPacksYMLCache();
 				return null;
 			}
 			
 			protected void done() {
 				options.updateBuildsList();
+				options.updateModPackList();
 			}
 		};
 		updateThread.execute();
@@ -111,11 +115,16 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		usernameField.setFont(new Font("Arial", Font.PLAIN, 11));
 		usernameField.addActionListener(this);
 		usernameField.setOpaque(false);
-
-		setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/favicon.png")));
+		if(modpackFilename != null)
+			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_favicon.png")));
+		else
+			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/technic_favicon.png")));
 		setResizable(false);
 
-		setTitle("Technic Launcher");
+		if(modpackName == null)
+			setTitle("Technic Launcher");
+		else
+			setTitle(modpackName.toString() + " Launcher");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -128,8 +137,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		JLabel lblLogo = new JLabel("");
 		lblLogo.setBounds(8, 0, 294, 99);
-		lblLogo.setIcon(new ImageIcon(LoginForm.class.getResource("/org/spoutcraft/launcher/technic.png")));
-
+		if(modpackFilename != null)
+			lblLogo.setIcon(new ImageIcon(LoginForm.class.getResource("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_logo.png")));
+		else
+			lblLogo.setIcon(new ImageIcon(LoginForm.class.getResource("/org/spoutcraft/launcher/technic_logo.png")));
 		JLabel lblMinecraftUsername = new JLabel("Minecraft Username: ");
 		lblMinecraftUsername.setFont(new Font("Arial", Font.PLAIN, 11));
 		lblMinecraftUsername.setHorizontalAlignment(SwingConstants.RIGHT);
