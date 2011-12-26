@@ -40,7 +40,10 @@ public class Options {
 
 	@Parameter(names = { "-safe", "-smode", "-safe_mode", "-sm" }, description = "Safe Mode - Prevents Addons from being loaded")
 	private boolean safe_mode = false;
-
+	
+	@Parameter(names = { "-modpack" }, description = "Select Mod Pack")
+	private int modpack = 0;
+	
 	public List<String> getParameters() {
 		return parameters;
 	}
@@ -75,6 +78,11 @@ public class Options {
 
 	public boolean isSafe_mode() {
 		return safe_mode;
+	}
+	
+	public int getModPack()
+	{
+		return modpack;
 	}
 
 }

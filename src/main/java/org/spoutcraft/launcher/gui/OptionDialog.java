@@ -82,6 +82,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 	/**
 	 * Create the dialog.
 	 */
+	@SuppressWarnings("unchecked")
 	public OptionDialog() {
 		setTitle("Technic Settings");
 		
@@ -126,6 +127,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		recBuilds.addActionListener(this);
 		devBuilds.addActionListener(this);
 		buildsCombo.addActionListener(this);
+		packCombo.addActionListener(this);
 		
 //		clipboardCheckbox.setSelected(SettingsUtil.isClipboardAccess());
 		backupCheckbox.setSelected(SettingsUtil.isWorldBackup());
@@ -287,21 +289,21 @@ public class OptionDialog extends JDialog implements ActionListener {
 		if(ModPacksYML.getModPacks().size() > 1)
 			packCombo.setEnabled(true);
 		
-		if(!SettingsUtil.isModPack())
+//		if(!SettingsUtil.isModPack())
+//		{
+//			packCombo.setSelectedIndex(0);
+//			SettingsUtil.setModPackSelection(0);
+//		}
+//		else
+		if(SettingsUtil.isModPack())
 		{
-			packCombo.setSelectedIndex(0);
-			SettingsUtil.setModPackSelection(0);
+			int id = SettingsUtil.getModPackSelection();
+			packCombo.setSelectedIndex(id);
 		}
 		else
 		{
-			int id = SettingsUtil.getModPackSelection();
-			if(id > 0);
-			{
-				SettingsUtil.setModPackSelection(SettingsUtil.getModPackSelection());
-				packCombo.setSelectedIndex(id);
-			}
+			packCombo.setSelectedIndex(0);
 		}
-		
 	}
 	
 	@Override
@@ -317,9 +319,19 @@ public class OptionDialog extends JDialog implements ActionListener {
 //			SettingsUtil.setClipboardAccess(clipboardCheckbox.isSelected());
 			SettingsUtil.setWorldBackup(backupCheckbox.isSelected());
 			SettingsUtil.setLoginTries(retryLoginCheckbox.isSelected());
+//			SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
 			if (SettingsUtil.getMemorySelection() > 5) {
 				SettingsUtil.setMemorySelection(0);
 			}
+//			if ((memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) && (packCombo.getSelectedIndex() != SettingsUtil.getModPackSelection()))
+//			{
+//				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
+//				SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
+//				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
+//				Main.reboot("-Xmx" + mem + "m", "-modpack " + packCombo.getSelectedIndex());
+////				packCombo.setSelectedIndex(SettingsUtil.getModPackSelection());
+////				SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
+//			}
 			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
 				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
 				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
@@ -329,6 +341,16 @@ public class OptionDialog extends JDialog implements ActionListener {
 				SettingsUtil.setLatestLWJGL(latestLWJGLCheckbox.isSelected());
 				clearCache();
 			}
+			
+			if (packCombo.getSelectedIndex() != SettingsUtil.getModPackSelection())
+			{
+				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
+				SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
+//				packCombo.setSelectedIndex(packCombo.getSelectedIndex());
+//				Main.reboot("-Xmx" + mem + "m", "-modpack " + packCombo.getSelectedIndex());
+				Main.reboot("-Xmx" + mem + "m");
+			}
+			
 			
 			if (buildsCombo.isEnabled()) {
 				int build = -1;

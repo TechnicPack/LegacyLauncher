@@ -1,4 +1,5 @@
 /*
+
  * This file is part of Spoutcraft Launcher (http://wiki.getspout.org/).
  * 
  * Spoutcraft Launcher is free software: you can redistribute it and/or modify

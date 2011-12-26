@@ -67,6 +67,8 @@ public class Main {
 			for (String arg : args_temp) {
 				params.add(arg);
 			}
+			
+			
 			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
 				params.add("-Xdock:name=\"Technic\"");
 				
@@ -98,41 +100,49 @@ public class Main {
 	
 	public static void reboot(String memory, String modpack)
 	{
-		try {
-			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-			ArrayList<String> params = new ArrayList<String>();
-			if (PlatformUtils.getPlatform() == PlatformUtils.OS.windows) {
-				params.add("javaw"); // Windows-specific
-			} else {
-				params.add("java"); // Linux/Mac/whatever
-			}
-			params.add(memory);
-			params.add(modpack);
-			params.add("-classpath");
-			params.add(pathToJar);
-			params.add("org.spoutcraft.launcher.Main");
-			for (String arg : args_temp) {
-				params.add(arg);
-			}
-			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
-				params.add("-Xdock:name=\"Technic\"");
-				
-				try {
-					File icon = new File(PlatformUtils.getWorkingDirectory(), "icon.icns");
-					GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/icon.icns"), new FileOutputStream(icon));
-					params.add("-Xdock:icon=" + icon.getCanonicalPath());
-				}
-				catch (Exception ignore) { }
-			}
-			ProcessBuilder pb = new ProcessBuilder(params);
-			Process process = pb.start();
-			if(process == null)
-				throw new Exception("!");
-			System.exit(0);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		reboot(memory);
+//		SettingsUtil.setModPackSelection(Integer.parseInt(modpack));
 	}
+	
+//	public static void reboot(String memory, String modpack)
+//	{
+//		try {
+//			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+//			ArrayList<String> params = new ArrayList<String>();
+//			SettingsUtil.setModPackSelection(Integer.parseInt(modpack));
+//			if (PlatformUtils.getPlatform() == PlatformUtils.OS.windows) {
+//				params.add("javaw"); // Windows-specific
+//			} else {
+//				params.add("java"); // Linux/Mac/whatever
+//			}
+//			params.add(memory);
+////			params.add(modpack);
+//			params.add("-classpath");
+//			params.add(pathToJar);
+//			params.add("org.spoutcraft.launcher.Main");
+//			for (String arg : args_temp) {
+//				params.add(arg);
+//			}
+//			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
+//				params.add("-Xdock:name=\"" + ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name").toString() + "\"");
+//				
+//				try {
+//					String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
+//					File icon = new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString() + "_icon.icns");
+//					GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/" + modpackFilename.toString() + "icon.icns"), new FileOutputStream(icon));
+//					params.add("-Xdock:icon=" + icon.getCanonicalPath());
+//				}
+//				catch (Exception ignore) { }
+//			}
+//			ProcessBuilder pb = new ProcessBuilder(params);
+//			Process process = pb.start();
+//			if(process == null)
+//				throw new Exception("!");
+//			System.exit(0);
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	
 	public static void main(String[] args) throws Exception {
