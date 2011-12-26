@@ -54,3 +54,4 @@ build.xml
 # IntelliJ IDEA files #
 #######################
 .idea
+*.jpage

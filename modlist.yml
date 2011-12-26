@@ -1,0 +1,16 @@
+mods:
+    buildcraft:
+        name: "BuildCraft"
+        description: "Extending Minecraft with pipes, auto-crafting, quarries, engines and much more!"
+        installtype: "zip"
+        link: "http://www.mod-buildcraft.com/"
+        versions:
+            2.2.7: "03fd974285584b306af080a5e5e6edc7"
+    buildcraft-logisticspipes:
+        name: "Logistics Pipes for Buildcraft"
+        description: ""
+        installtype: "zip"
+        link: "http://www.mod-buildcraft.com/forums/topic/1-8-1-logistics-pipes-0-0-1alpha-for-buildcraft-2-2-5/"
+        versions:
+            0.1.3a: "7d930995cf5c025888ffb01c5378b15e"
+            0.1.0a: "b9cdcfc09606c4fa25f2afbe936ebb8e"

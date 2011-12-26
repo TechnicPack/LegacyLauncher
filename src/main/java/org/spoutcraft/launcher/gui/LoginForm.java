@@ -42,6 +42,7 @@ import javax.swing.border.EmptyBorder;
 import org.spoutcraft.launcher.*;
 import org.spoutcraft.launcher.async.DownloadListener;
 import org.spoutcraft.launcher.exception.*;
+import org.spoutcraft.launcher.technic.TechnicUpdater;
 
 public class LoginForm extends JFrame implements ActionListener, DownloadListener, KeyListener, WindowListener {
 	private static final long serialVersionUID = 1L;
@@ -69,7 +70,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
 	public String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
 
-	public static final GameUpdater gameUpdater = new GameUpdater();
+	public static final TechnicUpdater gameUpdater = new TechnicUpdater();
 	OptionDialog options = new OptionDialog();
 	ModsDialog mods = new ModsDialog(ModsYML.getTechnicMods());
 
@@ -90,6 +91,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				LibrariesYML.updateLibrariesYMLCache();
 				ModsYML.updateModsYMLCache();
 				ModPacksYML.updateModPacksYMLCache();
+				TechnicUpdater.updateTechnicModsYML();
 				return null;
 			}
 			
@@ -604,7 +606,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 						
 						publish("Checking for Technic update...\n");
 						try {
-							technicUpdate = spoutUpdate;
+							technicUpdate = spoutUpdate || gameUpdater.isTechnicUpdateAvailable();
 						} catch (Exception e) {
 							technicUpdate = false;
 						}
@@ -620,7 +622,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 							updateDialog.setToUpdate("Technic");
 						}
 						if (mcUpdate || spoutUpdate || technicUpdate) {
-							LoginForm.updateDialog.setVisible(true);
+							//LoginForm.updateDialog.setVisible(true);
+							updateThread();
 						} else {
 							runGame();
 						}
@@ -659,7 +662,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 						gameUpdater.updateSpoutcraft();
 					}
 					if (technicUpdate) {
-						gameUpdater.updateTechnic();
+//						gameUpdater.updateTechnic();
+						gameUpdater.updateTechnicMods();
 					}
 				}
 				catch (NoMirrorsAvailableException e) {

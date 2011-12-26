@@ -13,6 +13,9 @@ builds:
             slick: 0.3
             snakeyaml: 1.9
             trove4j: 3.0.1
+        mods:
+            buildcraft: 2.2.7
+            buildcraft-logisticspipes: 0.1.0a
     3:
         minecraft: 1.0.0
         libraries:

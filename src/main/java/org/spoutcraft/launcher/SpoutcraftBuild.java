@@ -9,13 +9,15 @@ public class SpoutcraftBuild {
 	private String latestVersion;
 	private int build;
 	Map<String, Object> libraries;
+	Map<String, Object> mods;
 	private DownloadListener listener = null;
 
-	private SpoutcraftBuild(String minecraft, String latest, int build, Map<String, Object> libraries) {
+	private SpoutcraftBuild(String minecraft, String latest, int build, Map<String, Object> libraries, Map<String, Object> mods) {
 		this.minecraftVersion = minecraft;
 		this.latestVersion = latest;
 		this.build = build;
 		this.libraries = libraries;
+		this.mods = mods;
 	}
 
 	public int getBuild() {
@@ -70,6 +72,10 @@ public class SpoutcraftBuild {
 	public Map<String, Object> getLibraries() {
 		return libraries;
 	}
+	
+	public Map<String, Object> getMods() {
+		return mods;
+	}
 
 	@SuppressWarnings("unchecked")
 	public static SpoutcraftBuild getSpoutcraftBuild() {
@@ -81,15 +87,18 @@ public class SpoutcraftBuild {
 		if (SettingsUtil.isRecommendedBuild()) {
 			Map<String, Object> build = (Map<String, Object>) builds.get(recommended);
 			Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
-			return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), recommended, libs);
+			Map<String, Object> mods = (Map<String, Object>) build.get("mods");
+			return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), recommended, libs, mods);
 		} else if (SettingsUtil.isDevelopmentBuild()) {
 			Map<String, Object> build = (Map<String, Object>) builds.get(latest);
 			Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
-			return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), latest, libs);
+			Map<String, Object> mods = (Map<String, Object>) build.get("mods");
+			return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), latest, libs, mods);
 		}
 
 		Map<String, Object> build = (Map<String, Object>) builds.get(selected);
 		Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
-		return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), selected, libs);
+		Map<String, Object> mods = (Map<String, Object>) build.get("mods");
+		return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), selected, libs, mods);
 	}
 }

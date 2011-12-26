@@ -22,7 +22,7 @@ public class SpoutcraftYML {
 	public static void updateSpoutcraftYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("technic.yml", "http://urcraft.com/technic/technic.yml", null);
+				String urlName = MirrorUtils.getMirrorUrl("technic.yml", "http://dl.dropbox.com/u/182999/technic/technic.yml", null);
 				if (urlName != null) {
 	
 					try {

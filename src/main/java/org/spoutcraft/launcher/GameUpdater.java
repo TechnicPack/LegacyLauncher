@@ -605,7 +605,7 @@ public class GameUpdater implements DownloadListener {
 		LzmaAlone.main(args);
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private void extractPack(String in, String out) throws Exception {
 		File f = new File(in);
 		if (!f.exists())
