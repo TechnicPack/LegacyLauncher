@@ -38,7 +38,7 @@ public class LauncherFrame extends Frame implements WindowListener{
 	private static final long serialVersionUID = 4524937541564722358L;
 	private MinecraftAppletEnglober minecraft;
 	private LoginForm loginForm = null;
-	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
+	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
 	public String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
 	
 	public static final int RETRYING_LAUNCH = -1;

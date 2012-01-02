@@ -11,12 +11,22 @@ import org.bukkit.util.config.Configuration;
 
 public class MD5Utils {
 	public static String getMD5(File file){
+		FileInputStream stream = null;
 		try {
-			return DigestUtils.md5Hex(new FileInputStream(file));
+			stream = new FileInputStream(file);
+			String md5Hex = DigestUtils.md5Hex(stream);
+			stream.close();
+			return md5Hex;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

@@ -1,6 +1,7 @@
 package org.spoutcraft.launcher.technic;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -40,12 +41,10 @@ public class TechnicUpdater extends GameUpdater {
 				if (urlName != null) {
 	
 					try {
-						//int selected = -1;
 						if (technicModsYML.exists()) {
 							try {
 								Configuration config = new Configuration(technicModsYML);
 								config.load();
-								//selected = config.getInt("current", -1);
 							}
 							catch (Exception ex){
 								ex.printStackTrace();
@@ -60,9 +59,6 @@ public class TechnicUpdater extends GameUpdater {
 	
 						Configuration config = new Configuration(technicModsYML);
 						config.load();
-						//config.setProperty("current", selected);
-						//config.setProperty("launcher", Main.build);
-						//config.save();
 						
 					}
 					catch (IOException e) {
@@ -82,10 +78,11 @@ public class TechnicUpdater extends GameUpdater {
 	}
 
 	public void updateTechnicMods() throws Exception {
-		
+		try {
 		Download download;
 		
 		technicModsDirectory.mkdirs();
+		SecurityManager security = System.getSecurityManager();
 		
 		Map<String, Object> modLibrary = (Map<String, Object>) getTechnicModsYML().getProperty("mods");
 
@@ -97,7 +94,7 @@ public class TechnicUpdater extends GameUpdater {
 				throw new IOException("Mod is missing from the mod library");
 
 			Map<String, Object> modProperties = (Map<String, Object>) modLibrary.get(modName);
-			Map<String, String> modVersions = (Map<String, String>) modProperties.get("versions");
+			Map<String, Object> modVersions = (Map<String, Object>) modProperties.get("versions");
 			
 			String version = modEntry2.getValue().toString();
 						
@@ -110,24 +107,46 @@ public class TechnicUpdater extends GameUpdater {
 
 			String installType = modProperties.get("installtype").toString();
 			String fullFilename = modName + "-" + version + "." + installType;
-			String md5 = modVersions.get(version);
+			Boolean isOptional = modProperties.containsKey("optional") ? (Boolean) modProperties.get("optional") : false;
+			
+			Map<String, Object> versionProperties = (Map<String, Object>) modVersions.get(version);
+			String md5 = (String)versionProperties.get("md5");
 			
 			//If local mods md5 hash is not the same as server version then delete to update.
 			File modFile = new File(modDirectory, fullFilename);
+			boolean isDeleted = false;
 			if (modFile.exists()) {
 				String computedMD5  = MD5Utils.getMD5(modFile);
 				if (!computedMD5.equals(md5)) {
-					modFile.delete();
+					//security.checkDelete(modFile.getAbsolutePath());
+					isDeleted = modFile.delete();
 				}
 			}
 			
-			if (!modFile.exists()) {
+			if (!modFile.exists() || isDeleted) {
 				String mirrorURL = "/Libraries/" + fullFilename;
 				String fallbackURL = technicModsURL + modName + "/" + fullFilename;
 				String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
 				download = DownloadUtils.downloadFile(url, modFile.getPath(), fullFilename, md5, this);
+				if (download.isSuccess())
+				{
+					stateChanged("Extracting Files...", 0);
+					// Extract Natives
+					try {
+						extractNatives2(PlatformUtils.getWorkingDirectory(), modFile);
+					}
+					catch (FileNotFoundException inUse) {
+						//If we previously loaded this dll with a failed launch, we will be unable to access the files
+						//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
+						//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
+						//the files are good, since they got loaded last time...
+					}
+				}
 			}
 		}	
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 	
 	public boolean isTechnicUpdateAvailable() throws IOException {
@@ -145,7 +164,7 @@ public class TechnicUpdater extends GameUpdater {
 				throw new IOException("Mod is missing from the mod library");
 			
 			Map<String, Object> modProperties = (Map<String, Object>) modLibrary.get(modName);
-			Map<String, String> modVersions = (Map<String, String>) modProperties.get("versions");
+			Map<String, Object> modVersions = (Map<String, Object>) modProperties.get("versions");
 			
 			String version = modEntry2.getValue().toString();
 						
@@ -157,7 +176,9 @@ public class TechnicUpdater extends GameUpdater {
 
 			String installType = modProperties.get("installtype").toString();
 			String fullFilename = modName + "-" + version + "." + installType;
-			String md5 = modVersions.get(version);
+			
+			Map<String, Object> versionProperties = (Map<String, Object>) modVersions.get(version);
+			String md5 = (String)versionProperties.get("md5");
 			
 			File modFile = new File(modDirectory, fullFilename);
 			if (!modFile.exists()) {

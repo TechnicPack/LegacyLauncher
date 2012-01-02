@@ -63,7 +63,7 @@ public class SettingsUtil {
 	
 	public static int getModPackSelection()
 	{
-		return getProperty("modpack", -1);
+		return getProperty("modpack", 0);
 	}
 	
 	public static void setModPackSelection(int value)

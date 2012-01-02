@@ -241,7 +241,7 @@ public class GameUpdater implements DownloadListener {
 	}
 	
 	//Extracts technic.zip to the .technic folder
-	private void extractNatives2(File nativesDir, File nativesJar) throws Exception {
+	protected void extractNatives2(File nativesDir, File nativesJar) throws Exception {
 
 		if (!nativesDir.exists())
 			nativesDir.mkdirs();
@@ -324,22 +324,22 @@ public class GameUpdater implements DownloadListener {
 			copy(mcCache, updateMC);
 		}
 
-		File spoutcraft = new File(GameUpdater.updateDir, "technic.jar");
-
-		stateChanged("Looking Up Mirrors...", 0F);
-		build.setDownloadListener(this);
-		
-		String url = build.getSpoutcraftURL();
-
-		if (url == null) {
-			throw new NoMirrorsAvailableException();
-		}
-		
-		
-		Download download = DownloadUtils.downloadFile(url, spoutcraft.getPath(), null, null, this);
-		if (download.isSuccess()) {
-			copy(download.getOutFile(), new File(binDir, "technic.jar"));
-		}
+//		File spoutcraft = new File(GameUpdater.updateDir, "technic.jar");
+//
+//		stateChanged("Looking Up Mirrors...", 0F);
+//		build.setDownloadListener(this);
+//		
+//		String url = build.getSpoutcraftURL();
+//
+//		if (url == null) {
+//			throw new NoMirrorsAvailableException();
+//		}
+//		
+//		
+//		Download download = DownloadUtils.downloadFile(url, spoutcraft.getPath(), null, null, this);
+//		if (download.isSuccess()) {
+//			copy(download.getOutFile(), new File(binDir, "technic.jar"));
+//		}
 		
 		File libDir = new File(binDir, "lib");
 		libDir.mkdir();
@@ -364,8 +364,8 @@ public class GameUpdater implements DownloadListener {
 			if (!libraryFile.exists()) {
 				String mirrorURL = "/Libraries/" + lib.getKey() + "/" + name + ".jar";
 				String fallbackURL = "http://urcraft.com/technic/Libraries/" + lib.getKey() + "/" + name + ".jar";
-				url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
-				download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
+				String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
+				Download download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
 			}
 		}
 	

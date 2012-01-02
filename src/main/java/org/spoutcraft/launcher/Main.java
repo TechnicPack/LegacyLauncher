@@ -43,7 +43,7 @@ public class Main {
 
 	public static void reboot(String memory) {
 		try {
-			String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
+			String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
 			int mem = 1 << 9 + SettingsUtil.getMemorySelection();
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
@@ -183,7 +183,7 @@ public class Main {
 			} catch (Exception ignore) { }
 		}
 		PlatformUtils.getWorkingDirectory().mkdirs();
-		String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
+		String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
 		if(modpackFilename != null)
 		{
 			new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString()).mkdir();
