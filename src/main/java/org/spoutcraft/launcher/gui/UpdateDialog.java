@@ -11,6 +11,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+
+import org.spoutcraft.launcher.ModPacksYML;
+import org.spoutcraft.launcher.SettingsUtil;
+
 import java.awt.Font;
 
 public class UpdateDialog extends JDialog implements ActionListener {
@@ -19,6 +23,8 @@ public class UpdateDialog extends JDialog implements ActionListener {
 	private final JPanel contentPanel = new JPanel();
 	private JLabel label = new JLabel("There is a new update for %TO_UPDATE%.");
 	private LoginForm lf;
+	
+	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
 	
 	public void setToUpdate(String str) {
 		if(str == "Spoutcraft")
@@ -36,7 +42,10 @@ public class UpdateDialog extends JDialog implements ActionListener {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 
-		setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/favicon.png")));
+		if(modpackFilename == null)
+			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/favicon.png")));
+		else
+			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_favicon.png" )));
 
 		label.setFont(new Font("Arial", Font.PLAIN, 18));
 		contentPanel.add(label);

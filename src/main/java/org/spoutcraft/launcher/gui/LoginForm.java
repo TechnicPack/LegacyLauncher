@@ -69,6 +69,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	private int success = LauncherFrame.ERROR_IN_LAUNCH;
 	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
 	public String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
+	
+	public String workingDir = PlatformUtils.getWorkingDirectory().getAbsolutePath();
 
 	public static final TechnicUpdater gameUpdater = new TechnicUpdater();
 	OptionDialog options = new OptionDialog();
@@ -322,6 +324,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		int intProgress = Math.round(progress);
 
 		progressBar.setValue(intProgress);
+		
+		fileName = fileName.replace(workingDir, "%appdata%");
+		
 		if (fileName.length() > 60) {
 			fileName = fileName.substring(0, 60) + "...";
 		}

@@ -19,7 +19,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.mainClass>${project.groupId}.${project.artifactId}.Main</project.mainClass>
-		<project.build.number>0</project.build.number>
+		<project.build.number>1</project.build.number>
 		<project.version.string>${release.version}.${build.number}</project.version.string>
 	</properties>
 
