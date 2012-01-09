@@ -627,8 +627,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 							updateDialog.setToUpdate("Technic");
 						}
 						if (mcUpdate || spoutUpdate || technicUpdate) {
-							LoginForm.updateDialog.setVisible(true);
-							//updateThread();
+							if (!GameUpdater.binDir.exists())
+								updateThread();
+							else
+								LoginForm.updateDialog.setVisible(true);
 						} else {
 							runGame();
 						}
