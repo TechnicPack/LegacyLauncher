@@ -6,9 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.DownloadUtils;
@@ -33,6 +36,8 @@ public class TechnicUpdater extends GameUpdater {
 	private static String technicModsURL = baseTechnicURL + "mods/";
 	
 	private static Object key = new Object();
+	
+	private static File installedTechnicModsYML = new File(baseTechnicDirectory, "installedMods.yml");	
 	
 	public static void updateTechnicModsYML() {
 		if (!updated) {
@@ -78,8 +83,11 @@ public class TechnicUpdater extends GameUpdater {
 	}
 
 	public void updateTechnicMods() throws Exception {
-		try {
 		Download download;
+		
+		Configuration modsConfig = new Configuration(installedTechnicModsYML);
+		modsConfig.load();
+		
 		
 		technicModsDirectory.mkdirs();
 		SecurityManager security = System.getSecurityManager();
@@ -130,23 +138,53 @@ public class TechnicUpdater extends GameUpdater {
 				download = DownloadUtils.downloadFile(url, modFile.getPath(), fullFilename, md5, this);
 				if (download.isSuccess())
 				{
-					stateChanged("Extracting Files...", 0);
-					// Extract Natives
-					try {
-						extractNatives2(PlatformUtils.getWorkingDirectory(), modFile);
-					}
-					catch (FileNotFoundException inUse) {
-						//If we previously loaded this dll with a failed launch, we will be unable to access the files
-						//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
-						//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
-						//the files are good, since they got loaded last time...
-					}
+					updateMod(modFile, modName, version, modsConfig);
 				}
 			}
-		}	
-		} catch (Exception e) {
-			throw e;
 		}
+		
+		modsConfig.save();
+	}
+	
+	public void updateMod(File modFile, String modName, String modVersion, Configuration modsConfig) {
+		try {
+			//Check if previous version of mod is installed
+			String modPath = String.format("mods.%s", modName);
+			String installedVersion = (String)modsConfig.getProperty(modPath);
+			
+			if (installedVersion != null) {
+				//Mod has been previously installed uninstall previous version
+				File previousModZip = new File(new File(technicModsDirectory, modName), modName + "-" + installedVersion + ".zip");
+				//String previousModVersionFileName = String.format("%s\\%s\\%s-%v.zip", technicModsDirectory.getAbsolutePath(), modName, modName, modVersion);
+				ZipFile zf = new ZipFile(previousModZip);
+				Enumeration<? extends ZipEntry> entries = zf.entries();
+				//Go through zipfile of previous version and delete all file from technic that exist in the zip
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					if (entry.isDirectory()) continue;
+					File file = new File(PlatformUtils.getWorkingDirectory(), entry.getName());					
+					if (file.exists()) {
+						//File from mod exists.. delete it
+						file.delete();
+					}
+				}
+					
+			}			
+			 
+			stateChanged("Extracting Files ...", 0);
+			// Extract Natives
+			extractNatives2(PlatformUtils.getWorkingDirectory(), modFile);	
+			
+			modsConfig.setProperty(modPath, modVersion);
+		}
+		catch (FileNotFoundException inUse) {
+			//If we previously loaded this dll with a failed launch, we will be unable to access the files
+			//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
+			//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
+			//the files are good, since they got loaded last time...
+		} catch (Exception e2) {
+			// errror extracting mod.
+		} 
 	}
 	
 	public boolean isTechnicUpdateAvailable() throws IOException {
