@@ -32,7 +32,7 @@ public class TechnicUpdater extends GameUpdater {
 	private static File technicModsDirectory = new File(baseTechnicDirectory, "mods");
 	private static File technicModsYML = new File(baseTechnicDirectory, "modlist.yml");	
 
-	private static String baseTechnicURL = "http://dl.dropbox.com/u/182999/technic/";
+	private static String baseTechnicURL = "http://urcraft.com/technic/";
 	private static String technicModsURL = baseTechnicURL + "mods/";
 	
 	private static Object key = new Object();
