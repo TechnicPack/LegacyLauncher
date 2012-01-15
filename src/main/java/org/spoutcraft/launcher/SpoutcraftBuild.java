@@ -7,12 +7,12 @@ import org.spoutcraft.launcher.async.DownloadListener;
 public class SpoutcraftBuild {
 	private String minecraftVersion;
 	private String latestVersion;
-	private int build;
+	private String build;
 	Map<String, Object> libraries;
 	Map<String, Object> mods;
 	private DownloadListener listener = null;
 
-	private SpoutcraftBuild(String minecraft, String latest, int build, Map<String, Object> libraries, Map<String, Object> mods) {
+	private SpoutcraftBuild(String minecraft, String latest, String build, Map<String, Object> libraries, Map<String, Object> mods) {
 		this.minecraftVersion = minecraft;
 		this.latestVersion = latest;
 		this.build = build;
@@ -20,7 +20,7 @@ public class SpoutcraftBuild {
 		this.mods = mods;
 	}
 
-	public int getBuild() {
+	public String getBuild() {
 		return build;
 	}
 
@@ -54,9 +54,9 @@ public class SpoutcraftBuild {
 		config.save();
 	}
 
-	public int getInstalledBuild() {
+	public String getInstalledBuild() {
 		Configuration config = SpoutcraftYML.getSpoutcraftYML();
-		return config.getInt("current", -1);
+		return config.getString("current", null);
 	}
 
 	public String getPatchURL() {
@@ -80,25 +80,23 @@ public class SpoutcraftBuild {
 	@SuppressWarnings("unchecked")
 	public static SpoutcraftBuild getSpoutcraftBuild() {
 		Configuration config = SpoutcraftYML.getSpoutcraftYML();
-		Map<Integer, Object> builds = (Map<Integer, Object>) config.getProperty("builds");
-		int latest = config.getInt("latest", -1);
-		int recommended = config.getInt("recommended", -1);
-		int selected = SettingsUtil.getSelectedBuild();
+		Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
+		String latest = config.getString("latest", null);
+		String recommended = config.getString("recommended", null);
+		String selected = SettingsUtil.getSelectedBuild();
+		
+		String buildSelection = selected;
+		
 		if (SettingsUtil.isRecommendedBuild()) {
-			Map<String, Object> build = (Map<String, Object>) builds.get(recommended);
-			Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
-			Map<String, Object> mods = (Map<String, Object>) build.get("mods");
-			return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), recommended, libs, mods);
+			buildSelection = recommended;
 		} else if (SettingsUtil.isDevelopmentBuild()) {
-			Map<String, Object> build = (Map<String, Object>) builds.get(latest);
-			Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
-			Map<String, Object> mods = (Map<String, Object>) build.get("mods");
-			return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), latest, libs, mods);
+			buildSelection = latest;
 		}
 
-		Map<String, Object> build = (Map<String, Object>) builds.get(selected);
+		Map<String, Object> build = (Map<String, Object>) builds.get(buildSelection);
 		Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
 		Map<String, Object> mods = (Map<String, Object>) build.get("mods");
-		return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), selected, libs, mods);
+		
+		return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), buildSelection, libs, mods);
 	}
 }

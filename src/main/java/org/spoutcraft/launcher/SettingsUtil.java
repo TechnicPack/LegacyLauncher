@@ -41,11 +41,11 @@ public class SettingsUtil {
 		setProperty("recupdate", value);
 	}
 	
-	public static int getSelectedBuild() {
-		return getProperty("custombuild", -1);
+	public static String getSelectedBuild() {
+		return getProperty("custombuild", null);
 	}
 	
-	public static void setSelectedBuild(int value) {
+	public static void setSelectedBuild(String value) {
 		setProperty("custombuild", value);
 	}
 	
@@ -98,6 +98,14 @@ public class SettingsUtil {
 		return def;
 	}
 	
+	private static String getProperty(String s, String def) {
+		if (settings.checkProperty(s)) {
+			return settings.getPropertyString(s);
+		}
+		settings.put(s, def);
+		return def;
+	}
+	
 	private static int getProperty(String s, int def) {
 		if (settings.checkProperty(s)) {
 			return settings.getPropertyInteger(s);
@@ -105,5 +113,4 @@ public class SettingsUtil {
 		settings.put(s, def);
 		return def;
 	}
-
 }
