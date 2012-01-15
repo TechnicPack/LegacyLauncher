@@ -85,7 +85,7 @@ public class GameUpdater implements DownloadListener {
 		binCacheDir.mkdir();
 		if (updateDir.exists())
 			FileUtils.deleteDirectory(updateDir);
-		updateDir.mkdir();
+		updateDir.mkdirs();
 		
 		String minecraftMD5 = MD5Utils.getMD5(FileType.minecraft);
 		String jinputMD5 = MD5Utils.getMD5(FileType.jinput);
@@ -264,21 +264,28 @@ public class GameUpdater implements DownloadListener {
 			File outFile = new File(nativesDir.getPath() + File.separator + name);
 			if (!outFile.exists())
 				outFile.createNewFile();
-			OutputStream out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
+			OutputStream out;
+			try {
+				out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
 
-			int read;
-			byte[] bytes = new byte[1024];
-
-			while ((read = inputStream.read(bytes)) != -1) {
-				out.write(bytes, 0, read);
+				int read;
+				byte[] bytes = new byte[1024];
+	
+				while ((read = inputStream.read(bytes)) != -1) {
+					out.write(bytes, 0, read);
+				}
+				
+				progress += progressStep;
+				stateChanged("Extracting Files...", progress);
+	
+				inputStream.close();
+				out.flush();
+				out.close();
+			} catch (Exception e) {
+				// Zip failed to extract properly"
+				System.out.println(String.format("'%' failed to decompress properly for entry '%'", nativesJar.getName(), name));
+				e.printStackTrace();
 			}
-			
-			progress += progressStep;
-			stateChanged("Extracting Files...", progress);
-
-			inputStream.close();
-			out.flush();
-			out.close();
 		}
 
 	}
@@ -323,23 +330,6 @@ public class GameUpdater implements DownloadListener {
 		if (mcCache.exists()) {
 			copy(mcCache, updateMC);
 		}
-
-//		File spoutcraft = new File(GameUpdater.updateDir, "technic.jar");
-//
-//		stateChanged("Looking Up Mirrors...", 0F);
-//		build.setDownloadListener(this);
-//		
-//		String url = build.getSpoutcraftURL();
-//
-//		if (url == null) {
-//			throw new NoMirrorsAvailableException();
-//		}
-//		
-//		
-//		Download download = DownloadUtils.downloadFile(url, spoutcraft.getPath(), null, null, this);
-//		if (download.isSuccess()) {
-//			copy(download.getOutFile(), new File(binDir, "technic.jar"));
-//		}
 		
 		File libDir = new File(binDir, "lib");
 		libDir.mkdir();
@@ -362,8 +352,8 @@ public class GameUpdater implements DownloadListener {
 			}
 			
 			if (!libraryFile.exists()) {
-				String mirrorURL = "/Libraries/" + lib.getKey() + "/" + name + ".jar";
-				String fallbackURL = "http://urcraft.com/technic/Libraries/" + lib.getKey() + "/" + name + ".jar";
+				String mirrorURL = "Libraries/" + lib.getKey() + "/" + name + ".jar";
+				String fallbackURL = "http://spouty.org/Libraries/" + lib.getKey() + "/" + name + ".jar";
 				String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
 				Download download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
 			}
@@ -377,33 +367,6 @@ public class GameUpdater implements DownloadListener {
 		File spoutcraftVersion = new File(GameUpdater.spoutcraftDir, "versionTechnic");
 		spoutcraftVersion.delete();
 		
-	}
-	
-	public void updateTechnic() throws Exception
-	{
-		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
-		String url2 = build.getTechnicZipURL();
-		File techniczip = new File(GameUpdater.updateDir, "technic.zip");
-
-		
-		if (url2 == null) {
-			throw new NoMirrorsAvailableException();
-		}
-		
-		Download download2 = DownloadUtils.downloadFile(url2,  techniczip.getPath(), null, null, this);
-		if(download2.isSuccess()){
-			stateChanged("Extracting Files...", 0);
-			// Extract Natives
-			try {
-				extractNatives2(PlatformUtils.getWorkingDirectory(), new File(GameUpdater.updateDir.getPath() + File.separator + "technic.zip"));
-			}
-			catch (FileNotFoundException inUse) {
-				//If we previously loaded this dll with a failed launch, we will be unable to access the files
-				//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
-				//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
-				//the files are good, since they got loaded last time...
-			}
-		}
 	}
 
 	public boolean isSpoutcraftUpdateAvailable() throws IOException {

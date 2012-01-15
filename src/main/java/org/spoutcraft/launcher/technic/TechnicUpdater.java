@@ -1,9 +1,6 @@
 package org.spoutcraft.launcher.technic;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,9 +10,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -38,9 +32,9 @@ public class TechnicUpdater extends GameUpdater {
 	private static File technicModsDirectory = new File(baseTechnicDirectory, "mods");
 	private static File technicModsYML = new File(baseTechnicDirectory, "modlist.yml");	
 
-	private static String baseTechnicURL = "http://urcraft.com/technic/";
+	private static String baseTechnicURL = "http://technic.freeworldsgaming.com/";
 	private static String technicModsURL = baseTechnicURL + "mods/";
-	
+
 	private static Object key = new Object();
 	
 	private static File installedTechnicModsYML = new File(baseTechnicDirectory, "installedMods.yml");	
@@ -105,7 +99,7 @@ public class TechnicUpdater extends GameUpdater {
 			String modName = modEntry2.getKey();
 			
 			if (!modLibrary.containsKey(modName))
-				throw new IOException("Mod is missing from the mod library");
+				throw new IOException(String.format("Mod '%s' is missing from the mod library", modName));
 
 			Map<String, Object> modProperties = (Map<String, Object>) modLibrary.get(modName);
 			Map<String, Object> modVersions = (Map<String, Object>) modProperties.get("versions");
@@ -113,7 +107,7 @@ public class TechnicUpdater extends GameUpdater {
 			String version = modEntry2.getValue().toString();
 						
 			if (!modVersions.containsKey(version))
-				throw new IOException("Mod version is missing from the mod library");
+				throw new IOException(String.format("Mod '%s' version '%s' is missing from the mod library", modName, version));
 					
 
 			File modDirectory = new File(technicModsDirectory, modName);
@@ -125,20 +119,21 @@ public class TechnicUpdater extends GameUpdater {
 			
 			Map<String, Object> versionProperties = (Map<String, Object>) modVersions.get(version);
 			String md5 = (String)versionProperties.get("md5");
+			md5 = md5.toLowerCase();
 			
 			//If local mods md5 hash is not the same as server version then delete to update.
 			File modFile = new File(modDirectory, fullFilename);
 			boolean isDeleted = false;
 			if (modFile.exists()) {
 				String computedMD5  = MD5Utils.getMD5(modFile);
-				if (!computedMD5.equals(md5)) {
+				if (!computedMD5.equalsIgnoreCase(md5)) {
 					//security.checkDelete(modFile.getAbsolutePath());
 					isDeleted = modFile.delete();
 				}
 			}
 			
 			if (!modFile.exists() || isDeleted) {
-				String mirrorURL = "/mods/" + modName + "/" + fullFilename;
+				String mirrorURL = "mods/" + modName + "/" + fullFilename;
 				String fallbackURL = technicModsURL + modName + "/" + fullFilename;
 				String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
 				download = DownloadUtils.downloadFile(url, modFile.getPath(), fullFilename, md5, this);
@@ -150,49 +145,6 @@ public class TechnicUpdater extends GameUpdater {
 		}
 		
 		modsConfig.save();
-	}
-	
-	public void regenerateJarFile() {
-		
-		
-	}
-	
-	public boolean createJar(File jarFilename, File... filesToAdd) {
-		FileOutputStream stream = null;
-		JarOutputStream out = null;
-		BufferedOutputStream bos = null;
-		FileInputStream in = null;
-		BufferedInputStream bis = null;
-		try {
-			stream = new FileOutputStream(jarFilename);
-		    out = new JarOutputStream(stream, new Manifest());
-		    bos = new BufferedOutputStream(out);
-		    for (File fileToAdd : filesToAdd) {
-		      if (fileToAdd == null || !fileToAdd.exists() || fileToAdd.isDirectory())
-		        continue; // Just in case...
-		      JarEntry jarAdd = new JarEntry(fileToAdd.getName());
-		      jarAdd.setTime(fileToAdd.lastModified());
-		      out.putNextEntry(jarAdd);
-		      in = new FileInputStream(fileToAdd);
-		      bis = new BufferedInputStream(in);
-		      int data;
-		      while ((data = bis.read()) != -1) {
-		          bos.write(data);
-		      }
-		      bis.close();
-		      in.close();
-		    }
-		    bos.close();
-		    out.close();
-		    stream.close();
-		} catch (FileNotFoundException e) {
-			// skip not found file
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			
-		}
-	    return true;
 	}
 	
 	public void updateMod(File modFile, String modName, String modVersion, Configuration modsConfig) {
@@ -225,15 +177,17 @@ public class TechnicUpdater extends GameUpdater {
 			extractNatives2(PlatformUtils.getWorkingDirectory(), modFile);	
 			
 			modsConfig.setProperty(modPath, modVersion);
+			
+			modFile.delete();
 		}
 		catch (FileNotFoundException inUse) {
 			//If we previously loaded this dll with a failed launch, we will be unable to access the files
 			//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
 			//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
 			//the files are good, since they got loaded last time...
-		} catch (Exception e2) {
-			// errror extracting mod.
-		} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean isTechnicUpdateAvailable() throws IOException {

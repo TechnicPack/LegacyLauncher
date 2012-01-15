@@ -29,7 +29,7 @@ public class ModPacksYML {
 	public static void updateModPacksYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("modpacks.yml", "http://urcraft.com/technic/modpacks.yml", null);
+				String urlName = MirrorUtils.getMirrorUrl("modpacks.yml", "http://technic.freeworldsgaming.com/modpacks.yml", null);
 				if (urlName != null) {
 	
 					try {

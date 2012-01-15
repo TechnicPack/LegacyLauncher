@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 
+import javax.swing.DebugGraphics;
 import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
 
@@ -21,9 +22,10 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object>{
 	}
 
 	@Override
-	protected Object doInBackground() throws Exception {
+	protected Object doInBackground() {
+		URL url = null;
 		try {
-			URL url = new URL("http://urcraft.com/technic/changelog/");
+			url = new URL("http://urcraft.com/technic/changelog/");
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 			if (HttpURLConnection.HTTP_OK == conn.getResponseCode()) {
 				editorPane.setVisible(false);
@@ -56,7 +58,8 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object>{
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			editorPane.setText("Oh Noes! Our Tumblr Server is Down!");
+			System.out.println(String.format("Tumbler log @ '%' not avaliable.", url));
 		}
 
 		return null;

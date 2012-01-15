@@ -219,6 +219,10 @@ public class OptionDialog extends JDialog implements ActionListener {
 					.addComponent(buildInfo)
 					.addContainerGap(316, Short.MAX_VALUE))
 		);
+		
+		//TODO remove once implemented 
+		packCombo.setEnabled(false);
+		
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();

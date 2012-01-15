@@ -24,7 +24,7 @@ public class LibrariesYML {
 	public static void updateLibrariesYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("libraries.yml", "http://urcraft.com/technic/libraries.yml", null);
+				String urlName = MirrorUtils.getMirrorUrl("libraries.yml", "http://technic.freeworldsgaming.com/libraries.yml", null);
 				if (urlName != null) {
 	
 					try {

@@ -103,6 +103,10 @@ public class Download implements Runnable {
 			progress.interrupt();
 			success = size > 0 ? (size == outFile.length()) : true;
 		}
+		catch (IOException ioe)
+		{
+			System.out.println(String.format("Error opening '%s' for download.", url));
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}

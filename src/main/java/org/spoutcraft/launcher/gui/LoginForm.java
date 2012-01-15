@@ -53,6 +53,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	JButton optionsButton = new JButton("Options");
 	JButton modsButton = new JButton("Mods");
 	private JCheckBox rememberCheckbox = new JCheckBox("Remember");
+	final JLabel background = new JLabel("Loading...");
+	final JTextPane editorPane = new JTextPane();
 	private JButton loginSkin1;
 	private List<JButton> loginSkin1Image;
 	private JButton loginSkin2;
@@ -85,24 +87,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		gameUpdater.setListener(this);
 		
 		this.addWindowListener(this);
-		
-		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
-			protected Object doInBackground() throws Exception {
-				MinecraftYML.updateMinecraftYMLCache();
-				SpoutcraftYML.updateSpoutcraftYMLCache();
-				LibrariesYML.updateLibrariesYMLCache();
-				ModsYML.updateModsYMLCache();
-				ModPacksYML.updateModPacksYMLCache();
-				TechnicUpdater.updateTechnicModsYML();
-				return null;
-			}
-			
-			protected void done() {
-				options.updateBuildsList();
-				options.updateModPackList();
-			}
-		};
-		updateThread.execute();
 
 		options.setVisible(false);
 		loginButton.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -204,11 +188,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		rememberCheckbox.setOpaque(false);
 
-		final JTextPane editorPane = new JTextPane();
 		editorPane.setContentType("text/html");
-
-		tumblerFeed = new TumblerFeedParsingWorker(editorPane);
-		tumblerFeed.execute();
 		
 		readUsedUsernames();
 
@@ -293,7 +273,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		contentPane.add(trans);
 		contentPane.add(progressBar);
 
-		final JLabel background = new JLabel("Loading...");
 		background.setVerticalAlignment(SwingConstants.CENTER);
 		background.setHorizontalAlignment(SwingConstants.CENTER);
 		background.setBounds(0, 0, 854, 480);
@@ -302,10 +281,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		//TODO: remove this after next release
 		(new File(PlatformUtils.getWorkingDirectory(), "launcher_cache.jpg")).delete();
 		
-		File cacheDir = new File(PlatformUtils.getWorkingDirectory(), "cache");
-		cacheDir.mkdir();
-		File backgroundImage = new File(cacheDir, "launcher_background.jpg");
-		(new BackgroundImageWorker(backgroundImage, background)).execute();
 
 		Vector<Component> order = new Vector<Component>(6);
 		order.add(usernameField.getEditor().getEditorComponent());
@@ -318,6 +293,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		setFocusTraversalPolicy(new SpoutFocusTraversalPolicy(order));
 		
 		loginButton.setEnabled(true); //enable once logins are read
+		modsButton.setEnabled(false);
 	}
 
 	public void stateChanged(String fileName, float progress) {
@@ -325,7 +301,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		progressBar.setValue(intProgress);
 		
-		fileName = fileName.replace(workingDir, "%appdata%");
+		fileName = fileName.replace(workingDir, ".technic");
 		
 		if (fileName.length() > 60) {
 			fileName = fileName.substring(0, 60) + "...";
@@ -735,6 +711,32 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	}
 	
 	public void windowOpened(WindowEvent e) {
+		
+		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
+			protected Object doInBackground() throws Exception {
+				MinecraftYML.updateMinecraftYMLCache();
+				SpoutcraftYML.updateSpoutcraftYMLCache();
+				LibrariesYML.updateLibrariesYMLCache();
+				ModsYML.updateModsYMLCache();
+				ModPacksYML.updateModPacksYMLCache();
+				TechnicUpdater.updateTechnicModsYML();
+				return null;
+			}
+			
+			protected void done() {
+				options.updateBuildsList();
+				options.updateModPackList();
+			}
+		};
+		updateThread.execute();
+
+		tumblerFeed = new TumblerFeedParsingWorker(editorPane);
+		tumblerFeed.execute();
+
+		File cacheDir = new File(PlatformUtils.getWorkingDirectory(), "cache");
+		cacheDir.mkdir();
+		File backgroundImage = new File(cacheDir, "launcher_background.jpg");
+		(new BackgroundImageWorker(backgroundImage, background)).execute();
 	}
 
 	public void windowClosing(WindowEvent e) {

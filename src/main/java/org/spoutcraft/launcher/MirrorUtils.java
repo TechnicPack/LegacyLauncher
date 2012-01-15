@@ -16,7 +16,6 @@ import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.async.DownloadListener;
 
 public class MirrorUtils {
-	public static final String MIRRORS_URL = "http://urcraft.com/technic/mirrors.yml";
 	private static boolean updated = false;
 	private static File mirrorsYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "mirrors.yml");
 	private static final Random rand = new Random();
@@ -33,10 +32,11 @@ public class MirrorUtils {
 				String mirror = "http://" + e.getKey() + "/" + mirrorURI;
 				if (isAddressReachable(mirror)) {
 					goodMirrors.add(e.getKey());
+					
 				}
 			}
-			
-			//safe fast return
+			//int x=1;
+			//safe fast return 
 			if (goodMirrors.size() == 1) {
 				return "http://" + goodMirrors.get(0) + "/" + mirrorURI;
 			}
@@ -87,7 +87,8 @@ public class MirrorUtils {
 			HttpURLConnection.setFollowRedirects(false);
 			HttpURLConnection urlConnect = (HttpURLConnection)test.openConnection();
 			urlConnect.setRequestMethod("HEAD");
-			return (urlConnect.getResponseCode() == HttpURLConnection.HTTP_OK);
+			int responseCode = urlConnect.getResponseCode();
+			return (responseCode == HttpURLConnection.HTTP_OK);
 		} catch (Exception e) {
 			return false;
 		}
@@ -103,16 +104,12 @@ public class MirrorUtils {
 	public static void updateMirrorsYMLCache() {
 		if (!updated) {
 			try {
-				if (isAddressReachable(MIRRORS_URL)) {
-					URL url = new URL(MIRRORS_URL);
+				if (isAddressReachable("http://technic.freeworldsgaming.com/mirrors.yml")) {
+				URL url = new URL("http://technic.freeworldsgaming.com/mirrors.yml");
 					HttpURLConnection con = (HttpURLConnection)(url.openConnection());
 					System.setProperty("http.agent", "");
 					con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 					GameUpdater.copy(con.getInputStream(), new FileOutputStream(mirrorsYML));
-				}
-				else
-				{
-					return;
 				}
 			}
 			catch (IOException e) {

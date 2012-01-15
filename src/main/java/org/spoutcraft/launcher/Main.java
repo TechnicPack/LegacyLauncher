@@ -21,8 +21,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.UIManager;
+
+import org.spoutcraft.launcher.gui.LoadingScreen;
 
 import org.spoutcraft.launcher.gui.LoginForm;
 import org.spoutcraft.launcher.logs.SystemConsoleListener;
@@ -32,7 +35,7 @@ import com.beust.jcommander.JCommander;
 public class Main {
 	
 	static String[] args_temp;
-	public static int build = -1;
+	public static String build = "0.5.0";
 	public static String currentPack;
 	static File recursion;
 	
@@ -146,16 +149,22 @@ public class Main {
 	
 	
 	public static void main(String[] args) throws Exception {
+		LoadingScreen ls = new LoadingScreen();
+		ls.setVisible(true);
+		System.out.println("Loading at " + new Date(System.currentTimeMillis()).toString());
+		//int i = 1;
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		Options options = new Options();
 		try {
 			new JCommander(options, args);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		MinecraftUtils.setOptions(options);
-		
 		recursion = new File(PlatformUtils.getWorkingDirectory(), "rtemp");
-		
+
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		args_temp = args;
 		boolean relaunch = false;
 		try {
@@ -168,13 +177,16 @@ public class Main {
 			//e.printStackTrace();
 		}
 
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		if (relaunch) {
 			if (SettingsUtil.getMemorySelection() < 6) {
 				int mem = 1 << (9 + SettingsUtil.getMemorySelection());
 				recursion.createNewFile();
+				ls.close();
 				reboot("-Xmx" + mem + "m");
 			}
 		}
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
 			try{
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -182,14 +194,11 @@ public class Main {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception ignore) { }
 		}
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		PlatformUtils.getWorkingDirectory().mkdirs();
-		String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
-		if(modpackFilename != null)
-		{
-			new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString()).mkdir();
-		}
 		new File(PlatformUtils.getWorkingDirectory(), "launcher").mkdir();
 
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		SystemConsoleListener listener = new SystemConsoleListener();
 
 		listener.initialize();
@@ -198,26 +207,35 @@ public class Main {
 		System.out.println("Launcher is starting....");
 		System.out.println("Launcher Build: " + getBuild());
 
-		
+
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			System.out.println("Warning: Can't get system LnF: " + e);
 		}
 
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
 		LoginForm login = new LoginForm();
 
+		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
+		System.out.println("Showing GUI at " + new Date(System.currentTimeMillis()).toString());
+		ls.close();
 		login.setVisible(true);
+		String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
+		if(modpackFilename != null)
+		{
+			new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString()).mkdir();
+		}
 	}
 
-	private static int getBuild() {
-		if (build == -1) {
+	private static String getBuild() {
+		if (build == null) {
 			File buildInfo = new File(PlatformUtils.getWorkingDirectory(), "launcherVersion");
 			if (buildInfo.exists()) {
 				try {
 					BufferedReader bf = new BufferedReader(new FileReader(buildInfo));
-					String version = bf.readLine();
-					build = Integer.parseInt(version);
+					build = bf.readLine();
 				}
 				catch (Exception e) {
 					e.printStackTrace();

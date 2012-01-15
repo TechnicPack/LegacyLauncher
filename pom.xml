@@ -128,6 +128,9 @@
 						<manifest>
 							<mainClass>${project.mainClass}</mainClass>
 						</manifest>
+                        <manifestEntries>
+                            <SplashScreen-Image>org/spoutcraft/launcher/splash.gif</SplashScreen-Image>
+                        </manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>

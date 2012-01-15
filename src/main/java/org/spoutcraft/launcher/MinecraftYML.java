@@ -46,7 +46,7 @@ public class MinecraftYML {
 	public static void updateMinecraftYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("minecraft.yml", "http://urcraft.com/technic/minecraft.yml", null);
+				String urlName = MirrorUtils.getMirrorUrl("minecraft.yml", "http://technic.freeworldsgaming.com/minecraft.yml", null);
 				if (urlName != null) {
 					try {
 						
