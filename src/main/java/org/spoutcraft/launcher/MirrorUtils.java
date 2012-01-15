@@ -32,11 +32,9 @@ public class MirrorUtils {
 				String mirror = "http://" + e.getKey() + "/" + mirrorURI;
 				if (isAddressReachable(mirror)) {
 					goodMirrors.add(e.getKey());
-					
 				}
 			}
-			//int x=1;
-			//safe fast return 
+			//safe fast return
 			if (goodMirrors.size() == 1) {
 				return "http://" + goodMirrors.get(0) + "/" + mirrorURI;
 			}
@@ -87,8 +85,7 @@ public class MirrorUtils {
 			HttpURLConnection.setFollowRedirects(false);
 			HttpURLConnection urlConnect = (HttpURLConnection)test.openConnection();
 			urlConnect.setRequestMethod("HEAD");
-			int responseCode = urlConnect.getResponseCode();
-			return (responseCode == HttpURLConnection.HTTP_OK);
+			return (urlConnect.getResponseCode() == HttpURLConnection.HTTP_OK);
 		} catch (Exception e) {
 			return false;
 		}
@@ -110,6 +107,10 @@ public class MirrorUtils {
 					System.setProperty("http.agent", "");
 					con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 					GameUpdater.copy(con.getInputStream(), new FileOutputStream(mirrorsYML));
+				}
+				else
+				{
+					return;
 				}
 			}
 			catch (IOException e) {

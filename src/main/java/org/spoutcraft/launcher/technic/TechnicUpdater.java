@@ -1,6 +1,9 @@
 package org.spoutcraft.launcher.technic;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,6 +13,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -145,6 +151,49 @@ public class TechnicUpdater extends GameUpdater {
 		}
 		
 		modsConfig.save();
+	}
+	
+	public void regenerateJarFile() {
+		
+		
+	}
+	
+	public boolean createJar(File jarFilename, File... filesToAdd) {
+		FileOutputStream stream = null;
+		JarOutputStream out = null;
+		BufferedOutputStream bos = null;
+		FileInputStream in = null;
+		BufferedInputStream bis = null;
+		try {
+			stream = new FileOutputStream(jarFilename);
+		    out = new JarOutputStream(stream, new Manifest());
+		    bos = new BufferedOutputStream(out);
+		    for (File fileToAdd : filesToAdd) {
+		      if (fileToAdd == null || !fileToAdd.exists() || fileToAdd.isDirectory())
+		        continue; // Just in case...
+		      JarEntry jarAdd = new JarEntry(fileToAdd.getName());
+		      jarAdd.setTime(fileToAdd.lastModified());
+		      out.putNextEntry(jarAdd);
+		      in = new FileInputStream(fileToAdd);
+		      bis = new BufferedInputStream(in);
+		      int data;
+		      while ((data = bis.read()) != -1) {
+		          bos.write(data);
+		      }
+		      bis.close();
+		      in.close();
+		    }
+		    bos.close();
+		    out.close();
+		    stream.close();
+		} catch (FileNotFoundException e) {
+			// skip not found file
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			
+		}
+	    return true;
 	}
 	
 	public void updateMod(File modFile, String modName, String modVersion, Configuration modsConfig) {
