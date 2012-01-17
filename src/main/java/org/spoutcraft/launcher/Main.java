@@ -132,7 +132,7 @@ public class Main {
 //				try {
 //					String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
 //					File icon = new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString() + "_icon.icns");
-//					GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/" + modpackFilename.toString() + "icon.icns"), new FileOutputStream(icon));
+////					GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/" + modpackFilename.toString() + "icon.icns"), new FileOutputStream(icon));
 //					params.add("-Xdock:icon=" + icon.getCanonicalPath());
 //				}
 //				catch (Exception ignore) { }
