@@ -84,7 +84,7 @@
 	</dependencies>
    
 	<build>
-		<defaultGoal>clean</defaultGoal>
+		<defaultGoal>install</defaultGoal>
 		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
 		<!-- Resources -->
 		<resources>

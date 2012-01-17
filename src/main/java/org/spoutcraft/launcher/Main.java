@@ -147,10 +147,14 @@ public class Main {
 //		}
 //	}
 	
+	public static boolean isDebug()
+	{
+		return 	java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");	
+	}
 	
 	public static void main(String[] args) throws Exception {
 		LoadingScreen ls = new LoadingScreen();
-		ls.setVisible(true);
+		if (!isDebug()) ls.setVisible(true);
 		System.out.println("Loading at " + new Date(System.currentTimeMillis()).toString());
 		//int i = 1;
 		//System.out.println(i++ + " - " + new Date(System.currentTimeMillis()).toString());
