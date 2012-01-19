@@ -27,20 +27,7 @@ public class ModsYML {
 	public static void updateModsYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("mods.yml", "http://technic.freeworldsgaming.com/mods.yml", null);
-				if (urlName != null) {
-	
-					try {
-						URL url = new URL(urlName);
-						URLConnection con = (url.openConnection());
-						System.setProperty("http.agent", "");
-						con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
-						GameUpdater.copy(con.getInputStream(), new FileOutputStream(modsYML));
-					}
-					catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				YmlUtils.downloadYmlFile("mods.yml", "http://technic.freeworldsgaming.com/mods.yml", modsYML);
 				updated = true;
 			}
 		}

@@ -19,17 +19,23 @@ package org.spoutcraft.launcher.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 import org.spoutcraft.launcher.FileUtils;
@@ -40,16 +46,6 @@ import org.spoutcraft.launcher.MinecraftYML;
 import org.spoutcraft.launcher.ModPacksYML;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.SpoutcraftYML;
-
-import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JCheckBox;
-import javax.swing.JRadioButton;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.Font;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 
 public class OptionDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -309,11 +305,6 @@ public class OptionDialog extends JDialog implements ActionListener {
 			packCombo.setSelectedIndex(0);
 		}
 	}
-	
-	@Override
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-	}
 
 	public void actionPerformed(ActionEvent evt) {
 		String id = evt.getActionCommand(); 
@@ -350,7 +341,6 @@ public class OptionDialog extends JDialog implements ActionListener {
 			{
 				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
 				SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
-//				packCombo.setSelectedIndex(packCombo.getSelectedIndex());
 //				Main.reboot("-Xmx" + mem + "m", "-modpack " + packCombo.getSelectedIndex());
 				Main.reboot("-Xmx" + mem + "m");
 			}

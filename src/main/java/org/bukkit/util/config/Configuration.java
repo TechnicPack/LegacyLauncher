@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import org.spoutcraft.launcher.Util;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -85,11 +88,7 @@ public class Configuration extends ConfigurationNode {
         } catch (ConfigurationException e) {
             root = new HashMap<String, Object>();
         } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException e) {}
+        	Util.closeQuietly(stream);
         }
     }
 
@@ -156,12 +155,10 @@ public class Configuration extends ConfigurationNode {
             }
             yaml.dump(root, writer);
             return true;
-        } catch (IOException e) {} finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException e) {}
+        } catch (IOException e) {
+        	
+        } finally {
+        	Util.closeQuietly(stream);
         }
 
         return false;

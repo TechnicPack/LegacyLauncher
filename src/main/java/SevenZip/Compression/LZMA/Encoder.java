@@ -1,9 +1,9 @@
 package SevenZip.Compression.LZMA;
 
-import SevenZip.Compression.RangeCoder.BitTreeEncoder;
-import SevenZip.Compression.LZMA.Base;
-import SevenZip.ICodeProgress;
 import java.io.IOException;
+
+import SevenZip.ICodeProgress;
+import SevenZip.Compression.RangeCoder.BitTreeEncoder;
 
 public class Encoder
 {
@@ -296,7 +296,7 @@ public class Encoder
 		public int Backs3;
 
 		public void MakeAsChar() { BackPrev = -1; Prev1IsChar = false; }
-		public void MakeAsShortRep() { BackPrev = 0; ; Prev1IsChar = false; }
+		public void MakeAsShortRep() { BackPrev = 0; Prev1IsChar = false; }
 		public boolean IsShortRep() { return (BackPrev == 0); }
 	};
 	Optimal[] _optimum = new Optimal[kNumOpts];

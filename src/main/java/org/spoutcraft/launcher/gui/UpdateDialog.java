@@ -27,7 +27,7 @@ public class UpdateDialog extends JDialog implements ActionListener {
 	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
 	
 	public void setToUpdate(String str) {
-		if(str == "Spoutcraft")
+		if(str.equals("Spoutcraft"))
 			label.setText(label.getText().replace("%TO_UPDATE%", "Technic"));
 		label.setText(label.getText().replace("%TO_UPDATE%", str));
 	}

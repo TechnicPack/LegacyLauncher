@@ -81,10 +81,10 @@ public class MinecraftDownloadUtils {
 				Map<String, Object> map = (Map<String, Object>) builds.get(i);
 				String version = String.valueOf(map.get("minecraft"));
 				results[index] += "| " + version;
-				if (i == latest) {
+				if (i.equals(latest)) {
 					results[index] += " | Latest";
 				}
-				if (i == recommended) {
+				if (i.equals(recommended)) {
 					results[index] += " | Rec. Build";
 				}
 				index++;

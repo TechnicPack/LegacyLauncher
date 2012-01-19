@@ -28,18 +28,18 @@ public class ClientLoggerFormatter extends Formatter{
 		StringBuilder sb = new StringBuilder();
 		
 		// Get the date from the LogRecord and add it to the buffer
-		sb.append("[");
+		sb.append('[');
 		sb.append( new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date(System.currentTimeMillis())));
 		sb.append("] ");
 		
 		// Get the level name and add it to the buffer
 		sb.append(record.getLevel().toString().equals("STDOUT") ? "[INFO]" : "[SEVERE]");
-		sb.append("\t");
+		sb.append('\t');
 		 
 		// Get the formatted message (includes localization 
 		// and substitution of paramters) and add it to the buffer
 		sb.append(formatMessage(record));
-		sb.append("\n");
+		sb.append('\n');
 
 		return sb.toString();
 	}

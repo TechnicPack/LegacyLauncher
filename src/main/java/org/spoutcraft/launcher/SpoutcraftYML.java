@@ -23,42 +23,39 @@ public class SpoutcraftYML {
 	public static void updateSpoutcraftYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("technic.yml", "http://technic.freeworldsgaming.com/technic.yml", null);
-				if (urlName != null) {
-	
-					try {
-						String selected = null;
-						if (spoutcraftYML.exists()) {
-							try {
-								Configuration config = new Configuration(spoutcraftYML);
-								config.load();
-								selected = config.getString("current");
-								if (selected == "-1") selected = config.getString("recommended");
-							}
-							catch (Exception ex){
-								ex.printStackTrace();
-							}
-						}
-	
-						URL url = new URL(urlName);
-						URLConnection con = (url.openConnection());
-						System.setProperty("http.agent", "");
-						con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
-						GameUpdater.copy(con.getInputStream(), new FileOutputStream(spoutcraftYML));
-	
-						Configuration config = new Configuration(spoutcraftYML);
-						config.load();
-						config.setProperty("current", selected);
-						config.setProperty("launcher", Main.build);
-						config.save();
-						
-					}
-					catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				String selected = getSelectedBuild();
+				
+				YmlUtils.downloadYmlFile("technic.yml", "http://technic.freeworldsgaming.com/technic.yml", spoutcraftYML);
+				
+				Configuration config = new Configuration(spoutcraftYML);
+				config.load();
+				config.setProperty("current", selected);
+				config.setProperty("launcher", Main.build);
+				config.save();
+				
 				updated = true;
 			}
 		}
+	}
+
+	private static String getSelectedBuild() {
+		String selected = null;
+		if (spoutcraftYML.exists()) {
+			try {
+				Configuration config = new Configuration(spoutcraftYML);
+				config.load();
+				selected = config.getString("current");
+				if (selected == null || !isValidBuild(selected))
+					selected = config.getString("recommended");
+			}
+			catch (Exception ex){
+				ex.printStackTrace();
+			}
+		}
+		return selected;
+	}
+
+	private static boolean isValidBuild(String selected) {
+		return !selected.equals("-1");
 	}
 }

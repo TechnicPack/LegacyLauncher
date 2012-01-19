@@ -24,20 +24,7 @@ public class LibrariesYML {
 	public static void updateLibrariesYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("libraries.yml", "http://technic.freeworldsgaming.com/libraries.yml", null);
-				if (urlName != null) {
-	
-					try {
-						URL url = new URL(urlName);
-						URLConnection con = (url.openConnection());
-						System.setProperty("http.agent", "");
-						con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
-						GameUpdater.copy(con.getInputStream(), new FileOutputStream(librariesYML));
-					}
-					catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+				YmlUtils.downloadYmlFile("libraries.yml", "http://technic.freeworldsgaming.com/libraries.yml", librariesYML);
 				updated = true;
 			}
 		}

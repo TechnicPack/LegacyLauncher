@@ -1,6 +1,7 @@
 package org.spoutcraft.launcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -20,8 +21,9 @@ public class BackupCleanupThread extends Thread{
 					path = split[split.length - 1];
 					int build = Integer.parseInt(path.split("-")[0]);
 					builds.add(build);
+				} catch (NumberFormatException e) {
+					
 				}
-				catch (Exception e) { }
 			}
 		}
 		
@@ -42,8 +44,9 @@ public class BackupCleanupThread extends Thread{
 					if (build < minSafeBuild) {
 						file.delete();
 					}
+				} catch (NumberFormatException e) {
+					
 				}
-				catch (Exception e) { }
 			}
 			else if (file.getPath().endsWith(".tmp")) {
 				file.delete();

@@ -261,7 +261,7 @@ public class LzmaBench
 		String s = "";
 		s += v;
 		for (int i = 0; i + s.length() < 6; i++)
-			System.out.print(" ");
+			System.out.print(' ');
 		System.out.print(s);
 	}
 	
@@ -364,7 +364,7 @@ public class LzmaBench
 				long outSize = kBufferSize;
 				long startTime = System.currentTimeMillis();
 				if (!decoder.Code(inputCompressedStream, crcOutStream, outSize))
-					throw (new Exception("Decoding Error"));;
+					throw (new Exception("Decoding Error"));
 				decodeTime = System.currentTimeMillis() - startTime;
 				if (crcOutStream.GetDigest() != crc.GetDigest())
 					throw (new Exception("CRC Error"));

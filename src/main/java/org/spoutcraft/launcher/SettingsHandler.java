@@ -196,7 +196,7 @@ public class SettingsHandler {
 			String line;
 			
 			while((line = br.readLine()) != null) {
-				if ((line.isEmpty()) || (line.startsWith("#")) || (!line.contains(": "))) continue;
+				if ((line.isEmpty()) || (line.length() > 0 && line.charAt(0) == '#') || (!line.contains(": "))) continue;
 				String[] args = line.split(": ");
 				if (args.length < 2) {
 					result.put(args[0], null);
@@ -282,11 +282,7 @@ public class SettingsHandler {
 				HashMap<String,String> contents = this.loadHashMap();
 				result = contents.get(property);
 			}
-			if (result != null && result.equalsIgnoreCase("true")) {
-				return true;
-			} else {
-				return false;
-			}
+			return (result != null && result.equalsIgnoreCase("true"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

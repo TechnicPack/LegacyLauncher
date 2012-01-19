@@ -42,7 +42,7 @@ import javax.swing.border.EmptyBorder;
 import org.spoutcraft.launcher.*;
 import org.spoutcraft.launcher.async.DownloadListener;
 import org.spoutcraft.launcher.exception.*;
-import org.spoutcraft.launcher.technic.TechnicUpdater;
+import org.spoutcraft.launcher.technic.ModPackUpdater;
 
 public class LoginForm extends JFrame implements ActionListener, DownloadListener, KeyListener, WindowListener {
 	private static final long serialVersionUID = 1L;
@@ -74,7 +74,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	
 	public String workingDir = PlatformUtils.getWorkingDirectory().getAbsolutePath();
 
-	public static final TechnicUpdater gameUpdater = new TechnicUpdater();
+	public static final ModPackUpdater gameUpdater = new ModPackUpdater();
 	OptionDialog options = new OptionDialog();
 	ModsDialog mods = new ModsDialog(ModsYML.getTechnicMods());
 
@@ -90,7 +90,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				LibrariesYML.updateLibrariesYMLCache();
 				ModsYML.updateModsYMLCache();
 				ModPacksYML.updateModPacksYMLCache();
-				TechnicUpdater.updateTechnicModsYML();
+				ModPackUpdater.updateTechnicModsYML();
 				return null;
 			}
 			
@@ -480,7 +480,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		options.setVisible(false);
 		SwingWorker<Boolean, Boolean> loginThread = new SwingWorker<Boolean, Boolean>() {
 
-			protected Boolean doInBackground() throws Exception {
+			protected Boolean doInBackground() {
 				progressBar.setVisible(true);
 				progressBar.setString("Connecting to www.minecraft.net...");
 				try {
@@ -570,7 +570,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 				gameUpdater.user = values[2].trim();
 				gameUpdater.downloadTicket = values[1].trim();
-				if (cmdLine == false) {
+				if (!cmdLine) {
 					String password = new String(passwordField.getPassword());
 					if (rememberCheckbox.isSelected()) {
 						usernames.put(gameUpdater.user, new UserPasswordInformation(password));

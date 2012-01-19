@@ -31,6 +31,10 @@ public class MD5Utils {
 		return null;
 	}
 	
+	public static boolean doMD5sMatch(File file, String md5) {
+		return getMD5(file).equalsIgnoreCase(md5);
+	}
+	
 	public static String getMD5(FileType type) {
 		return getMD5(type, MinecraftYML.getLatestMinecraftVersion());
 	}

@@ -38,13 +38,11 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.spoutcraft.launcher.async.Download;
 import org.spoutcraft.launcher.async.DownloadListener;
-import org.spoutcraft.launcher.exception.NoMirrorsAvailableException;
 import org.spoutcraft.launcher.exception.UnsupportedOSException;
 import org.spoutcraft.launcher.logs.SystemConsoleListener;
 
@@ -130,15 +128,6 @@ public class GameUpdater implements DownloadListener {
 		else {
 			copy(mcCache, new File(binDir, "lwjgl_util.jar"));
 		}
-		
-//		if (url2 == null) {
-//			throw new NoMirrorsAvailableException();
-//		}
-//		
-//		Download download2 = DownloadUtils.downloadFile(url2,  techniczip.getPath(), null, null, this);
-//		if(download2.isSuccess()){
-////			copy(download2.getOutFile(), new File(PlatformUtils.getWorkingDirectory(), "technic.zip"));
-//		}
 
 		getNatives();
 
@@ -146,7 +135,6 @@ public class GameUpdater implements DownloadListener {
 		// Extract Natives
 		try {
 			extractNatives(nativesDir, new File(GameUpdater.updateDir.getPath() + File.separator + "natives.zip"));
-//			extractNatives2(PlatformUtils.getWorkingDirectory(), new File(GameUpdater.updateDir.getPath() + File.separator + "technic.zip"));
 		}
 		catch (FileNotFoundException inUse) {
 			//If we previously loaded this dll with a failed launch, we will be unable to access the files
@@ -241,51 +229,52 @@ public class GameUpdater implements DownloadListener {
 	}
 	
 	//Extracts technic.zip to the .technic folder
-	protected void extractNatives2(File nativesDir, File nativesJar) throws Exception {
+	protected void extractNatives2(File nativesDir, File nativesJar) {
+		String name = null;
 
 		if (!nativesDir.exists())
 			nativesDir.mkdirs();
 
-		JarFile jar = new JarFile(nativesJar);
-		Enumeration<JarEntry> entries = jar.entries();
-		
-		float progressStep = 100F / jar.size();
-		float progress = 0;
-		
-		while (entries.hasMoreElements()) {
-			JarEntry entry = entries.nextElement();
-			String name = entry.getName();
-			if (entry.isDirectory())
-			{
-				(new File(nativesDir.getPath() +  File.separator + entry.getName())).mkdirs();
-				continue;
-			}
-			InputStream inputStream = jar.getInputStream(entry);
-			File outFile = new File(nativesDir.getPath() + File.separator + name);
-			if (!outFile.exists())
-				outFile.createNewFile();
-			OutputStream out;
-			try {
-				out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
-
-				int read;
-				byte[] bytes = new byte[1024];
-	
-				while ((read = inputStream.read(bytes)) != -1) {
-					out.write(bytes, 0, read);
+		try {
+			JarFile jar = new JarFile(nativesJar);
+			Enumeration<JarEntry> entries = jar.entries();
+			
+			float progressStep = 100F / jar.size();
+			float progress = 0;
+			
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				name = entry.getName();
+				if (entry.isDirectory())
+				{
+					(new File(nativesDir.getPath() +  File.separator + entry.getName())).mkdirs();
+					continue;
 				}
-				
-				progress += progressStep;
-				stateChanged("Extracting Files...", progress);
+				InputStream inputStream = jar.getInputStream(entry);
+				File outFile = new File(nativesDir.getPath() + File.separator + name);
+				if (!outFile.exists())
+					outFile.createNewFile();
+				OutputStream out;
+					out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
 	
-				inputStream.close();
-				out.flush();
-				out.close();
-			} catch (Exception e) {
-				// Zip failed to extract properly"
-				System.out.println(String.format("'%' failed to decompress properly for entry '%'", nativesJar.getName(), name));
-				e.printStackTrace();
+					int read;
+					byte[] bytes = new byte[1024];
+		
+					while ((read = inputStream.read(bytes)) != -1) {
+						out.write(bytes, 0, read);
+					}
+					
+					progress += progressStep;
+					stateChanged("Extracting Files...", progress);
+		
+					inputStream.close();
+					out.flush();
+					out.close();
 			}
+		} catch (IOException e) {
+			// Zip failed to extract properly"
+			System.out.println(String.format("'%' failed to decompress properly for entry '%'", nativesJar.getName(), name));
+			e.printStackTrace();
 		}
 
 	}
@@ -495,7 +484,7 @@ public class GameUpdater implements DownloadListener {
 		tempFile.delete();
 
 		copy(zipFile, tempFile);
-		boolean renameOk = zipFile.renameTo(tempFile);;
+		boolean renameOk = zipFile.renameTo(tempFile);
 		if (!renameOk) {
 			if (tempFile.exists()) {
 				zipFile.delete();
@@ -555,7 +544,7 @@ public class GameUpdater implements DownloadListener {
 
 				out.closeEntry();
 				in.close();
-			} catch (Exception e) {
+			} catch (IOException e) {
 			}
 		}
 

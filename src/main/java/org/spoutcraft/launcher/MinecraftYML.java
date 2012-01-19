@@ -46,40 +46,26 @@ public class MinecraftYML {
 	public static void updateMinecraftYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				String urlName = MirrorUtils.getMirrorUrl("minecraft.yml", "http://technic.freeworldsgaming.com/minecraft.yml", null);
-				if (urlName != null) {
+				String current = null;
+				if (minecraftYML.exists()) {
 					try {
-						
-						String current = null;
-						if (minecraftYML.exists()) {
-							try {
-								Configuration config = new Configuration(minecraftYML);
-								config.load();
-								current = config.getString("current");
-							}
-							catch (Exception ex){
-								ex.printStackTrace();
-							}
-						}
-						
-						URL url = new URL(urlName);
-						URLConnection con = (url.openConnection());
-						System.setProperty("http.agent", "");
-						con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
-						GameUpdater.copy(con.getInputStream(), new FileOutputStream(minecraftYML));
-						
 						Configuration config = new Configuration(minecraftYML);
 						config.load();
-						latest = config.getString("latest");
-						recommended = config.getString("recommended");
-						if (current != null) {
-							config.setProperty("current", current);
-							config.save();
-						}
-						
+						current = config.getString("current");
 					}
-					catch (IOException e) {
-						e.printStackTrace();
+					catch (Exception ex){
+						ex.printStackTrace();
+					}
+				}
+				
+				if (YmlUtils.downloadYmlFile("minecraft.yml", "http://technic.freeworldsgaming.com/minecraft.yml", minecraftYML)) {
+					Configuration config = new Configuration(minecraftYML);
+					config.load();
+					latest = config.getString("latest");
+					recommended = config.getString("recommended");
+					if (current != null) {
+						config.setProperty("current", current);
+						config.save();
 					}
 				}
 				updated = true;
