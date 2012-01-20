@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -63,11 +64,15 @@ public class ModPackUpdater extends GameUpdater {
 		try {
 			Configuration modsConfig = new Configuration(installedTechnicModsYML);
 			modsConfig.load();
+			
 
 			technicModsDirectory.mkdirs();
 
 			Map<String, Object> modLibrary = (Map<String, Object>) getTechnicModsYML().getProperty("mods");
 			Map<String, Object> currentModList = SpoutcraftBuild.getSpoutcraftBuild().getMods();
+			
+			//Remove Mods no longer in previous version
+			removeOldMods(modsConfig, currentModList.keySet());
 			
 			for (Map.Entry<String, Object> modEntry2 : currentModList.entrySet()) {
 				String modName = modEntry2.getKey();
@@ -112,6 +117,23 @@ public class ModPackUpdater extends GameUpdater {
 			FileUtils.deleteQuietly(technicModsDirectory);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void removeOldMods(Configuration modsConfig, Set<String> modsToInstall) {
+		if (modsConfig.getProperty("mods") == null)
+			return;
+		Map<String, String> installedMods = (Map<String, String>)modsConfig.getProperty("mods");
+		Set<String> modsToRemove = installedMods.keySet();
+
+		if (modsToInstall == null || modsToInstall.size() <= 0)
+			return;
+		
+		modsToRemove.removeAll(modsToInstall);
+		
+		for (String modName : modsToRemove)
+		{
+			removePreviousModVersion(modName, installedMods.get(modName));
 		}
 	}
 	
@@ -173,7 +195,7 @@ public class ModPackUpdater extends GameUpdater {
 		String installedVersion = (String)modsConfig.getProperty(modPath);
 
 		if (installedVersion != null)
-			removePrevioudModVersion(modName, installedVersion);
+			removePreviousModVersion(modName, installedVersion);
 
 		stateChanged("Extracting Files ...", 0);
 		// Extract Natives
@@ -184,7 +206,7 @@ public class ModPackUpdater extends GameUpdater {
 		modFile.delete();
 	}
 
-	private void removePrevioudModVersion(String modName, String installedVersion) {
+	private void removePreviousModVersion(String modName, String installedVersion) {
 		try {
 			//Mod has been previously installed uninstall previous version
 			File previousModZip = new File(new File(technicModsDirectory, modName), modName + "-" + installedVersion + ".zip");
