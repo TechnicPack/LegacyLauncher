@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.JComboBox;
+
 public class Util {
 	public static void closeQuietly(Closeable closeable) {
 	    if (closeable != null) {
@@ -21,5 +23,33 @@ public class Util {
 	  List<T> list = new ArrayList<T>(c);
 	  java.util.Collections.sort(list);
 	  return list;
+	}
+	
+	public static void log(String formatString, Object... params) {
+		System.out.printf(formatString, params);
+	}
+	
+	public static void addComboItem(JComboBox combobox, String label, String value) {
+		combobox.addItem(new ComboItem(label, value));
+	}
+	
+	public static void setSelectedComboByLabel(JComboBox<ComboItem> combobox, String label) {
+		for (int i = 0; i < combobox.getItemCount(); i++) {
+			if ((combobox.getItemAt(i)).getLabel().equalsIgnoreCase(label)) {
+				combobox.setSelectedIndex(i);
+			}
+		}		
+	}
+	
+	public static void setSelectedComboByValue(JComboBox<ComboItem> combobox, String value) {
+		for (int i = 0; i < combobox.getItemCount(); i++) {
+			if ((combobox.getItemAt(i)).getValue().equalsIgnoreCase(value)) {
+				combobox.setSelectedIndex(i);
+			}
+		}		
+	}
+	
+	public static String getSelectedValue(JComboBox<ComboItem> combobox) {
+		return ((ComboItem)combobox.getSelectedItem()).getValue();
 	}
 }

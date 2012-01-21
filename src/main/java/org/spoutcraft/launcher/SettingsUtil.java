@@ -3,7 +3,8 @@ package org.spoutcraft.launcher;
 import java.io.File;
 
 public class SettingsUtil {
-	private static SettingsHandler settings = new SettingsHandler("defaults/launcher.properties", new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "launcher.properties"));
+	private static File settingsFile = new File(PlatformUtils.getWorkingDirectory(), "launcher.properties");
+	private static SettingsHandler settings = new SettingsHandler("defaults/launcher.properties", settingsFile);
 	
 	static {
 		settings.load();
@@ -61,12 +62,12 @@ public class SettingsUtil {
 		return isProperty("modpack");
 	}
 	
-	public static int getModPackSelection()
+	public static String getModPackSelection()
 	{
-		return getProperty("modpack", 0);
+		return getProperty("modpack", null);
 	}
 	
-	public static void setModPackSelection(int value)
+	public static void setModPackSelection(String value)
 	{
 		setProperty("modpack", value);
 	}

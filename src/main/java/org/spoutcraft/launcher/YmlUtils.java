@@ -19,16 +19,21 @@ public class YmlUtils {
 		return downloadYmlFile(mirrorYmlUrl, null, MirrorUtils.mirrorsYML);
 	}
 	
+	public static boolean downloadRelativeYmlFile(String relativePath) {
+		return downloadYmlFile(relativePath, null, new File(relativePath));
+	}
+	
 	public static boolean downloadYmlFile(String ymlUrl, String fallbackUrl, File ymlFile) {
-		if (ymlFile.exists() && md5HashMatches(ymlFile))
+		boolean isRelative = !ymlUrl.contains("http");
+		
+		if (isRelative && ymlFile.exists() && MD5Utils.checksumPath(ymlUrl))
 			return true;
 		
 		URL url = null;
 		File tempFile = null;
 		try {
-			if (ymlUrl.contains("http")) {
-				if (!MirrorUtils.isAddressReachable(ymlUrl))
-					return false;
+			if (isRelative && !MirrorUtils.isAddressReachable(ymlUrl)) {
+				return false;
 			} else {
 				ymlUrl = MirrorUtils.getMirrorUrl(ymlUrl, fallbackUrl);
 			}
@@ -39,7 +44,7 @@ public class YmlUtils {
 			System.setProperty("http.agent", "");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 			
-			tempFile = File.createTempFile("technic", null);
+			tempFile = File.createTempFile("launcherYml", null);
 			
 			//Download to temporary file
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();

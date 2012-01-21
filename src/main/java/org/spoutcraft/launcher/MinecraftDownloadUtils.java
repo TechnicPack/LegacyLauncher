@@ -8,6 +8,7 @@ import org.bukkit.util.config.Configuration;
 import org.spoutcraft.diff.JBPatch;
 import org.spoutcraft.launcher.async.Download;
 import org.spoutcraft.launcher.async.DownloadListener;
+import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class MinecraftDownloadUtils {
 	public static void downloadMinecraft(String user, String output, SpoutcraftBuild build, DownloadListener listener) throws IOException{
@@ -68,7 +69,7 @@ public class MinecraftDownloadUtils {
 
 	@SuppressWarnings("unchecked")
 	public static String[] getSpoutcraftBuilds() {
-		Configuration config = SpoutcraftYML.getSpoutcraftYML();
+		Configuration config = ModPackYML.getModPackYML();
 		Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
 		String latest = config.getString("latest", null);
 		String recommended = config.getString("recommended", null);

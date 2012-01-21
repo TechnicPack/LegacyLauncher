@@ -10,13 +10,14 @@ import java.util.Map;
 import org.bukkit.util.config.Configuration;
 
 public class LibrariesYML {
+	private static final String LIBRARIES_YML = "libraries.yml";
 	private static volatile boolean updated = false;
-	private static File librariesYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "libraries.yml");
+	private static File librariesYMLFile = new File(PlatformUtils.getWorkingDirectory(), LIBRARIES_YML);
 	private static Object key = new Object();
 
 	public static Configuration getLibrariesYML() {
 		updateLibrariesYMLCache();
-		Configuration config = new Configuration(librariesYML);
+		Configuration config = new Configuration(librariesYMLFile);
 		config.load();
 		return config;
 	}
@@ -24,7 +25,7 @@ public class LibrariesYML {
 	public static void updateLibrariesYMLCache() {
 		if (!updated) {
 			synchronized(key) {
-				YmlUtils.downloadYmlFile("libraries.yml", "http://technic.freeworldsgaming.com/libraries.yml", librariesYML);
+				YmlUtils.downloadYmlFile(LIBRARIES_YML, "http://technic.freeworldsgaming.com/libraries.yml", librariesYMLFile);
 				updated = true;
 			}
 		}

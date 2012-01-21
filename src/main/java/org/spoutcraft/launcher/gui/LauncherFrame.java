@@ -26,44 +26,34 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JOptionPane;
 
-import org.spoutcraft.launcher.ModPacksYML;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.Launcher;
 import org.spoutcraft.launcher.MinecraftAppletEnglober;
 import org.spoutcraft.launcher.MinecraftUtils;
 import org.spoutcraft.launcher.exception.CorruptedMinecraftJarException;
 import org.spoutcraft.launcher.exception.MinecraftVerifyException;
+import org.spoutcraft.launcher.modpacks.ModPackListYML;
+import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class LauncherFrame extends Frame implements WindowListener{
 	private static final long serialVersionUID = 4524937541564722358L;
 	private MinecraftAppletEnglober minecraft;
 	private LoginForm loginForm = null;
-	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
-	public String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
 	
 	public static final int RETRYING_LAUNCH = -1;
 	public static final int ERROR_IN_LAUNCH = 0;
 	public static final int SUCCESSFUL_LAUNCH = 1;
 	
-	
-	//private static SettingsHandler settings = new SettingsHandler("defaults/spoutcraft.properties", new File(PlatformUtils.getWorkingDirectory(), "spoutcraft" + File.separator + "spoutcraft.properties"));
-
 	public LauncherFrame() {
-		super("Technic");
+		super(ModPackListYML.currentModPackLabel);
 		super.setVisible(true);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation((dim.width-870)/2, (dim.height-518)/2);
 		this.setSize(new Dimension(870, 518));
 		this.setResizable(true);
 		this.addWindowListener(this);
-		if(modpackFilename == null)
-			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/favicon.png")));
-		else
-		{
-			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_favicon.png" )));
-			if(modpackName != null)
-				setTitle(modpackName.toString());
-		}
+		
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackFavIcon()));
 	}
 	
 	public void setLoginForm(LoginForm form) {

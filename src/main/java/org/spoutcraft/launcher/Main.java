@@ -23,12 +23,16 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
 import org.spoutcraft.launcher.gui.LoadingScreen;
 
 import org.spoutcraft.launcher.gui.LoginForm;
 import org.spoutcraft.launcher.logs.SystemConsoleListener;
+import org.spoutcraft.launcher.modpacks.ModPackListYML;
+import org.spoutcraft.launcher.modpacks.ModPackUpdater;
+import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 import com.beust.jcommander.JCommander;
 
@@ -38,7 +42,8 @@ public class Main {
 	public static String build = "0.5.0";
 	public static String currentPack;
 	static File recursion;
-	
+	public static LoginForm loginForm;
+	public static final File basePath = PlatformUtils.getWorkingDirectory();
 	
 	public Main() throws Exception {
 		main(new String[0]);
@@ -46,7 +51,6 @@ public class Main {
 
 	public static void reboot(String memory) {
 		try {
-			String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
 			int mem = 1 << 9 + SettingsUtil.getMemorySelection();
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
@@ -73,21 +77,12 @@ public class Main {
 			
 			
 			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
-				params.add("-Xdock:name=\"Technic\"");
+				params.add("-Xdock:name=\"Technic Launcher\"");
 				
 				try {
-					if(modpackFilename != null)
-					{
-						File icon = new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString() + "_icon.icns");
-						GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_icon.icns"), new FileOutputStream(icon));
-						params.add("-Xdock:icon=" + icon.getCanonicalPath());
-					}
-					else
-					{
 						File icon = new File(PlatformUtils.getWorkingDirectory(), "technic_icon.icns");
-						GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/technic_icon.icns"), new FileOutputStream(icon));
+						GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/launcher_icon.icns"), new FileOutputStream(icon));
 						params.add("-Xdock:icon=" + icon.getCanonicalPath());
-					}
 				}
 				catch (Exception ignore) { }
 			}
@@ -101,18 +96,14 @@ public class Main {
 		}
 	}
 	
-	public static void reboot(String memory, String modpack)
-	{
-		reboot(memory);
-//		SettingsUtil.setModPackSelection(Integer.parseInt(modpack));
-	}
-	
 	public static boolean isDebug()
 	{
 		return 	java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");	
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {		
+		ModPackListYML.downloadModPackResources();
+		
 		LoadingScreen ls = new LoadingScreen();
 		if (!isDebug()) ls.setVisible(true);
 		Options options = new Options();
@@ -172,16 +163,11 @@ public class Main {
 			System.out.println("Warning: Can't get system LnF: " + e);
 		}
 
-		LoginForm login = new LoginForm();
+		loginForm = new LoginForm();
 
 		System.out.println("Showing GUI at " + new Date(System.currentTimeMillis()).toString());
 		ls.close();
-		login.setVisible(true);
-		String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filenames");
-		if(modpackFilename != null)
-		{
-			new File(PlatformUtils.getWorkingDirectory(), modpackFilename.toString()).mkdir();
-		}
+		loginForm.setVisible(true);
 	}
 
 	private static String getBuild() {
@@ -199,5 +185,4 @@ public class Main {
 		}
 		return build;
 	}
-
 }

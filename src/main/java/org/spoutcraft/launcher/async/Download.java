@@ -105,7 +105,7 @@ public class Download implements Runnable {
 		}
 		catch (IOException ioe)
 		{
-			System.out.println(String.format("Error opening '%s' for download.", url));
+			System.out.println(String.format("[Error] Cannot open '%s' for download.", url));
 		}
 		catch (Exception e) {
 			e.printStackTrace();

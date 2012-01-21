@@ -3,6 +3,7 @@ package org.spoutcraft.launcher;
 import java.util.Map;
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.async.DownloadListener;
+import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class SpoutcraftBuild {
 	private String minecraftVersion;
@@ -49,13 +50,13 @@ public class SpoutcraftBuild {
 	}
 
 	public void install() {
-		Configuration config = SpoutcraftYML.getSpoutcraftYML();
+		Configuration config = ModPackYML.getModPackYML();
 		config.setProperty("current", getBuild());
 		config.save();
 	}
 
 	public String getInstalledBuild() {
-		Configuration config = SpoutcraftYML.getSpoutcraftYML();
+		Configuration config = ModPackYML.getModPackYML();
 		return config.getString("current");
 	}
 
@@ -79,7 +80,7 @@ public class SpoutcraftBuild {
 
 	@SuppressWarnings("unchecked")
 	public static SpoutcraftBuild getSpoutcraftBuild() {
-		Configuration config = SpoutcraftYML.getSpoutcraftYML();
+		Configuration config = ModPackYML.getModPackYML();
 		Map<Integer, Object> builds = (Map<Integer, Object>) config.getProperty("builds");
 		String latest = config.getString("latest", null);
 		String recommended = config.getString("recommended", null);

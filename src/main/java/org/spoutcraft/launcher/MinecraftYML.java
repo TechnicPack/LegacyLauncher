@@ -9,8 +9,9 @@ import java.net.URLConnection;
 import org.bukkit.util.config.Configuration;
 
 public class MinecraftYML {
+	private static final String MINECRAFT_YML = "minecraft.yml";
 	private static volatile boolean updated = false;
-	private static File minecraftYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "minecraft.yml");
+	private static File minecraftYML = new File(PlatformUtils.getWorkingDirectory(), MINECRAFT_YML);
 	private static String latest = null;
 	private static String recommended = null;
 	private static Object key = new Object();
@@ -58,7 +59,7 @@ public class MinecraftYML {
 					}
 				}
 				
-				if (YmlUtils.downloadYmlFile("minecraft.yml", "http://technic.freeworldsgaming.com/minecraft.yml", minecraftYML)) {
+				if (YmlUtils.downloadYmlFile(MINECRAFT_YML, "http://technic.freeworldsgaming.com/minecraft.yml", minecraftYML)) {
 					Configuration config = new Configuration(minecraftYML);
 					config.load();
 					latest = config.getString("latest");

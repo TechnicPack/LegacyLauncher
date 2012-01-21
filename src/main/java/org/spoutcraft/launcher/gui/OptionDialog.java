@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -38,18 +39,23 @@ import javax.swing.JRadioButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
+import org.spoutcraft.launcher.ComboItem;
+
 import org.spoutcraft.launcher.FileUtils;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MinecraftDownloadUtils;
 import org.spoutcraft.launcher.MinecraftYML;
-import org.spoutcraft.launcher.ModPacksYML;
 import org.spoutcraft.launcher.SettingsUtil;
-import org.spoutcraft.launcher.SpoutcraftYML;
+import org.spoutcraft.launcher.Util;
+import org.spoutcraft.launcher.modpacks.ModPackListYML;
+import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class OptionDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
+	
+	public Map<String, String> modPackList = null;
 
 	JRadioButton devBuilds = new JRadioButton("Always use development builds");
 	
@@ -67,7 +73,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 	
 	JComboBox memoryCombo = new JComboBox();
 	
-	JComboBox packCombo = new JComboBox();
+	JComboBox<ComboItem> packCombo = new JComboBox<ComboItem>();
 	
 	JButton clearCache = new JButton("Clear Cache");
 	
@@ -216,9 +222,6 @@ public class OptionDialog extends JDialog implements ActionListener {
 					.addContainerGap(316, Short.MAX_VALUE))
 		);
 		
-		//TODO remove once implemented 
-		packCombo.setEnabled(false);
-		
 		contentPanel.setLayout(gl_contentPanel);
 		{
 			JPanel buttonPane = new JPanel();
@@ -240,6 +243,8 @@ public class OptionDialog extends JDialog implements ActionListener {
 				buttonPane.add(cancelButton);
 			}
 		}
+		
+		modPackList = ModPackListYML.getModPacks();
 	}
 	
 	public void updateBuildsList() {
@@ -249,8 +254,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 				for (String item : buildList) {
 					buildsCombo.addItem(item);
 				}
-			}
-			else {
+			} else {
 				buildsCombo.addItem("No builds found");
 			}
 			updateBuildsCombo();
@@ -260,25 +264,11 @@ public class OptionDialog extends JDialog implements ActionListener {
 	@SuppressWarnings("unchecked")
 	public void updateModPackList()
 	{
-		if(packCombo.getItemCount() == 0)
+		if(packCombo.getItemCount() != modPackList.size())
 		{
-//			List<Map<String, String>> modpackList = ModPacksYML.getModPacks();
-			if (ModPacksYML.getModPacks() != null)
-			{
-				for(int i=0; i < ModPacksYML.getModPacks().size(); i++)
-				{
-//					Map<String, String> map = (Map<String, String>) modpackList.get(i);
-//					packCombo.addItem(map.get("name").toString());
-					if(ModPacksYML.getModPacks().get(i).get("name") != null)
-						packCombo.addItem(ModPacksYML.getModPacks().get(i).get("name").toString());
-				}
-			}
-			else
-			{
-				if(ModPacksYML.getModPacks().get(0).get("name") != null)
-					packCombo.addItem(ModPacksYML.getModPacks().get(0).get("name").toString());
-				else
-					packCombo.addItem("Technic");
+			packCombo.removeAll();
+			for (String modPackName : modPackList.keySet()) {
+				Util.addComboItem(packCombo, modPackName, modPackList.get(modPackName));
 			}
 			updateModPacksCombo();
 		}
@@ -286,22 +276,10 @@ public class OptionDialog extends JDialog implements ActionListener {
 	
 	public void updateModPacksCombo()
 	{
-		if(ModPacksYML.getModPacks().size() > 1)
-			packCombo.setEnabled(true);
-		
-//		if(!SettingsUtil.isModPack())
-//		{
-//			packCombo.setSelectedIndex(0);
-//			SettingsUtil.setModPackSelection(0);
-//		}
-//		else
-		if(SettingsUtil.isModPack())
-		{
-			int id = SettingsUtil.getModPackSelection();
-			packCombo.setSelectedIndex(id);
-		}
-		else
-		{
+		packCombo.setEnabled(modPackList.size() > 1);	
+		if(SettingsUtil.isModPack()) {
+			Util.setSelectedComboByValue(packCombo, SettingsUtil.getModPackSelection());
+		} else {
 			packCombo.setSelectedIndex(0);
 		}
 	}
@@ -314,37 +292,27 @@ public class OptionDialog extends JDialog implements ActionListener {
 //			SettingsUtil.setClipboardAccess(clipboardCheckbox.isSelected());
 			SettingsUtil.setWorldBackup(backupCheckbox.isSelected());
 			SettingsUtil.setLoginTries(retryLoginCheckbox.isSelected());
-//			SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
+			
 			if (SettingsUtil.getMemorySelection() > 5) {
 				SettingsUtil.setMemorySelection(0);
 			}
-//			if ((memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) && (packCombo.getSelectedIndex() != SettingsUtil.getModPackSelection()))
-//			{
-//				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
-//				SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
-//				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
-//				Main.reboot("-Xmx" + mem + "m", "-modpack " + packCombo.getSelectedIndex());
-////				packCombo.setSelectedIndex(SettingsUtil.getModPackSelection());
-////				SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
-//			}
-			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
-				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
-				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
-				Main.reboot("-Xmx" + mem + "m");
-			}
+			
 			if (latestLWJGLCheckbox.isSelected() != SettingsUtil.isLatestLWJGL()) {
 				SettingsUtil.setLatestLWJGL(latestLWJGLCheckbox.isSelected());
 				clearCache();
 			}
 			
-			if (packCombo.getSelectedIndex() != SettingsUtil.getModPackSelection())
-			{
+			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
+				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
 				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
-				SettingsUtil.setModPackSelection(packCombo.getSelectedIndex());
-//				Main.reboot("-Xmx" + mem + "m", "-modpack " + packCombo.getSelectedIndex());
 				Main.reboot("-Xmx" + mem + "m");
 			}
 			
+			if (Util.getSelectedValue(packCombo) != SettingsUtil.getModPackSelection())
+			{
+				SettingsUtil.setModPackSelection(Util.getSelectedValue(packCombo));
+				
+			}
 			
 			if (buildsCombo.isEnabled()) {
 				String build = null;
@@ -422,7 +390,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 			return false;
 		}
 		finally {
-			SpoutcraftYML.getSpoutcraftYML().setProperty("current", null);
+			ModPackYML.getModPackYML().setProperty("current", null);
 			MinecraftYML.setInstalledVersion("");
 		}
 	}

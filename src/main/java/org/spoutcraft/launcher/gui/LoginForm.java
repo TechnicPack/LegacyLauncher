@@ -23,8 +23,19 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -33,16 +44,48 @@ import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 
-import org.spoutcraft.launcher.*;
+import org.spoutcraft.launcher.GameUpdater;
+import org.spoutcraft.launcher.LibrariesYML;
+import org.spoutcraft.launcher.MD5Utils;
+import org.spoutcraft.launcher.MinecraftUtils;
+import org.spoutcraft.launcher.MinecraftYML;
+import org.spoutcraft.launcher.PlatformUtils;
+import org.spoutcraft.launcher.SettingsUtil;
+import org.spoutcraft.launcher.SpoutFocusTraversalPolicy;
 import org.spoutcraft.launcher.async.DownloadListener;
-import org.spoutcraft.launcher.exception.*;
-import org.spoutcraft.launcher.technic.ModPackUpdater;
+import org.spoutcraft.launcher.exception.BadLoginException;
+import org.spoutcraft.launcher.exception.MCNetworkException;
+import org.spoutcraft.launcher.exception.MinecraftUserNotPremiumException;
+import org.spoutcraft.launcher.exception.NoMirrorsAvailableException;
+import org.spoutcraft.launcher.exception.OutdatedMCLauncherException;
+import org.spoutcraft.launcher.modpacks.ModLibraryYML;
+import org.spoutcraft.launcher.modpacks.ModPackListYML;
+import org.spoutcraft.launcher.modpacks.ModPackUpdater;
+import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class LoginForm extends JFrame implements ActionListener, DownloadListener, KeyListener, WindowListener {
 	private static final long serialVersionUID = 1L;
@@ -69,28 +112,27 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	private static String pass = null;
 	public static String[] values = null;
 	private int success = LauncherFrame.ERROR_IN_LAUNCH;
-	public String modpackFilename = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("filename");
-	public String modpackName = ModPacksYML.getModPacks().get(SettingsUtil.getModPackSelection()).get("name");
 	
 	public String workingDir = PlatformUtils.getWorkingDirectory().getAbsolutePath();
 
 	public static final ModPackUpdater gameUpdater = new ModPackUpdater();
 	OptionDialog options = new OptionDialog();
-	ModsDialog mods = new ModsDialog(ModsYML.getTechnicMods());
+	ModsDialog mods = new ModsDialog(ModPackYML.getModList());
 
 	
 	Container loginPane = new Container();
 	Container offlinePane = new Container();
+	private JLabel lblLogo;
 
 	public LoginForm() {
 		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
 			protected Object doInBackground() throws Exception {
+				MD5Utils.updateMD5Cache();
 				MinecraftYML.updateMinecraftYMLCache();
-				SpoutcraftYML.updateSpoutcraftYMLCache();
 				LibrariesYML.updateLibrariesYMLCache();
-				ModsYML.updateModsYMLCache();
-				ModPacksYML.updateModPacksYMLCache();
-				ModPackUpdater.updateTechnicModsYML();
+				ModPackListYML.updateModPacksYMLCache();
+				ModLibraryYML.updateModLibraryYML();
+				ModPackYML.updateModPackYML();
 				return null;
 			}
 			
@@ -98,7 +140,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				options.updateBuildsList();
 				options.updateModPackList();
 			}
-		};		
+		};
 		updateThread.execute();
 		
 		LoginForm.updateDialog = new UpdateDialog(this);
@@ -121,16 +163,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		usernameField.setFont(new Font("Arial", Font.PLAIN, 11));
 		usernameField.addActionListener(this);
 		usernameField.setOpaque(false);
-		if(modpackFilename != null)
-			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_favicon.png")));
-		else
-			setIconImage(Toolkit.getDefaultToolkit().getImage(LoginForm.class.getResource("/org/spoutcraft/launcher/technic_favicon.png")));
-		setResizable(false);
-
-		if(modpackName == null)
-			setTitle("Technic Launcher");
-		else
-			setTitle(modpackName.toString() + " Launcher");
+		
+		
+		
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -141,12 +177,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 
-		JLabel lblLogo = new JLabel("");
+		lblLogo = new JLabel("");
 		lblLogo.setBounds(8, 0, 294, 99);
-		if(modpackFilename != null)
-			lblLogo.setIcon(new ImageIcon(LoginForm.class.getResource("/org/spoutcraft/launcher/" + modpackFilename.toString() + "_logo.png")));
-		else
-			lblLogo.setIcon(new ImageIcon(LoginForm.class.getResource("/org/spoutcraft/launcher/technic_logo.png")));
+		
 		JLabel lblMinecraftUsername = new JLabel("Minecraft Username: ");
 		lblMinecraftUsername.setFont(new Font("Arial", Font.PLAIN, 11));
 		lblMinecraftUsername.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -312,6 +345,24 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		
 		loginButton.setEnabled(true); //enable once logins are read
 		modsButton.setEnabled(false);
+	}
+	
+	public void updateBranding() {
+
+		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
+			protected Object doInBackground() throws Exception {
+				ModPackListYML.downloadModPackResources();
+				return null;
+			}
+			
+			protected void done() {
+				setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
+				setResizable(false);
+				setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
+				lblLogo.setIcon(new ImageIcon(ModPackYML.getModPackLogo()));
+			}
+		};
+		updateThread.execute();
 	}
 
 	public void stateChanged(String fileName, float progress) {
@@ -605,7 +656,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 						
 						publish("Checking for Technic update...\n");
 						try {
-							technicUpdate = spoutUpdate || gameUpdater.isTechnicUpdateAvailable();
+							technicUpdate = spoutUpdate || gameUpdater.isModpackUpdateAvailable();
 						} catch (Exception e) {
 							technicUpdate = false;
 						}
@@ -664,7 +715,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					}
 					if (technicUpdate) {
 //						gameUpdater.updateTechnic();
-						gameUpdater.updateTechnicMods();
+						gameUpdater.updateModPackMods();
 					}
 				}
 				catch (NoMirrorsAvailableException e) {
