@@ -107,7 +107,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	HashMap<String, UserPasswordInformation> usernames = new HashMap<String, UserPasswordInformation>();
 	public boolean mcUpdate = false;
 	public boolean spoutUpdate = false;
-	public boolean technicUpdate = false;
+	public boolean modpackUpdate = false;
 	public static UpdateDialog updateDialog;
 	private static String pass = null;
 	public static String[] values = null;
@@ -226,13 +226,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		purchaseAccount.setFont(new Font("Arial", Font.PLAIN, 11));
 		purchaseAccount.setForeground(new Color(0, 0, 255));
 		
-		JLabel wikiLink = new HyperlinkJLabel("<html><u>Technic Wiki</u></html>", "http://wiki.technicpack.net/index.php?title=Main_Page");
-		wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
-		wikiLink.setBounds(233, 85, 109, 14);
-		
-		wikiLink.setText("<html><u>Technic Wiki</u></html>");
-		wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
-		wikiLink.setForeground(new Color(0, 0, 255));
+//		JLabel wikiLink = new HyperlinkJLabel("<html><u>Technic Wiki</u></html>", "http://wiki.technicpack.net/index.php?title=Main_Page");
+//		wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
+//		wikiLink.setBounds(233, 85, 109, 14);
+//		
+//		wikiLink.setText("<html><u>Technic Wiki</u></html>");
+//		wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
+//		wikiLink.setForeground(new Color(0, 0, 255));
 		
 		usernameField.setBounds(143, 14, 119, 25);
 		rememberCheckbox.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -292,7 +292,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		loginPane.add(loginButton);
 		loginPane.add(rememberCheckbox);
 		loginPane.add(purchaseAccount);
-		loginPane.add(wikiLink);
+//		loginPane.add(wikiLink);
 		loginPane.add(optionsButton);
 		loginPane.add(modsButton);
 		contentPane.add(loginPane);
@@ -370,7 +370,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		progressBar.setValue(intProgress);
 		
-		fileName = fileName.replace(workingDir, ".technic");
+		fileName = fileName.replace(workingDir, ".techniclauncher");
 		
 		if (fileName.length() > 60) {
 			fileName = fileName.substring(0, 60) + "...";
@@ -654,11 +654,11 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 							spoutUpdate = false;
 						}
 						
-						publish("Checking for Technic update...\n");
+						publish("Checking for ModPack update...\n");
 						try {
-							technicUpdate = spoutUpdate || gameUpdater.isModpackUpdateAvailable();
+							modpackUpdate = spoutUpdate || gameUpdater.isModpackUpdateAvailable();
 						} catch (Exception e) {
-							technicUpdate = false;
+							modpackUpdate = false;
 						}
 						return true;
 					}
@@ -668,10 +668,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 							updateDialog.setToUpdate("Minecraft");
 						} else if (spoutUpdate) {
 							updateDialog.setToUpdate("Spoutcraft");
-						} else if (technicUpdate) {
-							updateDialog.setToUpdate("Technic");
+						} else if (modpackUpdate) {
+							updateDialog.setToUpdate("ModPack");
 						}
-						if (mcUpdate || spoutUpdate || technicUpdate) {
+						if (mcUpdate || spoutUpdate || modpackUpdate) {
 							if (!GameUpdater.binDir.exists())
 								updateThread();
 							else
@@ -713,8 +713,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					if (spoutUpdate) {
 						gameUpdater.updateSpoutcraft();
 					}
-					if (technicUpdate) {
-//						gameUpdater.updateTechnic();
+					if (modpackUpdate) {
 						gameUpdater.updateModPackMods();
 					}
 				}

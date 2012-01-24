@@ -79,7 +79,7 @@ public class Main {
 				params.add("-Xdock:name=\"Technic Launcher\"");
 				
 				try {
-						File icon = new File(PlatformUtils.getWorkingDirectory(), "technic_icon.icns");
+						File icon = new File(PlatformUtils.getWorkingDirectory(), "launcher_icon.icns");
 						GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/launcher_icon.icns"), new FileOutputStream(icon));
 						params.add("-Xdock:icon=" + icon.getCanonicalPath());
 				}
@@ -112,8 +112,6 @@ public class Main {
 		}
 		MinecraftUtils.setOptions(options);
 		recursion = new File(PlatformUtils.getWorkingDirectory(), "rtemp");	
-		
-		ModPackListYML.downloadModPackResources();
 
 		args_temp = args;
 		boolean relaunch = false;
@@ -138,10 +136,11 @@ public class Main {
 					reboot("-Xmx" + mem + "m");
 			}
 		}
+		
 		if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
 			try{
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
-				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Technic");
+				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Technic Launcher");
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (Exception ignore) { }
 		}

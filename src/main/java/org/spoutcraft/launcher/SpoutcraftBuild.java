@@ -37,14 +37,6 @@ public class SpoutcraftBuild {
 		return "http://s3.amazonaws.com/MinecraftDownload/minecraft.jar?user=" + user + "&ticket=1";
 	}
 
-	public String getSpoutcraftURL() {
-		return MirrorUtils.getMirrorUrl("technic/" + build + "/technic.jar", null, listener);
-	}
-	
-	public String getTechnicZipURL() {
-		return MirrorUtils.getMirrorUrl("technic/" + build + "/technic.zip", null, listener);
-	}
-
 	public void setDownloadListener(DownloadListener listener) {
 		this.listener = listener;
 	}

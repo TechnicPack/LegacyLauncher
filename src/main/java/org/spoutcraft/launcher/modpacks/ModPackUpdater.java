@@ -30,7 +30,7 @@ import org.spoutcraft.launcher.async.Download;
 public class ModPackUpdater extends GameUpdater {
 	static volatile boolean updated = false;
 
-	public static final String defaultModPackName = "technic";
+	public static final String defaultModPackName = "technicssp";
 	
 //	public static File baseModPackDirectory = new File(Main.basePath, defaultModPackName);
 //	public static File modpackTempModsDirectory = new File(baseModPackDirectory, "mods");
@@ -175,10 +175,9 @@ public class ModPackUpdater extends GameUpdater {
 		try {
 			//Mod has been previously installed uninstall previous version
 			File previousModZip = new File(DownloadUtils.cacheDirectory, modName + "-" + installedVersion + ".zip");
-			//String previousModVersionFileName = String.format("%s\\%s\\%s-%v.zip", technicModsDirectory.getAbsolutePath(), modName, modName, modVersion);
 			ZipFile zf = new ZipFile(previousModZip);
 			Enumeration<? extends ZipEntry> entries = zf.entries();
-			//Go through zipfile of previous version and delete all file from technic that exist in the zip
+			//Go through zipfile of previous version and delete all file from Madpack that exist in the zip
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
 				if (entry.isDirectory()) continue;

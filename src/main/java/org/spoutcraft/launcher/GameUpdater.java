@@ -49,23 +49,24 @@ import org.spoutcraft.launcher.logs.SystemConsoleListener;
 import SevenZip.LzmaAlone;
 
 public class GameUpdater implements DownloadListener {
+	public static final File WORKING_DIRECTORY = PlatformUtils.getWorkingDirectory();
 	/* Minecraft Updating Arguments */
 	public String user = "Player";
 	public String downloadTicket = "1";
 
 	/* Files */
-	public static final File binDir = new File(PlatformUtils.getWorkingDirectory(), "bin");
+	public static final File binDir = new File(WORKING_DIRECTORY, "bin");
 	public static final File binCacheDir = new File(binDir, "cache");
-	public static final File cacheDir = new File(PlatformUtils.getWorkingDirectory(), "cache");
-	public static final File updateDir = new File(PlatformUtils.getWorkingDirectory(), "temp");
-	public static final File backupDir = new File(PlatformUtils.getWorkingDirectory(), "backups");
-	public static final File spoutcraftDir = new File(PlatformUtils.getWorkingDirectory(), "technic");
-	public static final File savesDir = new File(PlatformUtils.getWorkingDirectory(), "saves");
-	public static final File modsDir = new File(PlatformUtils.getWorkingDirectory(), "mods");
-	public static final File technicModsDir = new File(PlatformUtils.getWorkingDirectory(), "mods-technic");
-	public static final File technicSavesDir = new File(PlatformUtils.getWorkingDirectory(), "saves-technic");
-	public static final File modconfigsDir = new File(PlatformUtils.getWorkingDirectory(), "config");
-	public static final File resourceDir = new File(PlatformUtils.getWorkingDirectory(), "resources");
+	public static final File cacheDir = new File(WORKING_DIRECTORY, "cache");
+	public static final File updateDir = new File(WORKING_DIRECTORY, "temp");
+	public static final File backupDir = new File(WORKING_DIRECTORY, "backups");
+	public static final File workDir = new File(WORKING_DIRECTORY, "madpacks");
+	public static final File savesDir = new File(WORKING_DIRECTORY, "saves");
+	public static final File modsDir = new File(WORKING_DIRECTORY, "mods");
+	public static final File modpackModsDir = new File(WORKING_DIRECTORY, "mods-modpack");
+	public static final File modpackSavesDir = new File(WORKING_DIRECTORY, "saves-modpack");
+	public static final File modconfigsDir = new File(WORKING_DIRECTORY, "config");
+	public static final File resourceDir = new File(WORKING_DIRECTORY, "resources");
 	
 
 	/* Minecraft Updating Arguments */
@@ -228,7 +229,7 @@ public class GameUpdater implements DownloadListener {
 
 	}
 	
-	//Extracts technic.zip to the .technic folder
+	//Extracts zip to the folder
 	protected void extractNatives2(File nativesDir, File nativesJar) {
 		String name = null;
 
@@ -312,7 +313,7 @@ public class GameUpdater implements DownloadListener {
 
 		updateDir.mkdirs();
 		binCacheDir.mkdirs();
-		spoutcraftDir.mkdirs();
+		workDir.mkdirs();
 		
 		File mcCache = new File(binCacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
 		File updateMC = new File(updateDir.getPath() + File.separator + "minecraft.jar");
@@ -353,24 +354,20 @@ public class GameUpdater implements DownloadListener {
 		build.install();
 		
 		//TODO: remove this once this build has been out for a few weeks
-		File spoutcraftVersion = new File(GameUpdater.spoutcraftDir, "versionTechnic");
+		File spoutcraftVersion = new File(GameUpdater.workDir, "versionLauncher");
 		spoutcraftVersion.delete();
 		
 	}
 
 	public boolean isSpoutcraftUpdateAvailable() throws IOException {
-		if (!PlatformUtils.getWorkingDirectory().exists())
+		if (!WORKING_DIRECTORY.exists())
 			return true;
-		if (!GameUpdater.spoutcraftDir.exists())
+		if (!GameUpdater.workDir.exists())
 			return true;
 		
 		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
 
 		if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild())) 
-			return true;
-		
-		File spoutcraft = new File(binDir, "technic.jar");
-		if (!spoutcraft.exists())
 			return true;
 		
 		File libDir = new File(binDir, "lib");
@@ -426,12 +423,12 @@ public class GameUpdater implements DownloadListener {
 		File zip = new File(GameUpdater.backupDir, build.getBuild() + "-backup.zip");
 
 		if (!zip.exists()) {
-			String rootDir = PlatformUtils.getWorkingDirectory() + File.separator;
+			String rootDir = WORKING_DIRECTORY + File.separator;
 			HashSet<File> exclude = new HashSet<File>();
 			exclude.add(GameUpdater.backupDir);
 			if (!SettingsUtil.isWorldBackup()) {
 				exclude.add(GameUpdater.savesDir);
-				exclude.add(GameUpdater.technicSavesDir);
+				exclude.add(GameUpdater.modpackSavesDir);
 			}
 			exclude.add(GameUpdater.updateDir);
 			exclude.add(SystemConsoleListener.logDir);
@@ -439,10 +436,10 @@ public class GameUpdater implements DownloadListener {
 			File[] existingBackups = backupDir.listFiles();
 			(new BackupCleanupThread(existingBackups)).start();
 			zip.createNewFile();
-			addFilesToExistingZip(zip, getFiles(PlatformUtils.getWorkingDirectory(), exclude, rootDir), rootDir, false);
+			addFilesToExistingZip(zip, getFiles(WORKING_DIRECTORY, exclude, rootDir), rootDir, false);
 			
-			if (technicModsDir.exists())
-				FileUtils.deleteDirectory(technicModsDir);
+			if (modpackModsDir.exists())
+				FileUtils.deleteDirectory(modpackModsDir);
 			
 			if (modsDir.exists())
 				FileUtils.deleteDirectory(modsDir);
@@ -460,7 +457,7 @@ public class GameUpdater implements DownloadListener {
 		try {
 			String path = (String) AccessController.doPrivileged(new PrivilegedExceptionAction() {
 				public Object run() throws Exception {
-					return PlatformUtils.getWorkingDirectory() + File.separator + "bin" + File.separator;
+					return WORKING_DIRECTORY + File.separator + "bin" + File.separator;
 				}
 			});
 			File dir = new File(path);
@@ -519,7 +516,7 @@ public class GameUpdater implements DownloadListener {
 			
 			progress += progressStep;
 			if (progressBar) {
-				stateChanged("Merging Technic Files Into Minecraft Jar...", progress);
+				stateChanged("Merging Madpack Files Into Minecraft Jar...", progress);
 			}
 		}
 		zin.close();
@@ -539,7 +536,7 @@ public class GameUpdater implements DownloadListener {
 				
 				progress += progressStep;
 				if (progressBar) {
-					stateChanged("Merging Technic Files Into Minecraft Jar...", progress);
+					stateChanged("Merging Madpack Files Into Minecraft Jar...", progress);
 				}
 
 				out.closeEntry();

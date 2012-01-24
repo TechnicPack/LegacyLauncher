@@ -86,7 +86,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 	 */
 	@SuppressWarnings("unchecked")
 	public OptionDialog() {
-		setTitle("Technic Settings");
+		setTitle("Technic Launcher Settings");
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(devBuilds);
@@ -96,17 +96,17 @@ public class OptionDialog extends JDialog implements ActionListener {
 		buildInfo.setText("Technic Launcher Build " + Main.build);
 		buildInfo.setOpaque(true);
 		buildInfo.setForeground(Color.DARK_GRAY);
-		buildInfo.setToolTipText("Created by the Spout Development Team. Licensed under the LGPL. Source code is available at www.github.com/SpoutDev" );
+		buildInfo.setToolTipText("Created by the Spout Development Team and Modified by the Technic Team. Licensed under the LGPL. Source code is available at www.github.com/SpoutDev" );
 		
 		customBuilds.setToolTipText("Only use if you know what you are doing!");
 		devBuilds.setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
 		recBuilds.setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
 //		clipboardCheckbox.setToolTipText("Allows server mods to see the contents of your clipboard.");
-		backupCheckbox.setToolTipText("Backs up your Technic SP worlds after each Technic update");
+		backupCheckbox.setToolTipText("Backs up your Single Player worlds after each Madpack update");
 		retryLoginCheckbox.setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
 		latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
-		clearCache.setToolTipText("Clears the cached minecraft and Technic files, forcing a redownload on your next login");
-		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Technic. Assigning more memory than you have may cause crashes.");
+		clearCache.setToolTipText("Clears the cached minecraft and Madpack files, forcing a redownload on your next login");
+		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Minecraft. Assigning more memory than you have may cause crashes.");
 		packCombo.setToolTipText("Select which mod pack to use with the launcher.");
 		
 		if (SettingsUtil.isRecommendedBuild()) {
@@ -153,7 +153,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
 		JLabel lblPack = new JLabel("Select Mod Pack: ");
 		
-		JLabel selectBuild = new JLabel("Select Technic build: ");
+		JLabel selectBuild = new JLabel("Select Madpack build: ");
 		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
@@ -342,7 +342,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(getParent(), "Successfully cleared the cache.");
 			}
 			else {
-				JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Technic files are open.\nIf all else fails, close the launcher, restart it, and try again.");
+				JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Madpack files are open.\nIf all else fails, close the launcher, restart it, and try again.");
 			}
 		}
 		else if (id.equals(customBuilds.getText()) || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {

@@ -14,7 +14,7 @@ public class ModPackYML {
 	private static final String MODPACK_YML = "modpack.yml";
 	private static final String FALLBACK_URL = String.format("http://technic.freeworldsgaming.com/%s", MODPACK_YML);
 	private static volatile boolean updated = false;
-	private static File modPackYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + MODPACK_YML);
+	private static File modPackYML = new File(PlatformUtils.getWorkingDirectory(), "Madpack" + File.separator + MODPACK_YML);
 	private static Object key = new Object();
 
 	private static File getModPackYMLFile() {

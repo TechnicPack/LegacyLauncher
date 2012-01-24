@@ -26,7 +26,7 @@ public class MirrorUtils {
 		"https://raw.github.com/icew01f/Technic/master/mirrors.yml", 
 		"http://technic.freeworldsgaming.com/mirrors.yml"
 		};
-	public static File mirrorsYML = new File(PlatformUtils.getWorkingDirectory(), "technic" + File.separator + "mirrors.yml");
+	public static File mirrorsYML = new File(GameUpdater.workDir, "mirrors.yml");
 	
 	private static boolean updated = false;
 	private static final Random rand = new Random();

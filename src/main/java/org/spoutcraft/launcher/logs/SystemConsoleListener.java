@@ -38,7 +38,7 @@ public class SystemConsoleListener {
 			
 			logDir.mkdirs();
 			
-			Handler fileHandler = new FileHandler(new File(logDir, "technic_%g.log").getPath(), 100000, 5, true);
+			Handler fileHandler = new FileHandler(new File(logDir, "launcher_%g.log").getPath(), 100000, 5, true);
 			fileHandler.setFormatter(new ClientLoggerFormatter());
 			Logger.getLogger("").addHandler(fileHandler);   
 		   

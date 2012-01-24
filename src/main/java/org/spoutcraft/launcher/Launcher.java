@@ -35,7 +35,7 @@ public class Launcher {
 			   
 		File mcBinFolder = new File(PlatformUtils.getWorkingDirectory(), "bin");
 		
-		File spoutcraftJar = new File(mcBinFolder, "technic.jar");
+		File spoutcraftJar = new File(mcBinFolder, "modpack.jar");
 		File minecraftJar = new File(mcBinFolder, "minecraft.jar");
 		File jinputJar = new File(mcBinFolder, "jinput.jar");
 		File lwglJar = new File(mcBinFolder, "lwjgl.jar");
