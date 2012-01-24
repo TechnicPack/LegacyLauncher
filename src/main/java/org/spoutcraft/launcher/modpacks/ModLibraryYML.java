@@ -3,12 +3,12 @@ package org.spoutcraft.launcher.modpacks;
 import java.io.File;
 
 import org.bukkit.util.config.Configuration;
-import org.spoutcraft.launcher.Main;
+import org.spoutcraft.launcher.PlatformUtils;
 import org.spoutcraft.launcher.YmlUtils;
 
 public class ModLibraryYML {
 	public static final String MODLIBRARY_YML = "modlibrary.yml";
-	public static final File modLibraryYML = new File(Main.basePath, MODLIBRARY_YML);
+	public static final File modLibraryYML = new File(PlatformUtils.getWorkingDirectory(), MODLIBRARY_YML);
 
 	public static void updateModLibraryYML() {
 		if (ModPackUpdater.updated) return;

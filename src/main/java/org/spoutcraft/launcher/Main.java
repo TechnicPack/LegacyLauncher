@@ -43,7 +43,6 @@ public class Main {
 	public static String currentPack;
 	static File recursion;
 	public static LoginForm loginForm;
-	public static final File basePath = PlatformUtils.getWorkingDirectory();
 	
 	public Main() throws Exception {
 		main(new String[0]);
@@ -101,8 +100,7 @@ public class Main {
 		return 	java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");	
 	}
 	
-	public static void main(String[] args) throws Exception {		
-		ModPackListYML.downloadModPackResources();
+	public static void main(String[] args) throws Exception {
 		
 		LoadingScreen ls = new LoadingScreen();
 		if (!isDebug()) ls.setVisible(true);
@@ -113,7 +111,9 @@ public class Main {
 			ex.printStackTrace();
 		}
 		MinecraftUtils.setOptions(options);
-		recursion = new File(PlatformUtils.getWorkingDirectory(), "rtemp");
+		recursion = new File(PlatformUtils.getWorkingDirectory(), "rtemp");	
+		
+		ModPackListYML.downloadModPackResources();
 
 		args_temp = args;
 		boolean relaunch = false;

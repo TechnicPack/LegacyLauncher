@@ -87,7 +87,7 @@ public class LoadingScreen extends JDialog {
 	    }
 	 
 	    // close "button" - show this image by default
-	    closeNormal = new ImageIcon( getClass().getResource( "/org/spoutcraft/launcher/technic_logo.png" ) );
+	    closeNormal = new ImageIcon( getClass().getResource( "/org/spoutcraft/launcher/splash_logo.png" ) );
 	    closeLabel = new JLabel( closeNormal );
 	 
 	    // Put the label with the image on the far right

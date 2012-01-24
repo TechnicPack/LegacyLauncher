@@ -19,7 +19,7 @@ import org.spoutcraft.launcher.async.DownloadListener;
 import org.yaml.snakeyaml.Yaml;
 
 public class DownloadUtils {
-	public static final File cacheDirectory = new File(Main.basePath, "cache");
+	public static final File cacheDirectory = new File(PlatformUtils.getWorkingDirectory(), "cache");
 	
 	public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
 		int tries = SettingsUtil.getLoginTries();

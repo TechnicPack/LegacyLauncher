@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.Map;
 
 import org.bukkit.util.config.Configuration;
-import org.spoutcraft.launcher.Main;
+import org.spoutcraft.launcher.PlatformUtils;
 
 public class InstalledModsYML {
 
 	private static final String INSTALLED_MODS_YML = "installedMods.yml";
-	public static File installedModsYML = new File(Main.basePath, INSTALLED_MODS_YML);	
+	public static File installedModsYML = new File(PlatformUtils.getWorkingDirectory(), INSTALLED_MODS_YML);	
 	
 	public static boolean setInstalledModVersion(String modName, String version) {
 		Configuration modsConfig = new Configuration(installedModsYML);

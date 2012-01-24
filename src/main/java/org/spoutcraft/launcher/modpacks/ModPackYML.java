@@ -22,7 +22,7 @@ public class ModPackYML {
 	}
 
 	public static File getModPackDirectory() {
-		return new File(Main.basePath, ModPackListYML.currentModPack);
+		return new File(PlatformUtils.getWorkingDirectory(), ModPackListYML.currentModPack);
 	}
 
 	private static void setModPackYML(String modPack) {

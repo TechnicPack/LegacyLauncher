@@ -13,7 +13,7 @@ import org.bukkit.util.config.Configuration;
 
 public class MD5Utils {
 	private static final String CHECKSUM_MD5 = "CHECKSUM.md5";
-	private static final File CHECKSUM_FILE = new File(Main.basePath, CHECKSUM_MD5);
+	private static final File CHECKSUM_FILE = new File(PlatformUtils.getWorkingDirectory(), CHECKSUM_MD5);
 	private static boolean updated;
 	
 	private static final Map<String, String> md5Map = new HashMap<String, String>();

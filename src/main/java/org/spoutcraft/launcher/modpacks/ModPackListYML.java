@@ -29,7 +29,7 @@ public class ModPackListYML {
 	private static final String[] RESOURCES = new String[] { ICON_PNG, FAVICON_PNG, LOGO_PNG };
 	
 	private static final String MODPACKS_YML = "modpacks.yml";
-	private static final File MODPACKS_YML_FILE = new File(Main.basePath, MODPACKS_YML);
+	private static final File MODPACKS_YML_FILE = new File(PlatformUtils.getWorkingDirectory(), MODPACKS_YML);
 	
 	private static volatile boolean updated = false;
 	private static Object key = new Object();
@@ -78,7 +78,7 @@ public class ModPackListYML {
 		
 		currentModPack = modPack;
 		currentModPackLabel = modPackLabel;
-		currentModPackDirectory = new File(Main.basePath, currentModPack);
+		currentModPackDirectory = new File(PlatformUtils.getWorkingDirectory(), currentModPack);
 		
 		downloadModPackResources();
 		
