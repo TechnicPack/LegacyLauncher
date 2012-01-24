@@ -1,11 +1,14 @@
 package org.spoutcraft.launcher;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -20,7 +23,7 @@ public class YmlUtils {
 	}
 	
 	public static boolean downloadRelativeYmlFile(String relativePath) {
-		return downloadYmlFile(relativePath, null, new File(relativePath));
+		return downloadYmlFile(relativePath, null, new File(GameUpdater.workDir, relativePath));
 	}
 	
 	public static boolean downloadYmlFile(String ymlUrl, String fallbackUrl, File ymlFile) {
@@ -30,11 +33,12 @@ public class YmlUtils {
 			return true;
 		
 		URL url = null;
-		File tempFile = null;
+		InputStream io = null;
+		OutputStream out = null;
 		try {
-			if (isRelative && !MirrorUtils.isAddressReachable(ymlUrl)) {
+			if (!isRelative && !MirrorUtils.isAddressReachable(ymlUrl)) {
 				return false;
-			} else {
+			} else if (isRelative) {
 				ymlUrl = MirrorUtils.getMirrorUrl(ymlUrl, fallbackUrl);
 			}
 			
@@ -44,11 +48,9 @@ public class YmlUtils {
 			System.setProperty("http.agent", "");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 			
-			tempFile = File.createTempFile("launcherYml", null);
-			
 			//Download to temporary file
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			//new FileOutputStream(tempFile)
+
 			if (GameUpdater.copy(con.getInputStream(), baos) <= 0) {
 				System.out.printf("[Error] Download URL was empty: '%s'/n", url);
 				return false;
@@ -58,20 +60,30 @@ public class YmlUtils {
 			
 			//Test yml loading
 			Yaml yamlFile = new Yaml();
-			yamlFile.load(new BufferedInputStream(new ByteArrayInputStream(yamlData)));
+			io = new BufferedInputStream(new ByteArrayInputStream(yamlData));
+			yamlFile.load(io);
 			
 			//If no Exception then file loaded fine, copy to output file
-			GameUpdater.copy(tempFile, ymlFile);
+			out = new BufferedOutputStream(new FileOutputStream(ymlFile));
+			out.write(yamlData);
+			out.flush();
 			
 			return true;
 		} catch (MalformedURLException e) {
 			System.out.printf("[Error] Download URL badly formed: '%s'/n", url);
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			System.out.printf("[Error] Could not write to temp file: '%s'/n", tempFile);
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.printf("[Error] Yaml File has error's badly formed: '%s'/n", url);
+			e.printStackTrace();
+		} finally {
+			try {
+				io.close();
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}

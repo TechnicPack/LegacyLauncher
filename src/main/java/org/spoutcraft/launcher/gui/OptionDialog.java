@@ -277,7 +277,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 	public void updateModPacksCombo()
 	{
 		packCombo.setEnabled(modPackList.size() > 1);	
-		if(SettingsUtil.isModPack()) {
+		if(SettingsUtil.hasModPack()) {
 			Util.setSelectedComboByValue(packCombo, SettingsUtil.getModPackSelection());
 		} else {
 			packCombo.setSelectedIndex(0);

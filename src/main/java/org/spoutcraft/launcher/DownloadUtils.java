@@ -2,10 +2,11 @@ package org.spoutcraft.launcher;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,12 +24,13 @@ public class DownloadUtils {
 	
 	public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
 		int tries = SettingsUtil.getLoginTries();
-		File outputFile = null;
+		File outputFile = new File(output);
+		File tempfile = File.createTempFile("Modpack", null);
 		Download download = null;
 		while (tries > 0) {
 			System.out.println("Starting download of " + url + ", with " + tries + " tries remaining");
 			tries--;
-			download = new Download(url, output);
+			download = new Download(url, tempfile.getPath());
 			download.setListener(listener);
 			download.run();
 			if (!download.isSuccess()) {
@@ -44,11 +46,15 @@ public class DownloadUtils {
 					String resultMD5 = MD5Utils.getMD5(download.getOutFile());
 					System.out.println("Expected MD5: " + md5 + " Calculated MD5: " + resultMD5);
 					if (resultMD5.equals(md5)) {
+						GameUpdater.copy(tempfile, outputFile);
+						tempfile.delete();
 						outputFile = download.getOutFile();
 						break;
 					}
 				}
 				else {
+					GameUpdater.copy(tempfile, outputFile);
+					tempfile.delete();
 					outputFile = download.getOutFile();
 					break;
 				}
@@ -122,24 +128,19 @@ public class DownloadUtils {
 			System.setProperty("http.agent", "");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 			
-			tempFile = File.createTempFile("Madpack", null);
+			tempFile = File.createTempFile("Modpack", null);
 			
 			//Download to temporary file
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			OutputStream baos = new FileOutputStream(tempFile);
 			//new FileOutputStream(tempFile)
 			if (GameUpdater.copy(con.getInputStream(), baos) <= 0) {
 				System.out.printf("[Error] Download URL was empty: '%s'/n", url);
 				return false;
 			}
-
-			byte[] yamlData = baos.toByteArray();
-			
-			//Test yml loading
-			Yaml yamlFile = new Yaml();
-			yamlFile.load(new BufferedInputStream(new ByteArrayInputStream(yamlData)));
 			
 			//If no Exception then file loaded fine, copy to output file
 			GameUpdater.copy(tempFile, new File(relativePath));
+			tempFile.delete();
 			
 			return true;
 		} catch (MalformedURLException e) {

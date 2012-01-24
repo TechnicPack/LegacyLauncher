@@ -73,6 +73,7 @@ import org.spoutcraft.launcher.LibrariesYML;
 import org.spoutcraft.launcher.MD5Utils;
 import org.spoutcraft.launcher.MinecraftUtils;
 import org.spoutcraft.launcher.MinecraftYML;
+import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.PlatformUtils;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.SpoutFocusTraversalPolicy;
@@ -116,7 +117,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	public String workingDir = PlatformUtils.getWorkingDirectory().getAbsolutePath();
 
 	public static final ModPackUpdater gameUpdater = new ModPackUpdater();
-	OptionDialog options = new OptionDialog();
+	OptionDialog options = null;
 	ModsDialog mods = new ModsDialog(ModPackYML.getModList());
 
 	
@@ -127,18 +128,25 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	public LoginForm() {
 		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
 			protected Object doInBackground() throws Exception {
+				MirrorUtils.updateMirrorsYMLCache();
 				MD5Utils.updateMD5Cache();
+				ModPackListYML.updateModPacksYMLCache();
+				
+				ModPackListYML.setCurrentModpack();
+				
 				MinecraftYML.updateMinecraftYMLCache();
 				LibrariesYML.updateLibrariesYMLCache();
-				ModPackListYML.updateModPacksYMLCache();
 				ModLibraryYML.updateModLibraryYML();
 				ModPackYML.updateModPackYML();
 				return null;
 			}
 			
 			protected void done() {
+				setBranding();
+				options = new OptionDialog();
 				options.updateBuildsList();
 				options.updateModPackList();
+				options.setVisible(false);
 			}
 		};
 		updateThread.execute();
@@ -148,7 +156,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		
 		this.addWindowListener(this);
 
-		options.setVisible(false);
 		loginButton.setFont(new Font("Arial", Font.PLAIN, 11));
 		loginButton.setBounds(272, 13, 86, 23);
 		loginButton.setOpaque(false);
@@ -345,6 +352,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		
 		loginButton.setEnabled(true); //enable once logins are read
 		modsButton.setEnabled(false);
+	}
+	
+	public void setBranding() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
+		setResizable(false);
+		setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
+		lblLogo.setIcon(new ImageIcon(ModPackYML.getModPackLogo()));
 	}
 	
 	public void updateBranding() {

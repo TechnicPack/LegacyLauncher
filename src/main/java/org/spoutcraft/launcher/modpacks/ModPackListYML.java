@@ -2,18 +2,15 @@ package org.spoutcraft.launcher.modpacks;
 
 import java.awt.Image;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.DownloadUtils;
+import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.PlatformUtils;
@@ -22,14 +19,16 @@ import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.YmlUtils;
 
 public class ModPackListYML {
+	private static final String ICON_ICO = "icon.ico";
+	private static final String ICON_ICNS = "icon.icns";
 	private static final String ICON_PNG = "icon.png";
 	private static final String FAVICON_PNG = "favicon.png";
 	private static final String LOGO_PNG = "logo.png";
 	
-	private static final String[] RESOURCES = new String[] { ICON_PNG, FAVICON_PNG, LOGO_PNG };
+	private static final List<String> RESOURCES = new LinkedList();
 	
 	private static final String MODPACKS_YML = "modpacks.yml";
-	private static final File MODPACKS_YML_FILE = new File(PlatformUtils.getWorkingDirectory(), MODPACKS_YML);
+	private static final File MODPACKS_YML_FILE = new File(GameUpdater.workDir, MODPACKS_YML);
 	
 	private static volatile boolean updated = false;
 	private static Object key = new Object();
@@ -41,6 +40,21 @@ public class ModPackListYML {
 	public static Image favIcon = null;
 	public static Image icon = null;
 	public static Image logo = null;
+	
+	static {
+		RESOURCES.add(FAVICON_PNG);
+		RESOURCES.add(LOGO_PNG);
+		RESOURCES.add(getIconName());
+	}
+	
+	public static String getIconName() {
+		if (PlatformUtils.getPlatform() == PlatformUtils.OS.windows) {
+			return ICON_PNG;
+		} else if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
+			return ICON_ICNS;
+		}
+		return ICON_PNG;
+	}
 
 	public static Configuration getModPacksYML() {
 		updateModPacksYMLCache();
@@ -57,43 +71,64 @@ public class ModPackListYML {
 			}
 		}
 	}
+	
+	public static void setCurrentModpack() {
+		Map<String, String> modPackMap = getModPacks();
+		if (!SettingsUtil.hasModPack()) {
+			Map.Entry<String, String> modpack = modPackMap.entrySet().iterator().next();
+			setModPack(modpack.getKey(), modpack.getValue(), true);
+		} else {
+			String modPack = SettingsUtil.getModPackSelection();
+			setModPack(modPack, modPackMap.get(modPack));
+		}
+	}
 
 	public static Map<String, String> getModPacks()
 	{
 		return (Map<String, String>) getModPacksYML().getProperty("modpacks");
 	}
-	
+
 	public static boolean setModPack(String modPack, String modPackLabel) {
+		return setModPack(modPack, modPackLabel, false);
+	}
+	
+	public static boolean setModPack(String modPack, String modPackLabel, boolean ignoreCheck) {
 		if (modPack.equalsIgnoreCase(currentModPack))
 			return true;
 		
-		Map<String, String> modPacks = getModPacks();
-		if (!modPacks.containsKey(modPack)) {
-			//Mod Pack not in list
-			Util.log("ModPack '%s' not in '%s' file.", modPackLabel, MODPACKS_YML);
-			return false;
+		if (!ignoreCheck) {
+			Map<String, String> modPacks = getModPacks();
+			if (!modPacks.containsKey(modPack)) {
+				//Mod Pack not in list
+				Util.log("ModPack '%s' not in '%s' file.", modPackLabel, MODPACKS_YML);
+				return false;
+			}
 		}
 		
 		SettingsUtil.setModPackSelection(modPack);
 		
 		currentModPack = modPack;
 		currentModPackLabel = modPackLabel;
-		currentModPackDirectory = new File(PlatformUtils.getWorkingDirectory(), currentModPack);
+		currentModPackDirectory = new File(GameUpdater.workDir, currentModPack);
+		
+		currentModPackDirectory.mkdirs();
 		
 		downloadModPackResources();
-		
-		Main.loginForm.updateBranding();
 		
 		return true;
 	}
 
 	public static void downloadModPackResources() {
 		Map<String, String> downloadFileList = new HashMap<String, String>();
+				
 		for (String resource : RESOURCES) {
-			String relativeFilePath = currentModPack + File.separator + ICON_PNG;
+			String relativeFilePath = currentModPack + "/resources/" + resource;
 			String fileURL = MirrorUtils.getMirrorUrl(relativeFilePath, null);
 			if (fileURL == null) continue;
-			String filePath = new File(ModPackYML.getModPackDirectory(), ICON_PNG).getAbsolutePath();
+			File dir = new File(currentModPackDirectory, "resources");
+			dir.mkdirs();
+			File file = new File(dir, resource);
+			String filePath = file.getAbsolutePath();
 			downloadFileList.put(fileURL, filePath);
 		}
 		if (DownloadUtils.downloadFiles(downloadFileList , 30, TimeUnit.SECONDS) != downloadFileList.size()) {

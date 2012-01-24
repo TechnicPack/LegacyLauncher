@@ -58,8 +58,8 @@ public class SettingsUtil {
 		setProperty("devupdate", value);
 	}
 	
-	public static boolean isModPack() {
-		return isProperty("modpack");
+	public static boolean hasModPack() {
+		return hasProperty("modpack");
 	}
 	
 	public static String getModPackSelection()
@@ -89,6 +89,10 @@ public class SettingsUtil {
 	
 	private static boolean isProperty(String s) {
 		return isProperty(s, false);
+	}
+	
+	private static boolean hasProperty(String name) {
+		return settings.checkProperty(name);
 	}
 	
 	private static boolean isProperty(String s, boolean def) {

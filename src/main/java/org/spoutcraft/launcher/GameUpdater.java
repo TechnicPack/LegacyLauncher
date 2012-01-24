@@ -49,7 +49,9 @@ import org.spoutcraft.launcher.logs.SystemConsoleListener;
 import SevenZip.LzmaAlone;
 
 public class GameUpdater implements DownloadListener {
+	public static final String LAUNCHER_DIRECTORY = "launcher";	
 	public static final File WORKING_DIRECTORY = PlatformUtils.getWorkingDirectory();
+	
 	/* Minecraft Updating Arguments */
 	public String user = "Player";
 	public String downloadTicket = "1";
@@ -60,7 +62,7 @@ public class GameUpdater implements DownloadListener {
 	public static final File cacheDir = new File(WORKING_DIRECTORY, "cache");
 	public static final File updateDir = new File(WORKING_DIRECTORY, "temp");
 	public static final File backupDir = new File(WORKING_DIRECTORY, "backups");
-	public static final File workDir = new File(WORKING_DIRECTORY, "madpacks");
+	public static final File workDir = new File(WORKING_DIRECTORY, LAUNCHER_DIRECTORY);
 	public static final File savesDir = new File(WORKING_DIRECTORY, "saves");
 	public static final File modsDir = new File(WORKING_DIRECTORY, "mods");
 	public static final File modpackModsDir = new File(WORKING_DIRECTORY, "mods-modpack");

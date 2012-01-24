@@ -13,7 +13,7 @@ import org.bukkit.util.config.Configuration;
 
 public class MD5Utils {
 	private static final String CHECKSUM_MD5 = "CHECKSUM.md5";
-	private static final File CHECKSUM_FILE = new File(PlatformUtils.getWorkingDirectory(), CHECKSUM_MD5);
+	private static final File CHECKSUM_FILE = new File(GameUpdater.workDir, CHECKSUM_MD5);
 	private static boolean updated;
 	
 	private static final Map<String, String> md5Map = new HashMap<String, String>();
@@ -62,11 +62,15 @@ public class MD5Utils {
 		if (!updated) {
 			updated = true;
 			try {
-				if (DownloadUtils.downloadFile(CHECKSUM_MD5)) {
+				String url = MirrorUtils.getMirrorUrl(CHECKSUM_MD5, null);
+				if (DownloadUtils.downloadFile(url, CHECKSUM_FILE.getPath()).isSuccess()) {
 					parseChecksumFile();
 				}
 			} catch (FileNotFoundException e) {
 				Util.log("[Error] Checksum file '%s' not found.", CHECKSUM_FILE.getAbsoluteFile());
+				e.printStackTrace();
+			} catch (IOException e) {
+				Util.log("[Error] Checksum file '%s' threw error.", CHECKSUM_FILE.getAbsoluteFile());
 				e.printStackTrace();
 			}
 		}
@@ -74,11 +78,13 @@ public class MD5Utils {
 
 	private static void parseChecksumFile() throws FileNotFoundException {
 		md5Map.clear();
-		Scanner scanner = new Scanner(CHECKSUM_FILE).useDelimiter("|");
+		Scanner scanner = new Scanner(CHECKSUM_FILE).useDelimiter("\\||\n");
 		while (scanner.hasNext()) {
-			String md5 = scanner.next().toLowerCase();
-			String path = scanner.next();
+//			String[] tokens = scanner.nextLine().split("\\|");
+			String md5 = scanner.next().toLowerCase();// tokens[0];
+			String path = scanner.next();//tokens[1];			
 			md5Map.put(path, md5);
+			scanner.nextLine();
 		}
 	}
 

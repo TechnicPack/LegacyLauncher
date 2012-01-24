@@ -100,18 +100,7 @@ public class MirrorUtils {
 		updateMirrorsYMLCache();
 		Configuration config = new Configuration(mirrorsYML);
 		config.load();
-		if (ymlMD5s.size() <= 0)
-			updateYmlMD5Map(config);
 		return config;
-	}
-	
-	private static void updateYmlMD5Map(Configuration config) {
-		try {
-			ymlMD5s.putAll((Map<String, String>) config.getProperty("yaml"));
-		} catch (NullPointerException e) {
-			System.out.print("[Error] MD5's missing from mirrors.yml!");
-			e.printStackTrace();
-		}
 	}
 
 	public static void updateMirrorsYMLCache() {

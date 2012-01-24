@@ -11,7 +11,7 @@ import org.bukkit.util.config.Configuration;
 public class MinecraftYML {
 	private static final String MINECRAFT_YML = "minecraft.yml";
 	private static volatile boolean updated = false;
-	private static File minecraftYML = new File(PlatformUtils.getWorkingDirectory(), MINECRAFT_YML);
+	private static File minecraftYML = new File(GameUpdater.workDir, MINECRAFT_YML);
 	private static String latest = null;
 	private static String recommended = null;
 	private static Object key = new Object();

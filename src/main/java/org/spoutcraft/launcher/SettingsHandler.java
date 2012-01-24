@@ -477,6 +477,7 @@ public class SettingsHandler {
 		if ((contents == null)) {
 			return;
 		}
+		boolean found = false;
 		for (int i = 1; i <= contents.size(); i ++) {
 			if (contents.get(i) == null) continue;
 			String check = contents.get(i);
@@ -484,7 +485,9 @@ public class SettingsHandler {
 				check = check.replace(property, "");
 				if (!(check.startsWith(": "))) continue;
 				contents.remove(i);
-				contents.put(i, property + ": " + obj.toString());
+				if (!found)
+					contents.put(i, property + ": " + obj.toString());
+				found = true;
 			}
 		}
 		this.flush(contents);

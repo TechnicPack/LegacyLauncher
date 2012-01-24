@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.util.config.Configuration;
+import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.PlatformUtils;
 import org.spoutcraft.launcher.YmlUtils;
@@ -14,19 +15,11 @@ public class ModPackYML {
 	private static final String MODPACK_YML = "modpack.yml";
 	private static final String FALLBACK_URL = String.format("http://technic.freeworldsgaming.com/%s", MODPACK_YML);
 	private static volatile boolean updated = false;
-	private static File modPackYML = new File(PlatformUtils.getWorkingDirectory(), "Madpack" + File.separator + MODPACK_YML);
+	private static File modPackYML = new File(PlatformUtils.getWorkingDirectory(), "Modpack" + File.separator + MODPACK_YML);
 	private static Object key = new Object();
 
 	private static File getModPackYMLFile() {
-		return modPackYML;
-	}
-
-	public static File getModPackDirectory() {
-		return new File(PlatformUtils.getWorkingDirectory(), ModPackListYML.currentModPack);
-	}
-
-	private static void setModPackYML(String modPack) {
-		ModPackYML.modPackYML = new File(PlatformUtils.getWorkingDirectory(), modPack + File.separator + MODPACK_YML);
+		return new File(ModPackListYML.currentModPackDirectory, MODPACK_YML);
 	}
 
 	public static Configuration getModPackYML() {
@@ -41,7 +34,7 @@ public class ModPackYML {
 			synchronized(key) {
 				String selected = getSelectedBuild();
 				
-				YmlUtils.downloadYmlFile(MODPACK_YML, FALLBACK_URL, getModPackYMLFile());
+				YmlUtils.downloadYmlFile(ModPackListYML.currentModPack + "/" + MODPACK_YML, FALLBACK_URL, getModPackYMLFile());
 				
 				Configuration config = new Configuration(getModPackYMLFile());
 				config.load();
@@ -81,14 +74,14 @@ public class ModPackYML {
 	}
 
 	public static String getModPackIcon() {
-		return new File(getModPackDirectory(), "resources" + File.separator + "icon.png").getAbsolutePath();
+		return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + ModPackListYML.getIconName()).getAbsolutePath();
 	}
 
 	public static String getModPackLogo() {
-		return new File(getModPackDirectory(), "resources" + File.separator + "logo.png").getAbsolutePath();
+		return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "logo.png").getAbsolutePath();
 	}
 
 	public static String getModPackFavIcon() {
-		return new File(getModPackDirectory(), "resources" + File.separator + "logo.png").getAbsolutePath();
+		return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "favicon.png").getAbsolutePath();
 	}
 }

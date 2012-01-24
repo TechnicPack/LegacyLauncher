@@ -12,7 +12,7 @@ import org.bukkit.util.config.Configuration;
 public class LibrariesYML {
 	private static final String LIBRARIES_YML = "libraries.yml";
 	private static volatile boolean updated = false;
-	private static File librariesYMLFile = new File(PlatformUtils.getWorkingDirectory(), LIBRARIES_YML);
+	private static File librariesYMLFile = new File(GameUpdater.workDir, LIBRARIES_YML);
 	private static Object key = new Object();
 
 	public static Configuration getLibrariesYML() {
