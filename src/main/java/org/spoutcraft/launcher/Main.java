@@ -164,9 +164,8 @@ public class Main {
 
 		loginForm = new LoginForm();
 
-		System.out.println("Showing GUI at " + new Date(System.currentTimeMillis()).toString());
-		ls.close();
 		loginForm.loadLauncherData();
+		ls.close();
 		loginForm.setVisible(true);
 	}
 
