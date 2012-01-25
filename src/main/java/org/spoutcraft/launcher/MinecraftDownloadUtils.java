@@ -2,13 +2,10 @@ package org.spoutcraft.launcher;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
-import org.bukkit.util.config.Configuration;
 import org.spoutcraft.diff.JBPatch;
 import org.spoutcraft.launcher.async.Download;
 import org.spoutcraft.launcher.async.DownloadListener;
-import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class MinecraftDownloadUtils {
 	public static void downloadMinecraft(String user, String output, SpoutcraftBuild build, DownloadListener listener) throws IOException{
@@ -65,33 +62,5 @@ public class MinecraftDownloadUtils {
 			throw new IOException("Failed to download minecraft");
 		}
 		GameUpdater.copy(outputFile, new File(GameUpdater.binCacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar"));
-	}
-
-	@SuppressWarnings("unchecked")
-	public static String[] getSpoutcraftBuilds() {
-		Configuration config = ModPackYML.getModPackYML();
-		Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
-		String latest = config.getString("latest", null);
-		String recommended = config.getString("recommended", null);
-		
-		if (builds != null) {
-			String[] results = new String[builds.size()];
-			int index = 0;
-			for (String i : builds.keySet()) {
-				results[index] = i.toString();
-				Map<String, Object> map = (Map<String, Object>) builds.get(i);
-				String version = String.valueOf(map.get("minecraft"));
-				results[index] += "| " + version;
-				if (i.equals(latest)) {
-					results[index] += " | Latest";
-				}
-				if (i.equals(recommended)) {
-					results[index] += " | Rec. Build";
-				}
-				index++;
-			}
-			return results;
-		}
-		return null;
 	}
 }

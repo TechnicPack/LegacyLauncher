@@ -30,9 +30,13 @@ public class ModPackYML {
 	}
 	
 	public static void updateModPackYML() {
-		if (!updated) {
+		updateModPackYML(false);
+	}
+	
+	public static void updateModPackYML(boolean doUpdate) {
+		if (doUpdate || !updated) {
 			synchronized(key) {
-				String selected = getSelectedBuild();
+				String selected = doUpdate ? null : getSelectedBuild();
 				
 				YmlUtils.downloadYmlFile(ModPackListYML.currentModPack + "/" + MODPACK_YML, FALLBACK_URL, getModPackYMLFile());
 				
@@ -83,5 +87,36 @@ public class ModPackYML {
 
 	public static String getModPackFavIcon() {
 		return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "favicon.png").getAbsolutePath();
+	}
+	
+//	public static Map<String, Object> getBuilds() {
+//		
+//	}
+
+	public static String[] getModpackBuilds() {
+		Configuration config = getModPackYML();
+		Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
+		String latest = config.getString("latest", null);
+		String recommended = config.getString("recommended", null);
+		
+		if (builds != null) {
+			String[] results = new String[builds.size()];
+			int index = 0;
+			for (String i : builds.keySet()) {
+				results[index] = i.toString();
+				Map<String, Object> map = (Map<String, Object>) builds.get(i);
+				String version = String.valueOf(map.get("minecraft"));
+				results[index] += "| " + version;
+				if (i.equals(latest)) {
+					results[index] += " | Latest";
+				}
+				if (i.equals(recommended)) {
+					results[index] += " | Rec. Build";
+				}
+				index++;
+			}
+			return results;
+		}
+		return null;
 	}
 }

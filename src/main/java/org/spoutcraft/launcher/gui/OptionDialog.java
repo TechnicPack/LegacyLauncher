@@ -44,7 +44,6 @@ import org.spoutcraft.launcher.ComboItem;
 import org.spoutcraft.launcher.FileUtils;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
-import org.spoutcraft.launcher.MinecraftDownloadUtils;
 import org.spoutcraft.launcher.MinecraftYML;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.Util;
@@ -248,27 +247,25 @@ public class OptionDialog extends JDialog implements ActionListener {
 	}
 	
 	public void updateBuildsList() {
-		if (buildsCombo.getItemCount() == 0) {
-			String[] buildList = MinecraftDownloadUtils.getSpoutcraftBuilds();
-			if (buildList != null) {
-				for (String item : buildList) {
-					buildsCombo.addItem(item);
-				}
-			} else {
-				buildsCombo.addItem("No builds found");
+		buildsCombo.removeAllItems();
+		String[] buildList = ModPackYML.getModpackBuilds();
+		if (buildList != null) {
+			for (String item : buildList) {
+				buildsCombo.addItem(item);
 			}
-			updateBuildsCombo();
+		} else {
+			buildsCombo.addItem("No builds found");
 		}
+		updateBuildsCombo();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void updateModPackList()
 	{
 		if(packCombo.getItemCount() != modPackList.size())
 		{
-			packCombo.removeAll();
+			packCombo.removeAllItems();
 			for (String modPackName : modPackList.keySet()) {
-				Util.addComboItem(packCombo, modPackName, modPackList.get(modPackName));
+				Util.addComboItem(packCombo, modPackList.get(modPackName), modPackName);
 			}
 			updateModPacksCombo();
 		}
@@ -310,8 +307,9 @@ public class OptionDialog extends JDialog implements ActionListener {
 			
 			if (Util.getSelectedValue(packCombo) != SettingsUtil.getModPackSelection())
 			{
-				SettingsUtil.setModPackSelection(Util.getSelectedValue(packCombo));
-				
+				String modpack = Util.getSelectedValue(packCombo);
+				SettingsUtil.setModPack(modpack);
+				Main.loginForm.updateBranding();
 			}
 			
 			if (buildsCombo.isEnabled()) {

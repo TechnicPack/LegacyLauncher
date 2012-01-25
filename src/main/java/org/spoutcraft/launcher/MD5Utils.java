@@ -80,9 +80,8 @@ public class MD5Utils {
 		md5Map.clear();
 		Scanner scanner = new Scanner(CHECKSUM_FILE).useDelimiter("\\||\n");
 		while (scanner.hasNext()) {
-//			String[] tokens = scanner.nextLine().split("\\|");
-			String md5 = scanner.next().toLowerCase();// tokens[0];
-			String path = scanner.next();//tokens[1];			
+			String md5 = scanner.next().toLowerCase();
+			String path = scanner.next().replace("\r", "");		
 			md5Map.put(path, md5);
 			scanner.nextLine();
 		}
@@ -93,11 +92,21 @@ public class MD5Utils {
 	}
 
 	public static boolean checksumPath(String filePath, String md5Path) {
-		File file = new File(filePath);
+		return checksumPath(new File(GameUpdater.workDir, filePath), md5Path);
+	}
+
+	public static boolean checksumPath(File file, String md5Path) {
+		md5Path = md5Path.replace('/', '\\');
 		if (!file.exists())
 			return false;
 		if (!md5Map.containsKey(md5Path))
 			return false;
-		return md5Map.get(md5Path).equalsIgnoreCase(getMD5(file));
+		String fileMD5 = getMD5(file);
+		String storedMD5 = md5Map.get(md5Path);
+		boolean doesMD5Match = storedMD5.equalsIgnoreCase(fileMD5);
+		if (!doesMD5Match) {
+			Util.log("[Warning] File (%s) has md5 of (%s) instead of (%s)", file, fileMD5, storedMD5);
+		}
+		return doesMD5Match;
 	}
 }

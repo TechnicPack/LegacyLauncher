@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.DownloadUtils;
 import org.spoutcraft.launcher.GameUpdater;
+import org.spoutcraft.launcher.MD5Utils;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.PlatformUtils;
@@ -105,7 +106,7 @@ public class ModPackListYML {
 			}
 		}
 		
-		SettingsUtil.setModPackSelection(modPack);
+		SettingsUtil.setModPack(modPack);
 		
 		currentModPack = modPack;
 		currentModPackLabel = modPackLabel;
@@ -113,7 +114,10 @@ public class ModPackListYML {
 		
 		currentModPackDirectory.mkdirs();
 		
+		//Download Branding Resources
 		downloadModPackResources();
+		
+		//TODO: Issue #9 Swap ModPack Directories
 		
 		return true;
 	}
@@ -123,15 +127,22 @@ public class ModPackListYML {
 				
 		for (String resource : RESOURCES) {
 			String relativeFilePath = currentModPack + "/resources/" + resource;
-			String fileURL = MirrorUtils.getMirrorUrl(relativeFilePath, null);
-			if (fileURL == null) continue;
+			
+			if (MD5Utils.checksumPath(relativeFilePath)) {
+				continue;
+			}
+			
 			File dir = new File(currentModPackDirectory, "resources");
 			dir.mkdirs();
 			File file = new File(dir, resource);
 			String filePath = file.getAbsolutePath();
+			
+			String fileURL = MirrorUtils.getMirrorUrl(relativeFilePath, null);
+			if (fileURL == null) continue;
 			downloadFileList.put(fileURL, filePath);
 		}
-		if (DownloadUtils.downloadFiles(downloadFileList , 30, TimeUnit.SECONDS) != downloadFileList.size()) {
+		
+		if (downloadFileList.size() > 0 && DownloadUtils.downloadFiles(downloadFileList , 30, TimeUnit.SECONDS) != downloadFileList.size()) {
 			Util.log("[Error] Could not download all resources for modpack '%s'.", currentModPackLabel);
 		}
 	}

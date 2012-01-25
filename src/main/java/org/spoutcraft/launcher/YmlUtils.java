@@ -2,9 +2,10 @@ package org.spoutcraft.launcher;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,8 @@ public class YmlUtils {
 			} else if (isRelative) {
 				ymlUrl = MirrorUtils.getMirrorUrl(ymlUrl, fallbackUrl);
 			}
+
+			Util.log("[Info] Downloading '%s' from '%s'.", ymlFile.getName(), ymlUrl);
 			
 			url = new URL(ymlUrl);
 			URLConnection con = (url.openConnection());
@@ -49,24 +52,24 @@ public class YmlUtils {
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 			
 			//Download to temporary file
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			File tempFile = File.createTempFile("launcher", null);
+			out = new BufferedOutputStream(new FileOutputStream(tempFile));
 
-			if (GameUpdater.copy(con.getInputStream(), baos) <= 0) {
+			if (GameUpdater.copy(con.getInputStream(), out) <= 0) {
 				System.out.printf("[Error] Download URL was empty: '%s'/n", url);
 				return false;
 			}
-
-			byte[] yamlData = baos.toByteArray();
+			
+			out.flush();
 			
 			//Test yml loading
 			Yaml yamlFile = new Yaml();
-			io = new BufferedInputStream(new ByteArrayInputStream(yamlData));
+			io = new BufferedInputStream(new FileInputStream(tempFile));
 			yamlFile.load(io);
 			
 			//If no Exception then file loaded fine, copy to output file
-			out = new BufferedOutputStream(new FileOutputStream(ymlFile));
-			out.write(yamlData);
-			out.flush();
+			GameUpdater.copy(tempFile, ymlFile);
+			tempFile.delete();
 			
 			return true;
 		} catch (MalformedURLException e) {

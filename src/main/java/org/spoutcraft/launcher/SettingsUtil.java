@@ -67,7 +67,7 @@ public class SettingsUtil {
 		return getProperty("modpack", null);
 	}
 	
-	public static void setModPackSelection(String value)
+	public static void setModPack(String value)
 	{
 		setProperty("modpack", value);
 	}
@@ -81,10 +81,10 @@ public class SettingsUtil {
 	}
 	
 	private static void setProperty(String s, Object value) {
-		if (settings.checkProperty(s)) {
+		if (settings.checkProperty(s))
 			settings.changeProperty(s, value);
-		}
-		settings.put(s, value);
+		else
+			settings.put(s, value);
 	}
 	
 	private static boolean isProperty(String s) {

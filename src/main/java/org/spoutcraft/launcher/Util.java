@@ -26,7 +26,7 @@ public class Util {
 	}
 	
 	public static void log(String formatString, Object... params) {
-		System.out.printf(formatString, params);
+		System.out.println(String.format(formatString, params));
 	}
 	
 	public static void addComboItem(JComboBox combobox, String label, String value) {
