@@ -84,7 +84,7 @@ public class GameUpdater implements DownloadListener {
 
 		binDir.mkdir();
 		binCacheDir.mkdir();
-		DownloadUtils.cacheDirectory.mkdirs();
+		cacheDir.mkdirs();
 		if (tempDir.exists())
 			FileUtils.deleteDirectory(tempDir);
 		tempDir.mkdirs();

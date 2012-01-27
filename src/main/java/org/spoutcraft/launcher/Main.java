@@ -21,29 +21,23 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Date;
 
-import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
 import org.spoutcraft.launcher.gui.LoadingScreen;
-
 import org.spoutcraft.launcher.gui.LoginForm;
 import org.spoutcraft.launcher.logs.SystemConsoleListener;
-import org.spoutcraft.launcher.modpacks.ModPackListYML;
-import org.spoutcraft.launcher.modpacks.ModPackUpdater;
-import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 import com.beust.jcommander.JCommander;
 
 public class Main {
-	
+
 	static String[] args_temp;
 	public static String build = "0.5.0";
 	public static String currentPack;
 	static File recursion;
 	public static LoginForm loginForm;
-	
+
 	public Main() throws Exception {
 		main(new String[0]);
 	}
@@ -58,12 +52,9 @@ public class Main {
 			} else {
 				params.add("java"); // Linux/Mac/whatever
 			}
-			if(memory.equals(("-Xmx" + mem + "m")))
-			{
+			if (memory.equals(("-Xmx" + mem + "m"))) {
 				params.add(memory);
-			}
-			else
-			{
+			} else {
 				params.add("-Xmx" + mem + "m");
 				params.add(memory);
 			}
@@ -73,37 +64,36 @@ public class Main {
 			for (String arg : args_temp) {
 				params.add(arg);
 			}
-			
-			
+
 			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
 				params.add("-Xdock:name=\"Technic Launcher\"");
-				
+
 				try {
-						File icon = new File(PlatformUtils.getWorkingDirectory(), "launcher_icon.icns");
-						GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/launcher_icon.icns"), new FileOutputStream(icon));
-						params.add("-Xdock:icon=" + icon.getCanonicalPath());
+					File icon = new File(PlatformUtils.getWorkingDirectory(), "launcher_icon.icns");
+					GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/launcher_icon.icns"), new FileOutputStream(icon));
+					params.add("-Xdock:icon=" + icon.getCanonicalPath());
+				} catch (Exception ignore) {
 				}
-				catch (Exception ignore) { }
 			}
 			ProcessBuilder pb = new ProcessBuilder(params);
 			Process process = pb.start();
-			if(process == null)
+			if (process == null)
 				throw new Exception("!");
 			System.exit(0);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static boolean isDebug()
-	{
-		return 	java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");	
+
+	public static boolean isDebug() {
+		return java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-		
+
 		LoadingScreen ls = new LoadingScreen();
-		if (!isDebug()) ls.setVisible(true);
+		if (!isDebug())
+			ls.setVisible(true);
 		Options options = new Options();
 		try {
 			new JCommander(options, args);
@@ -111,7 +101,7 @@ public class Main {
 			ex.printStackTrace();
 		}
 		MinecraftUtils.setOptions(options);
-		recursion = new File(PlatformUtils.getWorkingDirectory(), "rtemp");	
+		recursion = new File(PlatformUtils.getWorkingDirectory(), "rtemp");
 
 		args_temp = args;
 		boolean relaunch = false;
@@ -136,13 +126,14 @@ public class Main {
 					reboot("-Xmx" + mem + "m");
 			}
 		}
-		
+
 		if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
-			try{
+			try {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 				System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Technic Launcher");
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception ignore) { }
+			} catch (Exception ignore) {
+			}
 		}
 		PlatformUtils.getWorkingDirectory().mkdirs();
 		new File(PlatformUtils.getWorkingDirectory(), "launcher").mkdir();
@@ -150,11 +141,10 @@ public class Main {
 		SystemConsoleListener listener = new SystemConsoleListener();
 
 		listener.initialize();
-		
+
 		System.out.println("------------------------------------------");
 		System.out.println("Launcher is starting....");
 		System.out.println("Launcher Build: " + getBuild());
-
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -176,8 +166,7 @@ public class Main {
 				try {
 					BufferedReader bf = new BufferedReader(new FileReader(buildInfo));
 					build = bf.readLine();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

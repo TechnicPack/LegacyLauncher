@@ -15,10 +15,10 @@ public class MD5Utils {
 	private static final String CHECKSUM_MD5 = "CHECKSUM.md5";
 	private static final File CHECKSUM_FILE = new File(GameUpdater.workDir, CHECKSUM_MD5);
 	private static boolean updated;
-	
+
 	private static final Map<String, String> md5Map = new HashMap<String, String>();
 
-	public static String getMD5(File file){
+	public static String getMD5(File file) {
 		FileInputStream stream = null;
 		try {
 			stream = new FileInputStream(file);
@@ -38,11 +38,7 @@ public class MD5Utils {
 		}
 		return null;
 	}
-	
-	public static boolean doMD5sMatch(File file, String md5) {
-		return getMD5(file).equalsIgnoreCase(md5);
-	}
-	
+
 	public static String getMD5(FileType type) {
 		return getMD5(type, MinecraftYML.getLatestMinecraftVersion());
 	}
@@ -81,7 +77,7 @@ public class MD5Utils {
 		Scanner scanner = new Scanner(CHECKSUM_FILE).useDelimiter("\\||\n");
 		while (scanner.hasNext()) {
 			String md5 = scanner.next().toLowerCase();
-			String path = scanner.next().replace("\r", "");		
+			String path = scanner.next().replace("\r", "");
 			md5Map.put(path, md5);
 			scanner.nextLine();
 		}
@@ -95,18 +91,25 @@ public class MD5Utils {
 		return checksumPath(new File(GameUpdater.workDir, filePath), md5Path);
 	}
 
+	public static boolean checksumCachePath(String filePath, String md5Path) {
+		return checksumPath(new File(GameUpdater.cacheDir, filePath), md5Path);
+	}
+
 	public static boolean checksumPath(File file, String md5Path) {
-		md5Path = md5Path.replace('/', '\\');
 		if (!file.exists())
 			return false;
-		if (!md5Map.containsKey(md5Path))
-			return false;
-		String fileMD5 = getMD5(file);
-		String storedMD5 = md5Map.get(md5Path);
+		String fileMD5 = null;
+		String storedMD5 = getMD5FromList(md5Path);
+		fileMD5 = getMD5(file);
 		boolean doesMD5Match = storedMD5.equalsIgnoreCase(fileMD5);
 		if (!doesMD5Match) {
-			Util.log("[Warning] File (%s) has md5 of (%s) instead of (%s)", file, fileMD5, storedMD5);
+			Util.log("[MD5 Mismatch] File '%s' has md5 of '%s' instead of '%s'", file, fileMD5, storedMD5);
 		}
 		return doesMD5Match;
+	}
+
+	public static String getMD5FromList(String md5Path) {
+		md5Path = md5Path.replace('/', '\\');
+		return (!md5Map.containsKey(md5Path)) ? null : md5Map.get(md5Path);
 	}
 }

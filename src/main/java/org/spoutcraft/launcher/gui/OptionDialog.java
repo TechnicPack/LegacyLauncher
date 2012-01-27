@@ -299,12 +299,6 @@ public class OptionDialog extends JDialog implements ActionListener {
 				clearCache();
 			}
 			
-			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
-				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
-				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
-				Main.reboot("-Xmx" + mem + "m");
-			}
-			
 			if (Util.getSelectedValue(packCombo) != SettingsUtil.getModPackSelection())
 			{
 				String modpack = Util.getSelectedValue(packCombo);
@@ -327,6 +321,12 @@ public class OptionDialog extends JDialog implements ActionListener {
 				if (build != null) {
 					SettingsUtil.setSelectedBuild(build);
 				}
+			}
+			
+			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
+				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
+				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
+				Main.reboot("-Xmx" + mem + "m");
 			}
 			
 			this.setVisible(false);

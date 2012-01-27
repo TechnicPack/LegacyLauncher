@@ -90,6 +90,7 @@ public class SpoutcraftBuild {
 		Map<String, Object> build = (Map<String, Object>) builds.get(buildName);
 		Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
 		Map<String, Object> mods = (Map<String, Object>) build.get("mods");
-		return new SpoutcraftBuild((String)build.get("minecraft"), MinecraftYML.getLatestMinecraftVersion(), buildName, libs, mods);
+		String minecraftVersion = build.get("minecraft").toString();
+		return new SpoutcraftBuild( minecraftVersion, MinecraftYML.getLatestMinecraftVersion(), buildName, libs, mods);
 	}
 }

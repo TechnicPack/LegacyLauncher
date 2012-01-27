@@ -1,14 +1,9 @@
 package org.spoutcraft.launcher;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,33 +16,17 @@ import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.async.DownloadListener;
 
 public class MirrorUtils {
-	public static final String[] MIRRORS_URL = {
-		"https://raw.github.com/TechnicPack/Technic/master/mirrors.yml", 
-		"https://raw.github.com/icew01f/Technic/master/mirrors.yml", 
-		"http://technic.freeworldsgaming.com/mirrors.yml"
-		};
+	public static final String[] MIRRORS_URL = { "https://raw.github.com/TechnicPack/Technic/master/mirrors.yml", "https://raw.github.com/icew01f/Technic/master/mirrors.yml", "http://technic.freeworldsgaming.com/mirrors.yml" };
 	public static File mirrorsYML = new File(GameUpdater.workDir, "mirrors.yml");
-	
+
 	private static boolean updated = false;
 	private static final Random rand = new Random();
-	private static final Map<String, String> ymlMD5s = new HashMap<String, String>();
 
-	public static String getYmlMD5(File file) {
-		return getYmlMD5(file.getName());
-	}
-	
-	public static String getYmlMD5(String fileName) {
-		if (ymlMD5s.containsKey(fileName))
-			return ymlMD5s.get(fileName);
-		else
-			return "";
-	}
-	
 	public static String getMirrorUrl(String mirrorURI, String fallbackUrl, DownloadListener listener) {
 		try {
 			Map<String, Integer> mirrors = getMirrors();
 			Set<Entry<String, Integer>> set = mirrors.entrySet();
-			
+
 			ArrayList<String> goodMirrors = new ArrayList<String>(mirrors.size());
 			Iterator<Entry<String, Integer>> iterator = set.iterator();
 			while (iterator.hasNext()) {
@@ -58,34 +37,33 @@ public class MirrorUtils {
 					return mirror;
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.err.println("All mirrors failed, reverting to default");
 		return fallbackUrl;
 	}
-	
+
 	public static String getMirrorUrl(String mirrorURI, String fallbackUrl) {
 		return getMirrorUrl(mirrorURI, fallbackUrl, null);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Map<String, Integer> getMirrors() {
 		Configuration config = getMirrorsYML();
 		return (Map<String, Integer>) config.getProperty("mirrors");
 	}
-	
+
 	public static boolean isAddressReachable(String url) {
 		try {
 			if (url.contains("https")) {
-				HttpsURLConnection urlConnect = (HttpsURLConnection)(new URL(url).openConnection());
+				HttpsURLConnection urlConnect = (HttpsURLConnection) (new URL(url).openConnection());
 				urlConnect.setInstanceFollowRedirects(false);
 				urlConnect.setRequestMethod("HEAD");
 				int responseCode = urlConnect.getResponseCode();
 				return (responseCode == HttpURLConnection.HTTP_OK);
-			} else {			
-				HttpURLConnection urlConnect = (HttpURLConnection)(new URL(url).openConnection());
+			} else {
+				HttpURLConnection urlConnect = (HttpURLConnection) (new URL(url).openConnection());
 				urlConnect.setInstanceFollowRedirects(false);
 				urlConnect.setRequestMethod("HEAD");
 				int responseCode = urlConnect.getResponseCode();
@@ -95,7 +73,7 @@ public class MirrorUtils {
 		}
 		return false;
 	}
-	
+
 	public static Configuration getMirrorsYML() {
 		updateMirrorsYMLCache();
 		Configuration config = new Configuration(mirrorsYML);
@@ -104,13 +82,12 @@ public class MirrorUtils {
 	}
 
 	public static void updateMirrorsYMLCache() {
-		if (!updated) {
-			updated = true;
-			for (String urlentry : MIRRORS_URL) {
-				if (YmlUtils.downloadMirrorsYmlFile(urlentry)) {
-					ymlMD5s.clear();
-					return;
-				}
+		if (updated)
+			return;
+		updated = true;
+		for (String urlentry : MIRRORS_URL) {
+			if (YmlUtils.downloadMirrorsYmlFile(urlentry)) {
+				return;
 			}
 		}
 	}

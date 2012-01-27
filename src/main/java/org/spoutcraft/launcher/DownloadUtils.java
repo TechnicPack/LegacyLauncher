@@ -1,7 +1,5 @@
 package org.spoutcraft.launcher;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,11 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.spoutcraft.launcher.async.Download;
 import org.spoutcraft.launcher.async.DownloadListener;
-import org.yaml.snakeyaml.Yaml;
 
 public class DownloadUtils {
-	public static final File cacheDirectory = new File(PlatformUtils.getWorkingDirectory(), "cache");
-	
 	public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
 		int tries = SettingsUtil.getLoginTries();
 		File outputFile = new File(output);
@@ -55,10 +50,10 @@ public class DownloadUtils {
 				}
 			}
 		}
-		
+
 		if (cacheName != null) {
-			if (tempfile.exists()){
-				GameUpdater.copy(tempfile, new File(cacheDirectory, cacheName));
+			if (tempfile.exists()) {
+				GameUpdater.copy(tempfile, new File(GameUpdater.cacheDir, cacheName));
 			} else {
 				Util.log("Could not copy file to cache: %s", tempfile);
 			}
@@ -68,7 +63,7 @@ public class DownloadUtils {
 			tempfile.delete();
 		return download;
 	}
-	
+
 	public static Download downloadFile(String url, String output, String cacheName) throws IOException {
 		return downloadFile(url, output, cacheName, null, null);
 	}
@@ -79,12 +74,13 @@ public class DownloadUtils {
 
 	private static int filesToDownload = 0;
 	private static int filesDownloaded = 0;
+
 	public static int downloadFiles(Map<String, String> downloadFileList, long timeout, TimeUnit unit) {
 		filesToDownload = downloadFileList.size();
 		filesDownloaded = 0;
-		
+
 		ExecutorService es = Executors.newCachedThreadPool();
-		for (final Map.Entry<String, String> file: downloadFileList.entrySet()) {
+		for (final Map.Entry<String, String> file : downloadFileList.entrySet()) {
 			es.execute(new Runnable() {
 				public void run() {
 					Download downloadFile = null;
@@ -93,7 +89,7 @@ public class DownloadUtils {
 						if (downloadFile != null && downloadFile.isSuccess()) {
 							filesDownloaded++;
 							return;
-						}						
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -109,39 +105,38 @@ public class DownloadUtils {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		return 0;
 	}
 
-	
 	public static boolean downloadFile(String relativePath) {
 		if (MD5Utils.checksumPath(relativePath))
 			return true;
-		
+
 		URL url = null;
 		File tempFile = null;
 		try {
 			String mirrorUrl = MirrorUtils.getMirrorUrl(relativePath, null);
 			url = new URL(mirrorUrl);
 			URLConnection con = (url.openConnection());
-			
+
 			System.setProperty("http.agent", "");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
-			
+
 			tempFile = File.createTempFile("Modpack", null);
-			
-			//Download to temporary file
+
+			// Download to temporary file
 			OutputStream baos = new FileOutputStream(tempFile);
-			//new FileOutputStream(tempFile)
+			// new FileOutputStream(tempFile)
 			if (GameUpdater.copy(con.getInputStream(), baos) <= 0) {
 				System.out.printf("[Error] Download URL was empty: '%s'/n", url);
 				return false;
 			}
-			
-			//If no Exception then file loaded fine, copy to output file
+
+			// If no Exception then file loaded fine, copy to output file
 			GameUpdater.copy(tempFile, new File(relativePath));
 			tempFile.delete();
-			
+
 			return true;
 		} catch (MalformedURLException e) {
 			System.out.printf("[Error] Download URL badly formed: '%s'/n", url);
