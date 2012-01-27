@@ -25,8 +25,10 @@ public class DownloadUtils {
 	public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
 		int tries = SettingsUtil.getLoginTries();
 		File outputFile = new File(output);
-		File tempfile = File.createTempFile("Modpack", null);
+		File tempfile = new File(GameUpdater.tempDir, outputFile.getName());
+		tempfile.mkdirs();
 		Download download = null;
+		boolean areFilesIdentical = tempfile.getPath().equalsIgnoreCase(outputFile.getPath());
 		while (tries > 0) {
 			System.out.println("Starting download of " + url + ", with " + tries + " tries remaining");
 			tries--;
@@ -40,32 +42,30 @@ public class DownloadUtils {
 				System.err.println("Download of " + url + " Failed!");
 				if (listener != null)
 					listener.stateChanged("Download Failed, retries remaining: " + tries, 0F);
-			}
-			else {
-				if (md5 != null) {
-					String resultMD5 = MD5Utils.getMD5(download.getOutFile());
-					System.out.println("Expected MD5: " + md5 + " Calculated MD5: " + resultMD5);
-					if (resultMD5.equals(md5)) {
+			} else {
+				String fileMD5 = MD5Utils.getMD5(download.getOutFile());
+				if (md5 == null || fileMD5.equals(md5)) {
+					Util.log("Copying: %s to: %s", tempfile, outputFile);
+					if (!areFilesIdentical)
 						GameUpdater.copy(tempfile, outputFile);
-						tempfile.delete();
-						outputFile = download.getOutFile();
-						break;
-					}
-				}
-				else {
-					GameUpdater.copy(tempfile, outputFile);
-					tempfile.delete();
-					outputFile = download.getOutFile();
+					Util.log("File Downloaded: %s", outputFile);
 					break;
+				} else if (md5 != null && !fileMD5.equals(md5)) {
+					Util.log("Expected MD5: %s Calculated MD5: %s", md5, fileMD5);
 				}
 			}
 		}
-		if (outputFile == null) {
-			throw new IOException("Failed to download " + url);
-		}
+		
 		if (cacheName != null) {
-			GameUpdater.copy(outputFile, new File(cacheDirectory, cacheName));
+			if (tempfile.exists()){
+				GameUpdater.copy(tempfile, new File(cacheDirectory, cacheName));
+			} else {
+				Util.log("Could not copy file to cache: %s", tempfile);
+			}
 		}
+
+		if (!areFilesIdentical)
+			tempfile.delete();
 		return download;
 	}
 	

@@ -60,7 +60,7 @@ public class GameUpdater implements DownloadListener {
 	public static final File binDir = new File(WORKING_DIRECTORY, "bin");
 	public static final File binCacheDir = new File(binDir, "cache");
 	public static final File cacheDir = new File(WORKING_DIRECTORY, "cache");
-	public static final File updateDir = new File(WORKING_DIRECTORY, "temp");
+	public static final File tempDir = new File(WORKING_DIRECTORY, "temp");
 	public static final File backupDir = new File(WORKING_DIRECTORY, "backups");
 	public static final File workDir = new File(WORKING_DIRECTORY, LAUNCHER_DIRECTORY);
 	public static final File savesDir = new File(WORKING_DIRECTORY, "saves");
@@ -84,9 +84,10 @@ public class GameUpdater implements DownloadListener {
 
 		binDir.mkdir();
 		binCacheDir.mkdir();
-		if (updateDir.exists())
-			FileUtils.deleteDirectory(updateDir);
-		updateDir.mkdirs();
+		DownloadUtils.cacheDirectory.mkdirs();
+		if (tempDir.exists())
+			FileUtils.deleteDirectory(tempDir);
+		tempDir.mkdirs();
 		
 		String minecraftMD5 = MD5Utils.getMD5(FileType.minecraft);
 		String jinputMD5 = MD5Utils.getMD5(FileType.jinput);
@@ -99,7 +100,7 @@ public class GameUpdater implements DownloadListener {
 		File mcCache = new File(binCacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
 		if (!mcCache.exists() || !minecraftMD5.equals(MD5Utils.getMD5(mcCache))) {
 			String minecraftURL = baseURL + "minecraft.jar?user=" + user + "&ticket=" + downloadTicket;
-			String output = updateDir + File.separator + "minecraft.jar";
+			String output = tempDir + File.separator + "minecraft.jar";
 			MinecraftDownloadUtils.downloadMinecraft(minecraftURL, output, build, listener);
 		}
 		copy(mcCache, new File(binDir, "minecraft.jar"));
@@ -110,7 +111,7 @@ public class GameUpdater implements DownloadListener {
 		// Process other Downloads
 		mcCache = new File(binCacheDir, "jinput.jar");
 		if (!mcCache.exists() || !jinputMD5.equals(MD5Utils.getMD5(mcCache))) {
-			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar",binDir.getPath() + File.separator + "jinput.jar", "jinput.jar");
+			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar",binDir.getPath() + File.separator + "jinput.jar", "jinput.jar", jinputMD5, listener);
 		}
 		else {
 			copy(mcCache, new File(binDir, "jinput.jar"));
@@ -118,7 +119,7 @@ public class GameUpdater implements DownloadListener {
 		
 		mcCache = new File(binCacheDir, "lwjgl.jar");
 		if (!mcCache.exists() || !lwjglMD5.equals(MD5Utils.getMD5(mcCache))) {
-			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl.jar", binDir.getPath() + File.separator + "lwjgl.jar", "lwjgl.jar");
+			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl.jar", binDir.getPath() + File.separator + "lwjgl.jar", "lwjgl.jar", lwjglMD5, listener);
 		}
 		else {
 			copy(mcCache, new File(binDir, "lwjgl.jar"));
@@ -126,7 +127,7 @@ public class GameUpdater implements DownloadListener {
 		
 		mcCache = new File(binCacheDir, "lwjgl_util.jar");
 		if (!mcCache.exists() || !lwjgl_utilMD5.equals(MD5Utils.getMD5(mcCache))) {
-			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl_util.jar", binDir.getPath() + File.separator + "lwjgl_util.jar", "lwjgl_util.jar");
+			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl_util.jar", binDir.getPath() + File.separator + "lwjgl_util.jar", "lwjgl_util.jar", lwjgl_utilMD5, listener);
 		}
 		else {
 			copy(mcCache, new File(binDir, "lwjgl_util.jar"));
@@ -137,7 +138,7 @@ public class GameUpdater implements DownloadListener {
 		stateChanged("Extracting Files...", 0);
 		// Extract Natives
 		try {
-			extractNatives(nativesDir, new File(GameUpdater.updateDir.getPath() + File.separator + "natives.zip"));
+			extractNatives(nativesDir, new File(GameUpdater.tempDir.getPath() + File.separator + "natives.zip"));
 		}
 		catch (FileNotFoundException inUse) {
 			//If we previously loaded this dll with a failed launch, we will be unable to access the files
@@ -258,22 +259,23 @@ public class GameUpdater implements DownloadListener {
 				if (!outFile.exists())
 					outFile.createNewFile();
 				OutputStream out;
-					out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
+				out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
+
+				int read;
+				byte[] bytes = new byte[1024];
 	
-					int read;
-					byte[] bytes = new byte[1024];
-		
-					while ((read = inputStream.read(bytes)) != -1) {
-						out.write(bytes, 0, read);
-					}
-					
-					progress += progressStep;
-					stateChanged("Extracting Files...", progress);
-		
-					inputStream.close();
-					out.flush();
-					out.close();
+				while ((read = inputStream.read(bytes)) != -1) {
+					out.write(bytes, 0, read);
+				}
+				
+				progress += progressStep;
+				stateChanged("Extracting Files...", progress);
+	
+				inputStream.close();
+				out.flush();
+				out.close();
 			}
+			stateChanged("Extracted Files...", 100f);
 		} catch (IOException e) {
 			// Zip failed to extract properly"
 			System.out.println(String.format("'%' failed to decompress properly for entry '%'", nativesJar.getName(), name));
@@ -298,27 +300,27 @@ public class GameUpdater implements DownloadListener {
 			throw new UnsupportedOSException();
 		}
 
-		if (!updateDir.exists())
-			updateDir.mkdir();
+		if (!tempDir.exists())
+			tempDir.mkdir();
 
-		DownloadUtils.downloadFile(getNativesUrl(fname), updateDir.getPath() + File.separator + (!SettingsUtil.isLatestLWJGL() ? "natives.jar.lzma" : "natives.zip"));
+		DownloadUtils.downloadFile(getNativesUrl(fname), tempDir.getPath() + File.separator + (!SettingsUtil.isLatestLWJGL() ? "natives.jar.lzma" : "natives.zip"));
 
 		if (!SettingsUtil.isLatestLWJGL())
-			extractLZMA(GameUpdater.updateDir.getPath() + File.separator + "natives.jar.lzma", GameUpdater.updateDir.getPath() + File.separator + "natives.zip");
+			extractLZMA(GameUpdater.tempDir.getPath() + File.separator + "natives.jar.lzma", GameUpdater.tempDir.getPath() + File.separator + "natives.zip");
 
-		return new File(updateDir.getPath() + File.separator + "natives.jar.lzma");
+		return new File(tempDir.getPath() + File.separator + "natives.jar.lzma");
 	}
 
 	public void updateSpoutcraft() throws Exception {
 		performBackup();
 		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
 
-		updateDir.mkdirs();
+		tempDir.mkdirs();
 		binCacheDir.mkdirs();
 		workDir.mkdirs();
 		
 		File mcCache = new File(binCacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
-		File updateMC = new File(updateDir.getPath() + File.separator + "minecraft.jar");
+		File updateMC = new File(tempDir.getPath() + File.separator + "minecraft.jar");
 		if (mcCache.exists()) {
 			copy(mcCache, updateMC);
 		}
@@ -435,7 +437,7 @@ public class GameUpdater implements DownloadListener {
 				exclude.add(GameUpdater.savesDir);
 				exclude.add(GameUpdater.modpackSavesDir);
 			}
-			exclude.add(GameUpdater.updateDir);
+			exclude.add(GameUpdater.tempDir);
 			exclude.add(SystemConsoleListener.logDir);
 			
 			File[] existingBackups = backupDir.listFiles();
@@ -594,6 +596,7 @@ public class GameUpdater implements DownloadListener {
 	}
 
 	public void stateChanged(String fileName, float progress) {
+		fileName = fileName.replace(WORKING_DIRECTORY.getPath(), "");
 		this.listener.stateChanged(fileName, progress);
 	}
 

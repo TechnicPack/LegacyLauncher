@@ -126,8 +126,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	private JLabel lblLogo;
 
 	public LoginForm() {
-//		loadLauncherData();
-		
 		LoginForm.updateDialog = new UpdateDialog(this);
 		gameUpdater.setListener(this);
 		
@@ -332,30 +330,22 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	}
 
 	public void loadLauncherData() {
-//		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
-//			protected Object doInBackground() throws Exception {
-				MirrorUtils.updateMirrorsYMLCache();
-				MD5Utils.updateMD5Cache();
-				ModPackListYML.updateModPacksYMLCache();
-				
-				ModPackListYML.setCurrentModpack();
-				
-				MinecraftYML.updateMinecraftYMLCache();
-				LibrariesYML.updateLibrariesYMLCache();
-				ModLibraryYML.updateModLibraryYML();
-				ModPackYML.updateModPackYML();
-//				return null;
-//			}
-//			
-//			protected void done() {
-				setBranding();
-				options = new OptionDialog();
-				options.updateBuildsList();
-				options.updateModPackList();
-				options.setVisible(false);
-//			}
-//		};
-//		updateThread.execute();
+		MirrorUtils.updateMirrorsYMLCache();
+		MD5Utils.updateMD5Cache();
+		ModPackListYML.updateModPacksYMLCache();
+		
+		ModPackListYML.setCurrentModpack();
+		
+		MinecraftYML.updateMinecraftYMLCache();
+		LibrariesYML.updateLibrariesYMLCache();
+		ModLibraryYML.updateModLibraryYML();
+		ModPackYML.updateModPackYML();
+
+		setBranding();
+		options = new OptionDialog();
+		options.updateBuildsList();
+		options.updateModPackList();
+		options.setVisible(false);
 	}
 	
 	public void setBranding() {

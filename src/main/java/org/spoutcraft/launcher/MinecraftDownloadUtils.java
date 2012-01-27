@@ -34,7 +34,7 @@ public class MinecraftDownloadUtils {
 						File patch = new File(PlatformUtils.getWorkingDirectory(), "mc.patch");
 						Download patchDownload = DownloadUtils.downloadFile(build.getPatchURL(), patch.getPath(), null, null, listener);
 						if (patchDownload.isSuccess()) {
-							File patchedMinecraft = new File(GameUpdater.updateDir, "patched_minecraft.jar");
+							File patchedMinecraft = new File(GameUpdater.tempDir, "patched_minecraft.jar");
 							patchedMinecraft.delete();
 							JBPatch.bspatch(download.getOutFile(), patchedMinecraft, patch);
 							String minecraft181MD5 = MD5Utils.getMD5(FileType.minecraft, build.getMinecraftVersion());

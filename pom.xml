@@ -10,15 +10,15 @@
 
 	<!-- Project information -->
 	<groupId>org.spoutcraft</groupId>
-	<artifactId>launcher</artifactId>
-	<version>dev-SNAPSHOT</version>
-	<name>Spoutcraft Launcher</name>
-	<url>http://www.spoutcraft.org</url>
+	<artifactId>technic-launcher</artifactId>
+	<version>0.5.0.0</version>
+	<name>Technic Launcher</name>
+	<url>https://github.com/TechnicPack/Spoutcraft-Launcher</url>
 	<description></description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.mainClass>${project.groupId}.${project.artifactId}.Main</project.mainClass>
+		<project.mainClass>${project.groupId}.launcher.Main</project.mainClass>
 		<project.build.number>1</project.build.number>
 		<project.version.string>${release.version}.${build.number}</project.version.string>
 	</properties>
@@ -34,9 +34,9 @@
 
 	<!-- Source code -->
 	<scm>
-		<developerConnection>scm:git:git@github.com:SpoutDev/${project.name}.git</developerConnection>
-		<connection>scm:git:git://github.com/SpoutDev/${project.name}.git</connection>
-		<url>https://github.com/SpoutDev/${project.name}</url>
+		<developerConnection>scm:git:git@github.com:Technic/Spoutcraft-Launcher.git</developerConnection>
+		<connection>scm:git:git://github.com/Technic/Spoutcraft-Launcher.git</connection>
+		<url>https://github.com/Technic/Spoutcraft-Launcher</url>
 	</scm>
 
 	<!-- Continuous integration -->
@@ -197,12 +197,12 @@
 									</jre>
 									<icon>${basedir}/src/main/resources/icon.ico</icon>
 									<versionInfo>
-										<fileVersion>1.0.0.${build.number}</fileVersion>
-										<txtFileVersion>1.0.0.${build.number}</txtFileVersion>
+										<fileVersion>0.5.0.0</fileVersion>
+										<txtFileVersion>0.5.0.0</txtFileVersion>
 										<fileDescription>${project.name}</fileDescription>
 										<copyright>SpoutDev</copyright>
-										<productVersion>1.0.0.${build.number}</productVersion>
-										<txtProductVersion>1.0.0.${build.number}</txtProductVersion>
+										<productVersion>0.5.0.0</productVersion>
+										<txtProductVersion>0.5.0.0</txtProductVersion>
 										<productName>${project.name}</productName>
 										<internalName>${project.artifactId}</internalName>
 										<originalFilename>${project.artifactId}.exe</originalFilename>
@@ -231,7 +231,7 @@
 						<configuration>
 							<mainClass>${project.mainClass}</mainClass>
 							<bundleName>${project.name}</bundleName>
-							<iconFile>${basedir}/src/main/resources/icon.icns</iconFile>
+							<iconFile>${basedir}/src/main/resources/launcher_icon.icns</iconFile>
 							<dictionaryFile>src/main/resources/Info.plist</dictionaryFile>
 							<javaApplicationStub>${basedir}/src/main/resources/JavaApplicationStub</javaApplicationStub>
 							<additionalResources>
