@@ -32,8 +32,6 @@ public class ModPackUpdater extends GameUpdater {
 
 	public static final String defaultModPackName = "technicssp";
 	
-//	public static File baseModPackDirectory = new File(Main.basePath, defaultModPackName);
-//	public static File modpackTempModsDirectory = new File(baseModPackDirectory, "mods");
 	private static String baseFallbackURL = "http://technic.freeworldsgaming.com/";
 	private static String fallbackModsURL = baseFallbackURL + "mods/";
 
@@ -71,15 +69,17 @@ public class ModPackUpdater extends GameUpdater {
 				modMD5 = modMD5.toLowerCase();
 				
 				String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
-				String cacheModPath = String.format("cache%1%2", File.separator, fullFilename);
-				String md5ModPath = String.format("mods%1%2%1%3", File.separator, modName, fullFilename);
 
 				//If installed mods md5 hash is the same as server's version then go to next mod.
-				if (installedModVersion.equals(version) && MD5Utils.checksumPath(cacheModPath, md5ModPath)) {
-					continue;
+				if (installedModVersion != null && installedModVersion.equals(version)) {
+					String cacheModPath = String.format("cache%s%s", File.separator, fullFilename);
+					String md5ModPath = String.format("mods%s%s%s%s", File.separator, modName, File.separator, fullFilename);
+					if (MD5Utils.checksumPath(cacheModPath, md5ModPath)) {
+						continue;
+					}
 				}
 
-				File modFile = File.createTempFile("launcherMod", installType);
+				File modFile = File.createTempFile("launcherMod", null);
 
 				//If have the mod file then update
 				if (downloadModPackage(modName, fullFilename, modMD5, modFile))
@@ -92,11 +92,11 @@ public class ModPackUpdater extends GameUpdater {
 
 	private void removeOldMods(Set<String> modsToInstall) {
 		Map<String, String> installedMods = InstalledModsYML.getInstalledMods();
-		Set<String> modsToRemove = installedMods.keySet();
 
-		if (modsToInstall == null || modsToInstall.size() <= 0)
+		if (installedMods == null || modsToInstall == null || modsToInstall.size() <= 0)
 			return;
-		
+
+		Set<String> modsToRemove = installedMods.keySet();
 		modsToRemove.removeAll(modsToInstall);
 		
 		for (String modName : modsToRemove)
@@ -108,7 +108,7 @@ public class ModPackUpdater extends GameUpdater {
 	public boolean downloadModPackage(String name, String filename, String fileMD5, File downloadedFile) {
 		try {
 			//Install from cache if md5 matches otherwise download and insert to cache
-			File modCache = new File(binCacheDir, filename);
+			File modCache = new File(DownloadUtils.cacheDirectory, filename);
 			if (modCache.exists() && fileMD5.equalsIgnoreCase(MD5Utils.getMD5(modCache))) {
 				copy(modCache, downloadedFile);
 				return true;
@@ -217,7 +217,7 @@ public class ModPackUpdater extends GameUpdater {
 			Map<String, Object> versionProperties = (Map<String, Object>) modVersions.get(version);
 			String md5 = (String)versionProperties.get("md5");
 
-			File modCache = new File(binCacheDir, fullFilename);
+			File modCache = new File(DownloadUtils.cacheDirectory, fullFilename);
 			if (!modCache.exists() || !md5.equalsIgnoreCase(MD5Utils.getMD5(modCache))) {
 				return true;
 			}

@@ -163,7 +163,7 @@ public class GameUpdater implements DownloadListener {
 		return baseURL + fileName + ".jar.lzma";
 	}
 
-	public boolean checkMCUpdate() throws Exception {
+	public boolean checkMCUpdate() {
 		if (!GameUpdater.binDir.exists())
 			return true;
 		if (!new File(binDir, "natives").exists())
@@ -361,30 +361,33 @@ public class GameUpdater implements DownloadListener {
 		
 	}
 
-	public boolean isSpoutcraftUpdateAvailable() throws IOException {
-		if (!WORKING_DIRECTORY.exists())
-			return true;
-		if (!GameUpdater.workDir.exists())
-			return true;
-		
-		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
-
-		if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild())) 
-			return true;
-		
-		File libDir = new File(binDir, "lib");
-		libDir.mkdir();
-		
-		Map<String, Object> libraries = build.getLibraries();
-		Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-		while (i.hasNext()) {
-			Entry<String, Object> lib = i.next();						
-			File libraryFile = new File(libDir, lib.getKey() + ".jar");
-			if (!libraryFile.exists()) {
+	public boolean isSpoutcraftUpdateAvailable() {
+//		try {
+			if (!WORKING_DIRECTORY.exists())
 				return true;
+			if (!GameUpdater.workDir.exists())
+				return true;
+			
+			SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
+
+			if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild())) 
+				return true;
+			
+			File libDir = new File(binDir, "lib");
+			libDir.mkdir();
+			
+			Map<String, Object> libraries = build.getLibraries();
+			Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<String, Object> lib = i.next();						
+				File libraryFile = new File(libDir, lib.getKey() + ".jar");
+				if (!libraryFile.exists()) {
+					return true;
+				}
 			}
-		}
-		
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		return false;
 	}
 

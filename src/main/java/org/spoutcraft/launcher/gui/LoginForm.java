@@ -658,25 +658,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 					protected Boolean doInBackground() throws Exception {
 						publish("Checking for Minecraft Update...\n");
-						try {
-							mcUpdate = gameUpdater.checkMCUpdate();
-						} catch (Exception e) {
-							mcUpdate = false;
-						}
+						mcUpdate = gameUpdater.checkMCUpdate();
 
 						publish("Checking for Spoutcraft update...\n");
-						try {
-							spoutUpdate = mcUpdate || gameUpdater.isSpoutcraftUpdateAvailable();
-						} catch (Exception e) {
-							spoutUpdate = false;
-						}
+						spoutUpdate = gameUpdater.isSpoutcraftUpdateAvailable();
 						
-						publish("Checking for ModPack update...\n");
-						try {
-							modpackUpdate = spoutUpdate || gameUpdater.isModpackUpdateAvailable();
-						} catch (Exception e) {
-							modpackUpdate = false;
-						}
+						publish(String.format("Checking for %s update...\n", ModPackListYML.currentModPackLabel));
+						modpackUpdate = gameUpdater.isModpackUpdateAvailable();
 						return true;
 					}
 					
@@ -686,7 +674,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 						} else if (spoutUpdate) {
 							updateDialog.setToUpdate("Spoutcraft");
 						} else if (modpackUpdate) {
-							updateDialog.setToUpdate("ModPack");
+							updateDialog.setToUpdate(ModPackListYML.currentModPackLabel);
 						}
 						if (mcUpdate || spoutUpdate || modpackUpdate) {
 							if (!GameUpdater.binDir.exists())
