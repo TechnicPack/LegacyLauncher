@@ -3,8 +3,8 @@ package org.spoutcraft.launcher;
 import java.io.File;
 
 public class SettingsUtil {
-	private static File settingsFile = new File(PlatformUtils.getWorkingDirectory(), "launcher.properties");
-	private static SettingsHandler settings = new SettingsHandler("defaults/launcher.properties", settingsFile);
+	private static final File settingsFile = new File(PlatformUtils.getWorkingDirectory(), "launcher.properties");
+	private static final SettingsHandler settings = new SettingsHandler("defaults/launcher.properties", settingsFile);
 	
 	static {
 		settings.load();

@@ -24,372 +24,280 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Map;
-
-import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
-
-import org.spoutcraft.launcher.ComboItem;
-
-import org.spoutcraft.launcher.FileUtils;
-import org.spoutcraft.launcher.GameUpdater;
-import org.spoutcraft.launcher.Main;
-import org.spoutcraft.launcher.MinecraftYML;
-import org.spoutcraft.launcher.SettingsUtil;
-import org.spoutcraft.launcher.Util;
+import org.spoutcraft.launcher.*;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
 import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class OptionDialog extends JDialog implements ActionListener {
-	private static final long serialVersionUID = 1L;
-	private final JPanel contentPanel = new JPanel();
-	
-	public Map<String, String> modPackList = null;
 
-	JRadioButton devBuilds = new JRadioButton("Always use development builds");
-	
-	JRadioButton recBuilds = new JRadioButton("Always use recommended builds");
-	
-	JRadioButton customBuilds = new JRadioButton("Manual build selection");
-	
+  private static final long serialVersionUID = 1L;
+  private final JPanel contentPanel = new JPanel();
+  public Map<String, String> modPackList = null;
+  JRadioButton devBuilds = new JRadioButton("Always use development builds");
+  JRadioButton recBuilds = new JRadioButton("Always use recommended builds");
+  JRadioButton customBuilds = new JRadioButton("Manual build selection");
 //	JCheckBox clipboardCheckbox = new JCheckBox("Allow access to your clipboard");
-	
-	JCheckBox backupCheckbox = new JCheckBox("Include worlds when doing automated backup");
-	
-	JCheckBox retryLoginCheckbox = new JCheckBox("Retry after connection timeout");
-	
-	JCheckBox latestLWJGLCheckbox = new JCheckBox("Use latest LWJGL binaries");
-	
-	JComboBox memoryCombo = new JComboBox();
-	
-	JComboBox<ComboItem> packCombo = new JComboBox<ComboItem>();
-	
-	JButton clearCache = new JButton("Clear Cache");
-	
-	JLabel buildInfo = new JLabel();
-		
-	JComboBox buildsCombo = new JComboBox();
+  JCheckBox backupCheckbox = new JCheckBox("Include worlds when doing automated backup");
+  JCheckBox retryLoginCheckbox = new JCheckBox("Retry after connection timeout");
+  JCheckBox latestLWJGLCheckbox = new JCheckBox("Use latest LWJGL binaries");
+  JComboBox memoryCombo = new JComboBox();
+  JComboBox<ComboItem> packCombo = new JComboBox<ComboItem>();
+  JButton clearCache = new JButton("Clear Cache");
+  JLabel buildInfo = new JLabel();
+  JComboBox buildsCombo = new JComboBox();
 
-	/**
-	 * Create the dialog.
-	 */
-	@SuppressWarnings("unchecked")
-	public OptionDialog() {
-		setTitle("Technic Launcher Settings");
-		
-		ButtonGroup group = new ButtonGroup();
-		group.add(devBuilds);
-		group.add(recBuilds);
-		group.add(customBuilds);
-		
-		buildInfo.setText("Technic Launcher Build " + Main.build);
-		buildInfo.setOpaque(true);
-		buildInfo.setForeground(Color.DARK_GRAY);
-		buildInfo.setToolTipText("Created by the Spout Development Team and Modified by the Technic Team. Licensed under the LGPL. Source code is available at www.github.com/SpoutDev" );
-		
-		customBuilds.setToolTipText("Only use if you know what you are doing!");
-		devBuilds.setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
-		recBuilds.setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
+  /**
+   * Create the dialog.
+   */
+  @SuppressWarnings("unchecked")
+  public OptionDialog() {
+    setTitle("Technic Launcher Settings");
+
+    ButtonGroup group = new ButtonGroup();
+    group.add(devBuilds);
+    group.add(recBuilds);
+    group.add(customBuilds);
+
+    buildInfo.setText("Technic Launcher Build " + Main.build);
+    buildInfo.setOpaque(true);
+    buildInfo.setForeground(Color.DARK_GRAY);
+    buildInfo.setToolTipText("Created by the Spout Development Team and Modified by the Technic Team. Licensed under the LGPL. Source code is available at www.github.com/SpoutDev");
+
+    customBuilds.setToolTipText("Only use if you know what you are doing!");
+    devBuilds.setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
+    recBuilds.setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
 //		clipboardCheckbox.setToolTipText("Allows server mods to see the contents of your clipboard.");
-		backupCheckbox.setToolTipText("Backs up your Single Player worlds after each Madpack update");
-		retryLoginCheckbox.setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
-		latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
-		clearCache.setToolTipText("Clears the cached minecraft and Madpack files, forcing a redownload on your next login");
-		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Minecraft. Assigning more memory than you have may cause crashes.");
-		packCombo.setToolTipText("Select which mod pack to use with the launcher.");
-		
-		if (SettingsUtil.isRecommendedBuild()) {
-			devBuilds.setSelected(false);
-			recBuilds.setSelected(true);
-			customBuilds.setSelected(false);
-			SettingsUtil.setDevelopmentBuild(false);
-		}
-		else if (SettingsUtil.isDevelopmentBuild()) {
-			devBuilds.setSelected(true);
-			recBuilds.setSelected(false);
-			customBuilds.setSelected(false);
-		}
-		else {
-			devBuilds.setSelected(false);
-			recBuilds.setSelected(false);
-			customBuilds.setSelected(true);
-		}
-		customBuilds.addActionListener(this);
-		recBuilds.addActionListener(this);
-		devBuilds.addActionListener(this);
-		buildsCombo.addActionListener(this);
-		packCombo.addActionListener(this);
-		
+    backupCheckbox.setToolTipText("Backs up your Single Player worlds after each Madpack update");
+    retryLoginCheckbox.setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
+    latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
+    clearCache.setToolTipText("Clears the cached minecraft and Madpack files, forcing a redownload on your next login");
+    memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Minecraft. Assigning more memory than you have may cause crashes.");
+    packCombo.setToolTipText("Select which mod pack to use with the launcher.");
+
+    if (SettingsUtil.isRecommendedBuild()) {
+      devBuilds.setSelected(false);
+      recBuilds.setSelected(true);
+      customBuilds.setSelected(false);
+      SettingsUtil.setDevelopmentBuild(false);
+    } else if (SettingsUtil.isDevelopmentBuild()) {
+      devBuilds.setSelected(true);
+      recBuilds.setSelected(false);
+      customBuilds.setSelected(false);
+    } else {
+      devBuilds.setSelected(false);
+      recBuilds.setSelected(false);
+      customBuilds.setSelected(true);
+    }
+    customBuilds.addActionListener(this);
+    recBuilds.addActionListener(this);
+    devBuilds.addActionListener(this);
+    buildsCombo.addActionListener(this);
+    packCombo.addActionListener(this);
+
 //		clipboardCheckbox.setSelected(SettingsUtil.isClipboardAccess());
-		backupCheckbox.setSelected(SettingsUtil.isWorldBackup());
-		retryLoginCheckbox.setSelected(SettingsUtil.getLoginTries() > 1);
-		latestLWJGLCheckbox.setSelected(SettingsUtil.isLatestLWJGL());
-		
-		setResizable(false);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		
-		memoryCombo.addItem("512 MB");
-		memoryCombo.addItem("1 GB");
-		memoryCombo.addItem("2 GB");
-		memoryCombo.addItem("4 GB");
-		memoryCombo.addItem("8 GB");
-		memoryCombo.addItem("16 GB");
-		
-		memoryCombo.setSelectedIndex(SettingsUtil.getMemorySelection());
-		
-		JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
-		JLabel lblPack = new JLabel("Select Mod Pack: ");
-		
-		JLabel selectBuild = new JLabel("Select Madpack build: ");
-		
-		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-								.addComponent(selectBuild)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addComponent(devBuilds)
-						.addComponent(recBuilds)
-						.addComponent(customBuilds)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-								.addComponent(lblPack)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-//						.addComponent(clipboardCheckbox)
-						.addComponent(backupCheckbox)
-						.addComponent(retryLoginCheckbox)
-						.addComponent(latestLWJGLCheckbox)
-						.addComponent(clearCache)
-						.addComponent(buildInfo)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(lblMemoryToAllocate)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(27, Short.MAX_VALUE))
-		);
-		
-		Font font = new Font("Arial", Font.PLAIN, 11);
-		backupCheckbox.setFont(font);
+    backupCheckbox.setSelected(SettingsUtil.isWorldBackup());
+    retryLoginCheckbox.setSelected(SettingsUtil.getLoginTries() > 1);
+    latestLWJGLCheckbox.setSelected(SettingsUtil.isLatestLWJGL());
+
+    setResizable(false);
+    getContentPane().setLayout(new BorderLayout());
+    contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+    getContentPane().add(contentPanel, BorderLayout.CENTER);
+
+    memoryCombo.addItem("512 MB");
+    memoryCombo.addItem("1 GB");
+    memoryCombo.addItem("2 GB");
+    memoryCombo.addItem("4 GB");
+    memoryCombo.addItem("8 GB");
+    memoryCombo.addItem("16 GB");
+
+    memoryCombo.setSelectedIndex(SettingsUtil.getMemorySelection());
+
+    JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
+    JLabel lblPack = new JLabel("Select Mod Pack: ");
+
+    JLabel selectBuild = new JLabel("Select Madpack build: ");
+
+    GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
+    gl_contentPanel.setHorizontalGroup(
+            gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addComponent(selectBuild).addPreferredGap(ComponentPlacement.RELATED).addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addComponent(devBuilds).addComponent(recBuilds).addComponent(customBuilds).addGroup(gl_contentPanel.createSequentialGroup().addComponent(lblPack).addPreferredGap(ComponentPlacement.RELATED).addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)) //						.addComponent(clipboardCheckbox)
+            .addComponent(backupCheckbox).addComponent(retryLoginCheckbox).addComponent(latestLWJGLCheckbox).addComponent(clearCache).addComponent(buildInfo).addGroup(gl_contentPanel.createSequentialGroup().addComponent(lblMemoryToAllocate).addPreferredGap(ComponentPlacement.RELATED).addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap(27, Short.MAX_VALUE)));
+
+    Font font = new Font("Arial", Font.PLAIN, 11);
+    backupCheckbox.setFont(font);
 //		clipboardCheckbox.setFont(font);
-		devBuilds.setFont(font);
-		recBuilds.setFont(font);
-		retryLoginCheckbox.setFont(font);
-		clearCache.setFont(font);
-		clearCache.setActionCommand("Clear Cache");
-		clearCache.addActionListener(this);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(selectBuild)
-							.addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addComponent(devBuilds)
-					.addComponent(recBuilds)
-					.addComponent(customBuilds)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblPack))
-					.addComponent(retryLoginCheckbox)
-					.addPreferredGap(ComponentPlacement.RELATED)
-//					.addComponent(clipboardCheckbox)
-					.addComponent(backupCheckbox)
-					.addComponent(latestLWJGLCheckbox)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblMemoryToAllocate))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(clearCache)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(buildInfo)
-					.addContainerGap(316, Short.MAX_VALUE))
-		);
-		
-		contentPanel.setLayout(gl_contentPanel);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setFont(font);
-				okButton.setActionCommand("OK");
-				okButton.addActionListener(this);
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setFont(font);
-				cancelButton.setActionCommand("Cancel");
-				cancelButton.addActionListener(this);
-				buttonPane.add(cancelButton);
-			}
-		}
-		
-		modPackList = ModPackListYML.getModPacks();
-	}
-	
-	public void updateBuildsList() {
-		buildsCombo.removeAllItems();
-		String[] buildList = ModPackYML.getModpackBuilds();
-		if (buildList != null) {
-			for (String item : buildList) {
-				buildsCombo.addItem(item);
-			}
-		} else {
-			buildsCombo.addItem("No builds found");
-		}
-		updateBuildsCombo();
-	}
-	
-	public void updateModPackList()
-	{
-		if(packCombo.getItemCount() != modPackList.size())
-		{
-			packCombo.removeAllItems();
-			for (String modPackName : modPackList.keySet()) {
-				Util.addComboItem(packCombo, modPackList.get(modPackName), modPackName);
-			}
-			updateModPacksCombo();
-		}
-	}
-	
-	public void updateModPacksCombo()
-	{
-		packCombo.setEnabled(modPackList.size() > 1);	
-		if(SettingsUtil.hasModPack()) {
-			Util.setSelectedComboByValue(packCombo, SettingsUtil.getModPackSelection());
-		} else {
-			packCombo.setSelectedIndex(0);
-		}
-	}
+    devBuilds.setFont(font);
+    recBuilds.setFont(font);
+    retryLoginCheckbox.setFont(font);
+    clearCache.setFont(font);
+    clearCache.setActionCommand("Clear Cache");
+    clearCache.addActionListener(this);
+    gl_contentPanel.setVerticalGroup(
+            gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(selectBuild).addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addComponent(devBuilds).addComponent(recBuilds).addComponent(customBuilds).addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(lblPack)).addComponent(retryLoginCheckbox).addPreferredGap(ComponentPlacement.RELATED) //					.addComponent(clipboardCheckbox)
+            .addComponent(backupCheckbox).addComponent(latestLWJGLCheckbox).addPreferredGap(ComponentPlacement.RELATED).addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(lblMemoryToAllocate)).addPreferredGap(ComponentPlacement.RELATED).addComponent(clearCache).addPreferredGap(ComponentPlacement.RELATED).addComponent(buildInfo).addContainerGap(316, Short.MAX_VALUE)));
 
-	public void actionPerformed(ActionEvent evt) {
-		String id = evt.getActionCommand(); 
-		if (id.equals("OK")) {
-			SettingsUtil.setDevelopmentBuild(devBuilds.isSelected());
-			SettingsUtil.setRecommendedBuild(recBuilds.isSelected());
+    contentPanel.setLayout(gl_contentPanel);
+    {
+      JPanel buttonPane = new JPanel();
+      buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+      getContentPane().add(buttonPane, BorderLayout.SOUTH);
+      {
+        JButton okButton = new JButton("OK");
+        okButton.setFont(font);
+        okButton.setActionCommand("OK");
+        okButton.addActionListener(this);
+        buttonPane.add(okButton);
+        getRootPane().setDefaultButton(okButton);
+      }
+      {
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setFont(font);
+        cancelButton.setActionCommand("Cancel");
+        cancelButton.addActionListener(this);
+        buttonPane.add(cancelButton);
+      }
+    }
+
+    modPackList = ModPackListYML.getModPacks();
+  }
+
+  public void updateBuildsList() {
+    buildsCombo.removeAllItems();
+    String[] buildList = ModPackYML.getModpackBuilds();
+    if (buildList != null) {
+      for (String item : buildList) {
+        buildsCombo.addItem(item);
+      }
+    } else {
+      buildsCombo.addItem("No builds found");
+    }
+    updateBuildsCombo();
+  }
+
+  public void updateModPackList() {
+    if (packCombo.getItemCount() != modPackList.size()) {
+      packCombo.removeAllItems();
+      for (String modPackName : modPackList.keySet()) {
+        Util.addComboItem(packCombo, modPackList.get(modPackName), modPackName);
+      }
+      updateModPacksCombo();
+    }
+  }
+
+  public void updateModPacksCombo() {
+    packCombo.setEnabled(modPackList.size() > 1);
+    if (SettingsUtil.hasModPack()) {
+      Util.setSelectedComboByValue(packCombo, SettingsUtil.getModPackSelection());
+    } else {
+      packCombo.setSelectedIndex(0);
+    }
+  }
+
+  public void actionPerformed(ActionEvent evt) {
+    String id = evt.getActionCommand();
+    if (id.equals("OK")) {
+      SettingsUtil.setDevelopmentBuild(devBuilds.isSelected());
+      SettingsUtil.setRecommendedBuild(recBuilds.isSelected());
 //			SettingsUtil.setClipboardAccess(clipboardCheckbox.isSelected());
-			SettingsUtil.setWorldBackup(backupCheckbox.isSelected());
-			SettingsUtil.setLoginTries(retryLoginCheckbox.isSelected());
-			
-			if (SettingsUtil.getMemorySelection() > 5) {
-				SettingsUtil.setMemorySelection(0);
-			}
-			
-			if (latestLWJGLCheckbox.isSelected() != SettingsUtil.isLatestLWJGL()) {
-				SettingsUtil.setLatestLWJGL(latestLWJGLCheckbox.isSelected());
-				clearCache();
-			}
-			
-			if (Util.getSelectedValue(packCombo) != SettingsUtil.getModPackSelection())
-			{
-				String modpack = Util.getSelectedValue(packCombo);
-				SettingsUtil.setModPack(modpack);
-				Main.loginForm.updateBranding();
-			}
-			
-			if (buildsCombo.isEnabled()) {
-				String build = null;
-				try {
-					String item = ((String)buildsCombo.getSelectedItem());
-					if (item.contains("|")) {
-						item = item.split("\\|")[0];
-					}
-					build = item.trim();
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-				if (build != null) {
-					SettingsUtil.setSelectedBuild(build);
-				}
-			}
-			
-			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
-				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
-				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
-				Main.reboot("-Xmx" + mem + "m");
-			}
-			
-			this.setVisible(false);
-			this.dispose();
-		} else if (id.equals("Cancel")) {
-			this.setVisible(false);
-			this.dispose();
-		}
-		else if (id.equals("Clear Cache")) {
-			if (clearCache()) {
-				JOptionPane.showMessageDialog(getParent(), "Successfully cleared the cache.");
-			}
-			else {
-				JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Madpack files are open.\nIf all else fails, close the launcher, restart it, and try again.");
-			}
-		}
-		else if (id.equals(customBuilds.getText()) || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {
-			updateBuildsCombo();
-		}
-	}
-	
-	public void updateBuildsCombo() {
-		buildsCombo.setEnabled(customBuilds.isSelected());
-		
-		if (customBuilds.isSelected()) {
-			if (SettingsUtil.getSelectedBuild() != null) {
-				String build = SettingsUtil.getSelectedBuild();
-				for (int i = 0; i < buildsCombo.getItemCount(); i++) {
-					String item = (String) buildsCombo.getItemAt(i);
-					if (item.contains(String.valueOf(build))) {
-						buildsCombo.setSelectedIndex(i);
-						break;
-					}
-				}
-			}
-		}
-		else if (devBuilds.isSelected()) {
-			buildsCombo.setSelectedIndex(0);
-		}
-		else if (recBuilds.isSelected()) {
-			for (int i = 0; i < buildsCombo.getItemCount(); i++) {
-				String item = (String) buildsCombo.getItemAt(i);
-				if (item.contains("Rec. Build")) {
-					buildsCombo.setSelectedIndex(i);
-					break;
-				}
-			}
-		}
-	}
+      SettingsUtil.setWorldBackup(backupCheckbox.isSelected());
+      SettingsUtil.setLoginTries(retryLoginCheckbox.isSelected());
 
-	public static boolean clearCache() {
-		try {
-			FileUtils.deleteDirectory(GameUpdater.binDir);
-			FileUtils.deleteDirectory(GameUpdater.tempDir);
-			FileUtils.deleteDirectory(GameUpdater.cacheDir);
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		finally {
-			ModPackYML.getModPackYML().setProperty("current", null);
-			MinecraftYML.setInstalledVersion("");
-		}
-	}
+      if (SettingsUtil.getMemorySelection() > 5) {
+        SettingsUtil.setMemorySelection(0);
+      }
+
+      if (latestLWJGLCheckbox.isSelected() != SettingsUtil.isLatestLWJGL()) {
+        SettingsUtil.setLatestLWJGL(latestLWJGLCheckbox.isSelected());
+        clearCache();
+      }
+
+      if (Util.getSelectedValue(packCombo) == null ? SettingsUtil.getModPackSelection() != null : !Util.getSelectedValue(packCombo).equals(SettingsUtil.getModPackSelection())) {
+        String modpack = Util.getSelectedValue(packCombo);
+        SettingsUtil.setModPack(modpack);
+        Main.loginForm.updateBranding();
+      }
+
+      if (buildsCombo.isEnabled()) {
+        String build = null;
+        try {
+          String item = ((String) buildsCombo.getSelectedItem());
+          if (item.contains("|")) {
+            item = item.split("\\|")[0];
+          }
+          build = item.trim();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        if (build != null) {
+          SettingsUtil.setSelectedBuild(build);
+        }
+      }
+
+      if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
+        SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
+        int mem = 1 << 9 + memoryCombo.getSelectedIndex();
+        Main.reboot("-Xmx" + mem + "m");
+      }
+
+      this.setVisible(false);
+      this.dispose();
+    } else if (id.equals("Cancel")) {
+      this.setVisible(false);
+      this.dispose();
+    } else if (id.equals("Clear Cache")) {
+      if (clearCache()) {
+        JOptionPane.showMessageDialog(getParent(), "Successfully cleared the cache.");
+      } else {
+        JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Madpack files are open.\nIf all else fails, close the launcher, restart it, and try again.");
+      }
+    } else if (id.equals(customBuilds.getText()) || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {
+      updateBuildsCombo();
+    }
+  }
+
+  public void updateBuildsCombo() {
+    buildsCombo.setEnabled(customBuilds.isSelected());
+
+    if (customBuilds.isSelected()) {
+      if (SettingsUtil.getSelectedBuild() != null) {
+        String build = SettingsUtil.getSelectedBuild();
+        for (int i = 0; i < buildsCombo.getItemCount(); i++) {
+          String item = (String) buildsCombo.getItemAt(i);
+          if (item.contains(String.valueOf(build))) {
+            buildsCombo.setSelectedIndex(i);
+            break;
+          }
+        }
+      }
+    } else if (devBuilds.isSelected()) {
+      buildsCombo.setSelectedIndex(0);
+    } else if (recBuilds.isSelected()) {
+      for (int i = 0; i < buildsCombo.getItemCount(); i++) {
+        String item = (String) buildsCombo.getItemAt(i);
+        if (item.contains("Rec. Build")) {
+          buildsCombo.setSelectedIndex(i);
+          break;
+        }
+      }
+    }
+  }
+
+  public static boolean clearCache() {
+    try {
+      FileUtils.deleteDirectory(GameUpdater.binDir);
+      FileUtils.deleteDirectory(GameUpdater.tempDir);
+      FileUtils.deleteDirectory(GameUpdater.cacheDir);
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    } finally {
+      ModPackYML.getModPackYML().setProperty("current", null);
+      MinecraftYML.setInstalledVersion("");
+    }
+  }
 }

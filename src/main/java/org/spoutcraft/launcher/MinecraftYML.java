@@ -1,11 +1,6 @@
 package org.spoutcraft.launcher;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-
 import org.bukkit.util.config.Configuration;
 
 public class MinecraftYML {
@@ -14,7 +9,7 @@ public class MinecraftYML {
 	private static File minecraftYML = new File(GameUpdater.workDir, MINECRAFT_YML);
 	private static String latest = null;
 	private static String recommended = null;
-	private static Object key = new Object();
+	private static final Object key = new Object();
 	
 	public static Configuration getMinecraftYML() {
 		updateMinecraftYMLCache();

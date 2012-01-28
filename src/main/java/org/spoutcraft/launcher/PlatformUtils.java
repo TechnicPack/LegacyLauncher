@@ -16,142 +16,148 @@
  */
 package org.spoutcraft.launcher;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JProgressBar;
 
 public class PlatformUtils {
 
-	private static File workDir = null;
-	public static File getWorkingDirectory() {
-		if (workDir == null)
-			workDir = getWorkingDirectory("techniclauncher");
-		return workDir;
-	}
+  private static File workDir = null;
 
-	public static File getWorkingDirectory(String applicationName) {
-		if (MinecraftUtils.getOptions().isPortable()) {
-			return new File("techniclauncher");
-		}
-		String userHome = System.getProperty("user.home", ".");
-		File workingDirectory;
-		switch (getPlatform()) {
-			case linux:
-			case solaris:
-				workingDirectory = new File(userHome, '.' + applicationName + '/');
-				break;
-			case windows:
-				String applicationData = System.getenv("APPDATA");
-				if (applicationData != null)
-					workingDirectory = new File(applicationData, "." + applicationName + '/');
-				else
-					workingDirectory = new File(userHome, '.' + applicationName + '/');
-				break;
-			case macos:
-				workingDirectory = new File(userHome, "Library/Application Support/" + applicationName);
-				break;
-			default:
-				workingDirectory = new File(userHome, applicationName + '/');
-		}
-		if ((!workingDirectory.exists()) && (!workingDirectory.mkdirs()))
-			throw new RuntimeException("The working directory could not be created: " + workingDirectory);
-		return workingDirectory;
-	}
+  public static File getWorkingDirectory() {
+    if (workDir == null) {
+      workDir = getWorkingDirectory("techniclauncher");
+    }
+    return workDir;
+  }
 
-	public static OS getPlatform() {
-		String osName = System.getProperty("os.name").toLowerCase();
-		if (osName.contains("win"))
-			return OS.windows;
-		if (osName.contains("mac"))
-			return OS.macos;
-		if (osName.contains("solaris"))
-			return OS.solaris;
-		if (osName.contains("sunos"))
-			return OS.solaris;
-		if (osName.contains("linux"))
-			return OS.linux;
-		if (osName.contains("unix"))
-			return OS.linux;
-		return OS.unknown;
-	}
+  public static File getWorkingDirectory(String applicationName) {
+    if (MinecraftUtils.getOptions().isPortable()) {
+      return new File("techniclauncher");
+    }
+    String userHome = System.getProperty("user.home", ".");
+    File workingDirectory;
+    switch (getPlatform()) {
+      case linux:
+      case solaris:
+        workingDirectory = new File(userHome, '.' + applicationName + '/');
+        break;
+      case windows:
+        String applicationData = System.getenv("APPDATA");
+        if (applicationData != null) {
+          workingDirectory = new File(applicationData, "." + applicationName + '/');
+        } else {
+          workingDirectory = new File(userHome, '.' + applicationName + '/');
+        }
+        break;
+      case macos:
+        workingDirectory = new File(userHome, "Library/Application Support/" + applicationName);
+        break;
+      default:
+        workingDirectory = new File(userHome, applicationName + '/');
+    }
+    if ((!workingDirectory.exists()) && (!workingDirectory.mkdirs())) {
+      throw new RuntimeException("The working directory could not be created: " + workingDirectory);
+    }
+    return workingDirectory;
+  }
 
-	public enum OS {
-		linux,
-		solaris,
-		windows,
-		macos,
-		unknown
-	}
+  public static OS getPlatform() {
+    String osName = System.getProperty("os.name").toLowerCase();
+    if (osName.contains("win")) {
+      return OS.windows;
+    }
+    if (osName.contains("mac")) {
+      return OS.macos;
+    }
+    if (osName.contains("solaris")) {
+      return OS.solaris;
+    }
+    if (osName.contains("sunos")) {
+      return OS.solaris;
+    }
+    if (osName.contains("linux")) {
+      return OS.linux;
+    }
+    if (osName.contains("unix")) {
+      return OS.linux;
+    }
+    return OS.unknown;
+  }
 
-	public static String excutePost(String targetURL, String urlParameters, JProgressBar progress) {
-		HttpsURLConnection connection = null;
-		try {
-			URL url = new URL(targetURL);
-			connection = (HttpsURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+  public enum OS {
 
-			connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
-			connection.setRequestProperty("Content-Language", "en-US");
+    linux,
+    solaris,
+    windows,
+    macos,
+    unknown
+  }
 
-			connection.setUseCaches(false);
-			connection.setDoInput(true);
-			connection.setDoOutput(true);
-			
-			connection.setConnectTimeout(10000);
+  public static String excutePost(String targetURL, String urlParameters, JProgressBar progress) {
+    HttpsURLConnection connection = null;
+    try {
+      URL url = new URL(targetURL);
+      connection = (HttpsURLConnection) url.openConnection();
+      connection.setRequestMethod("POST");
+      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-			connection.connect();
-			Certificate[] certs = connection.getServerCertificates();
+      connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
+      connection.setRequestProperty("Content-Language", "en-US");
 
-			byte[] bytes = new byte[294];
-			DataInputStream dis = new DataInputStream(PlatformUtils.class.getResourceAsStream("minecraft.key"));
-			dis.readFully(bytes);
-			dis.close();
+      connection.setUseCaches(false);
+      connection.setDoInput(true);
+      connection.setDoOutput(true);
 
-			Certificate c = certs[0];
-			PublicKey pk = c.getPublicKey();
-			byte[] data = pk.getEncoded();
+      connection.setConnectTimeout(10000);
 
-			for (int j = 0; j < data.length; j++) {
-				if (data[j] == bytes[j])
-					continue;
-				throw new RuntimeException("Public key mismatch");
-			}
+      connection.connect();
+      Certificate[] certs = connection.getServerCertificates();
 
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.writeBytes(urlParameters);
-			wr.flush();
-			wr.close();
+      byte[] bytes = new byte[294];
+      DataInputStream dis = new DataInputStream(PlatformUtils.class.getResourceAsStream("minecraft.key"));
+      dis.readFully(bytes);
+      dis.close();
 
-			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+      Certificate c = certs[0];
+      PublicKey pk = c.getPublicKey();
+      byte[] data = pk.getEncoded();
 
-			StringBuilder response = new StringBuilder();
-			String line;
-			while ((line = rd.readLine()) != null) {
-				response.append(line);
-				response.append('\r');
-			}
-			rd.close();
+      for (int j = 0; j < data.length; j++) {
+        if (data[j] == bytes[j]) {
+          continue;
+        }
+        throw new RuntimeException("Public key mismatch");
+      }
 
-			return response.toString();
-		} catch (Exception e) {
-			String message = "Login failed...";
-			progress.setString(message);
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
-		return null;
-	}
+      DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+      wr.writeBytes(urlParameters);
+      wr.flush();
+      wr.close();
+
+      InputStream is = connection.getInputStream();
+      BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+
+      StringBuilder response = new StringBuilder();
+      String line;
+      while ((line = rd.readLine()) != null) {
+        response.append(line);
+        response.append('\r');
+      }
+      rd.close();
+
+      return response.toString();
+    } catch (Exception e) {
+      String message = "Login failed...";
+      progress.setString(message);
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
+    }
+    return null;
+  }
 }

@@ -16,73 +16,68 @@
  */
 package org.spoutcraft.launcher;
 
-import java.util.List;
-
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.internal.Lists;
+import java.util.List;
 
 public class Options {
 
-	@Parameter
-	private List<String> parameters = Lists.newArrayList();
+  @Parameter
+  private List<String> parameters = Lists.newArrayList();
+  @Parameter(names = {"-username", "-user", "-u"}, description = "Minecraft Username")
+  private String user = null;
+  @Parameter(names = {"-password", "-pass", "-p"}, description = "Minecraft Password")
+  private String pass = null;
+  @Parameter(names = {"-server", "-host", "-join", "-j", "-h", "-s"}, description = "Minecraft Server to join")
+  private String server = null;
+  @Parameter(names = {"-portable", "--portable", "-pmode", "-portable_mode", "-pm"}, description = "Portable Mode")
+  private boolean portable = false;
+  @Parameter(names = {"-safe", "-smode", "-safe_mode", "-sm"}, description = "Safe Mode - Prevents Addons from being loaded")
+  private boolean safe_mode = false;
+  @Parameter(names = {"-modpack"}, description = "Select Mod Pack")
+  private int modpack = 0;
 
-	@Parameter(names = { "-username", "-user", "-u" }, description = "Minecraft Username")
-	private String user = null;
+  public List<String> getParameters() {
+    return parameters;
+  }
 
-	@Parameter(names = { "-password", "-pass", "-p" }, description = "Minecraft Password")
-	private String pass = null;
+  public String getUser() {
+    return user;
+  }
 
-	@Parameter(names = { "-server", "-host", "-join", "-j", "-h", "-s" }, description = "Minecraft Server to join")
-	private String server = null;
+  public String getPass() {
+    return pass;
+  }
 
-	@Parameter(names = { "-portable", "--portable", "-pmode", "-portable_mode", "-pm" }, description = "Portable Mode")
-	private boolean portable = false;
+  public String getServer() {
+    if (server == null) {
+      return null;
+    }
+    if (server.contains(":")) {
+      return server.substring(0, server.indexOf(":"));
+    }
+    return server;
+  }
 
-	@Parameter(names = { "-safe", "-smode", "-safe_mode", "-sm" }, description = "Safe Mode - Prevents Addons from being loaded")
-	private boolean safe_mode = false;
-	
-	@Parameter(names = { "-modpack" }, description = "Select Mod Pack")
-	private int modpack = 0;
-	
-	public List<String> getParameters() {
-		return parameters;
-	}
+  public String getPort() {
+    if (server == null) {
+      return null;
+    }
+    if (server.contains(":")) {
+      return server.substring(server.indexOf(":") + 1);
+    }
+    return null;
+  }
 
-	public String getUser() {
-		return user;
-	}
+  public boolean isPortable() {
+    return portable;
+  }
 
-	public String getPass() {
-		return pass;
-	}
+  public boolean isSafe_mode() {
+    return safe_mode;
+  }
 
-	public String getServer() {
-		if (server == null) return null;
-		if (server.contains(":")) {
-			return server.substring(0, server.indexOf(":"));
-		}
-		return server;
-	}
-
-	public String getPort() {
-		if (server == null) return null;
-		if (server.contains(":")) {
-			return server.substring(server.indexOf(":") + 1);
-		}
-		return null;
-	}
-
-	public boolean isPortable() {
-		return portable;
-	}
-
-	public boolean isSafe_mode() {
-		return safe_mode;
-	}
-	
-	public int getModPack()
-	{
-		return modpack;
-	}
-
+  public int getModPack() {
+    return modpack;
+  }
 }

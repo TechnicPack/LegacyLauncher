@@ -17,197 +17,145 @@
  */
 package org.spoutcraft.launcher.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
+import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import org.spoutcraft.launcher.GameUpdater;
-import org.spoutcraft.launcher.LibrariesYML;
-import org.spoutcraft.launcher.MD5Utils;
-import org.spoutcraft.launcher.MinecraftUtils;
-import org.spoutcraft.launcher.MinecraftYML;
-import org.spoutcraft.launcher.MirrorUtils;
-import org.spoutcraft.launcher.PlatformUtils;
-import org.spoutcraft.launcher.SettingsUtil;
-import org.spoutcraft.launcher.SpoutFocusTraversalPolicy;
+import org.spoutcraft.launcher.*;
 import org.spoutcraft.launcher.async.DownloadListener;
-import org.spoutcraft.launcher.exception.BadLoginException;
-import org.spoutcraft.launcher.exception.MCNetworkException;
-import org.spoutcraft.launcher.exception.MinecraftUserNotPremiumException;
-import org.spoutcraft.launcher.exception.NoMirrorsAvailableException;
-import org.spoutcraft.launcher.exception.OutdatedMCLauncherException;
+import org.spoutcraft.launcher.exception.*;
 import org.spoutcraft.launcher.modpacks.ModLibraryYML;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
 import org.spoutcraft.launcher.modpacks.ModPackUpdater;
 import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class LoginForm extends JFrame implements ActionListener, DownloadListener, KeyListener, WindowListener {
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JPasswordField passwordField;
-	private JComboBox usernameField = new JComboBox();
-	private JButton loginButton = new JButton("Login");
-	JButton optionsButton = new JButton("Options");
-	JButton modsButton = new JButton("Mods");
-	private JCheckBox rememberCheckbox = new JCheckBox("Remember");
-	final JLabel background = new JLabel("Loading...");
-	final JTextPane editorPane = new JTextPane();
-	private JButton loginSkin1;
-	private List<JButton> loginSkin1Image;
-	private JButton loginSkin2;
-	private List<JButton> loginSkin2Image;
-	private TumblerFeedParsingWorker tumblerFeed;
-	public final JProgressBar progressBar;
-	HashMap<String, UserPasswordInformation> usernames = new HashMap<String, UserPasswordInformation>();
-	public boolean mcUpdate = false;
-	public boolean spoutUpdate = false;
-	public boolean modpackUpdate = false;
-	public static UpdateDialog updateDialog;
-	private static String pass = null;
-	public static String[] values = null;
-	private int success = LauncherFrame.ERROR_IN_LAUNCH;
-	
-	public String workingDir = PlatformUtils.getWorkingDirectory().getAbsolutePath();
 
-	public static final ModPackUpdater gameUpdater = new ModPackUpdater();
-	OptionDialog options = null;
-	ModsDialog mods = new ModsDialog(ModPackYML.getModList());
+  private static final long serialVersionUID = 1L;
+  private JPanel contentPane;
+  private JPasswordField passwordField;
+  private JComboBox usernameField = new JComboBox();
+  private JButton loginButton = new JButton("Login");
+  JButton optionsButton = new JButton("Options");
+  JButton modsButton = new JButton("Mods");
+  private JCheckBox rememberCheckbox = new JCheckBox("Remember");
+  final JLabel background = new JLabel("Loading...");
+  final JTextPane editorPane = new JTextPane();
+  private JButton loginSkin1;
+  private List<JButton> loginSkin1Image;
+  private JButton loginSkin2;
+  private List<JButton> loginSkin2Image;
+  private TumblerFeedParsingWorker tumblerFeed;
+  public final JProgressBar progressBar;
+  HashMap<String, UserPasswordInformation> usernames = new HashMap<String, UserPasswordInformation>();
+  public boolean mcUpdate = false;
+  public boolean spoutUpdate = false;
+  public boolean modpackUpdate = false;
+  public static UpdateDialog updateDialog;
+  private static String pass = null;
+  public static String[] values = null;
+  private int success = LauncherFrame.ERROR_IN_LAUNCH;
+  public String workingDir = PlatformUtils.getWorkingDirectory().getAbsolutePath();
+  public static final ModPackUpdater gameUpdater = new ModPackUpdater();
+  OptionDialog options = null;
+  ModsDialog mods = new ModsDialog(ModPackYML.getModList());
+  Container loginPane = new Container();
+  Container offlinePane = new Container();
+  private JLabel lblLogo;
 
-	
-	Container loginPane = new Container();
-	Container offlinePane = new Container();
-	private JLabel lblLogo;
+  public LoginForm() {
+    LoginForm.updateDialog = new UpdateDialog(this);
+    gameUpdater.setListener(this);
 
-	public LoginForm() {
-		LoginForm.updateDialog = new UpdateDialog(this);
-		gameUpdater.setListener(this);
-		
-		this.addWindowListener(this);
+    this.addWindowListener(this);
 
-		loginButton.setFont(new Font("Arial", Font.PLAIN, 11));
-		loginButton.setBounds(272, 13, 86, 23);
-		loginButton.setOpaque(false);
-		loginButton.addActionListener(this);
-		loginButton.setEnabled(false); //disable until login info is read
-		optionsButton.setFont(new Font("Arial", Font.PLAIN, 11));
-		optionsButton.setOpaque(false);
-		optionsButton.addActionListener(this);
-		modsButton.setFont(new Font("Arial", Font.PLAIN, 11));
-		modsButton.setOpaque(false);
-		modsButton.addActionListener(this);
-		usernameField.setFont(new Font("Arial", Font.PLAIN, 11));
-		usernameField.addActionListener(this);
-		usernameField.setOpaque(false);
-		
-		
-		
-		
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    loginButton.setFont(new Font("Arial", Font.PLAIN, 11));
+    loginButton.setBounds(272, 13, 86, 23);
+    loginButton.setOpaque(false);
+    loginButton.addActionListener(this);
+    loginButton.setEnabled(false); //disable until login info is read
+    optionsButton.setFont(new Font("Arial", Font.PLAIN, 11));
+    optionsButton.setOpaque(false);
+    optionsButton.addActionListener(this);
+    modsButton.setFont(new Font("Arial", Font.PLAIN, 11));
+    modsButton.setOpaque(false);
+    modsButton.addActionListener(this);
+    usernameField.setFont(new Font("Arial", Font.PLAIN, 11));
+    usernameField.addActionListener(this);
+    usernameField.setOpaque(false);
 
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		setBounds((dim.width - 860) / 2, (dim.height - 500) / 2, 860, 500);
 
-		contentPane = new JPanel();
 
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
 
-		lblLogo = new JLabel("");
-		lblLogo.setBounds(8, 0, 294, 99);
-		
-		JLabel lblMinecraftUsername = new JLabel("Minecraft Username: ");
-		lblMinecraftUsername.setFont(new Font("Arial", Font.PLAIN, 11));
-		lblMinecraftUsername.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblMinecraftUsername.setBounds(-17, 17, 150, 14);
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		JLabel lblPassword = new JLabel("Password: ");
-		lblPassword.setFont(new Font("Arial", Font.PLAIN, 11));
-		lblPassword.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblPassword.setBounds(33, 42, 100, 20);
+    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    setBounds((dim.width - 860) / 2, (dim.height - 500) / 2, 860, 500);
 
-		passwordField = new JPasswordField();
-		passwordField.setFont(new Font("Arial", Font.PLAIN, 11));
-		passwordField.setBounds(143, 42, 119, 22);
+    contentPane = new JPanel();
 
-		loginSkin1 = new JButton("Login as Player");
-		loginSkin1.setFont(new Font("Arial", Font.PLAIN, 11));
-		loginSkin1.setBounds(72, 428, 119, 23);
-		loginSkin1.setOpaque(false);
-		loginSkin1.addActionListener(this);
-		loginSkin1.setVisible(false);
-		loginSkin1Image = new ArrayList<JButton>();
-		
-		loginSkin2 = new JButton("Login as Player");
-		loginSkin2.setFont(new Font("Arial", Font.PLAIN, 11));
-		loginSkin2.setBounds(261, 428, 119, 23);
-		loginSkin2.setOpaque(false);
-		loginSkin2.addActionListener(this);
-		loginSkin2.setVisible(false);
-		loginSkin2Image = new ArrayList<JButton>();
+    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+    setContentPane(contentPane);
 
-		progressBar = new JProgressBar();
-		progressBar.setBounds(30, 100, 400, 23);
-		progressBar.setVisible(false);
-		progressBar.setStringPainted(true);
-		progressBar.setOpaque(true);
+    lblLogo = new JLabel("");
+    lblLogo.setBounds(8, 0, 294, 99);
 
-		
+    JLabel lblMinecraftUsername = new JLabel("Minecraft Username: ");
+    lblMinecraftUsername.setFont(new Font("Arial", Font.PLAIN, 11));
+    lblMinecraftUsername.setHorizontalAlignment(SwingConstants.RIGHT);
+    lblMinecraftUsername.setBounds(-17, 17, 150, 14);
 
-		JLabel purchaseAccount = new HyperlinkJLabel("<html><u>Need a minecraft account?</u></html>", "http://www.minecraft.net/register.jsp");
-		purchaseAccount.setHorizontalAlignment(SwingConstants.RIGHT);
-		purchaseAccount.setBounds(243, 70, 111, 14);
+    JLabel lblPassword = new JLabel("Password: ");
+    lblPassword.setFont(new Font("Arial", Font.PLAIN, 11));
+    lblPassword.setHorizontalAlignment(SwingConstants.RIGHT);
+    lblPassword.setBounds(33, 42, 100, 20);
 
-		purchaseAccount.setText("<html><u>Need an account?</u></html>");
-		purchaseAccount.setFont(new Font("Arial", Font.PLAIN, 11));
-		purchaseAccount.setForeground(new Color(0, 0, 255));
-		
+    passwordField = new JPasswordField();
+    passwordField.setFont(new Font("Arial", Font.PLAIN, 11));
+    passwordField.setBounds(143, 42, 119, 22);
+
+    loginSkin1 = new JButton("Login as Player");
+    loginSkin1.setFont(new Font("Arial", Font.PLAIN, 11));
+    loginSkin1.setBounds(72, 428, 119, 23);
+    loginSkin1.setOpaque(false);
+    loginSkin1.addActionListener(this);
+    loginSkin1.setVisible(false);
+    loginSkin1Image = new ArrayList<JButton>();
+
+    loginSkin2 = new JButton("Login as Player");
+    loginSkin2.setFont(new Font("Arial", Font.PLAIN, 11));
+    loginSkin2.setBounds(261, 428, 119, 23);
+    loginSkin2.setOpaque(false);
+    loginSkin2.addActionListener(this);
+    loginSkin2.setVisible(false);
+    loginSkin2Image = new ArrayList<JButton>();
+
+    progressBar = new JProgressBar();
+    progressBar.setBounds(30, 100, 400, 23);
+    progressBar.setVisible(false);
+    progressBar.setStringPainted(true);
+    progressBar.setOpaque(true);
+
+
+
+    JLabel purchaseAccount = new HyperlinkJLabel("<html><u>Need a minecraft account?</u></html>", "http://www.minecraft.net/register.jsp");
+    purchaseAccount.setHorizontalAlignment(SwingConstants.RIGHT);
+    purchaseAccount.setBounds(243, 70, 111, 14);
+
+    purchaseAccount.setText("<html><u>Need an account?</u></html>");
+    purchaseAccount.setFont(new Font("Arial", Font.PLAIN, 11));
+    purchaseAccount.setForeground(new Color(0, 0, 255));
+
 //		JLabel wikiLink = new HyperlinkJLabel("<html><u>Technic Wiki</u></html>", "http://wiki.technicpack.net/index.php?title=Main_Page");
 //		wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
 //		wikiLink.setBounds(233, 85, 109, 14);
@@ -215,609 +163,616 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 //		wikiLink.setText("<html><u>Technic Wiki</u></html>");
 //		wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
 //		wikiLink.setForeground(new Color(0, 0, 255));
-		
-		usernameField.setBounds(143, 14, 119, 25);
-		rememberCheckbox.setFont(new Font("Arial", Font.PLAIN, 11));
 
-		rememberCheckbox.setOpaque(false);
+    usernameField.setBounds(143, 14, 119, 25);
+    rememberCheckbox.setFont(new Font("Arial", Font.PLAIN, 11));
 
-		editorPane.setContentType("text/html");
-		
-		readUsedUsernames();
+    rememberCheckbox.setOpaque(false);
 
-		editorPane.setEditable(false);
-		editorPane.setOpaque(false);
+    editorPane.setContentType("text/html");
 
-		JLabel trans2;
+    readUsedUsernames();
 
-		JScrollPane scrollPane = new JScrollPane(editorPane);
-		scrollPane.setBounds(473, 11, 372, 340);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());
-		scrollPane.setOpaque(false);
-		scrollPane.getViewport().setOpaque(false);
+    editorPane.setEditable(false);
+    editorPane.setOpaque(false);
 
-		editorPane.setCaretPosition(0);
-		trans2 = new JLabel();
-		trans2.setBackground(new Color(229, 246, 255, 100));
-		trans2.setOpaque(true);
-		trans2.setBounds(473, 11, 372, 340);
+    JLabel trans2;
 
-		JLabel login = new JLabel();
-		login.setBackground(new Color(255, 255, 255, 120));
-		login.setOpaque(true);
-		login.setBounds(473, 362, 372, 99);
+    JScrollPane scrollPane = new JScrollPane(editorPane);
+    scrollPane.setBounds(473, 11, 372, 340);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+    scrollPane.setOpaque(false);
+    scrollPane.getViewport().setOpaque(false);
 
-		JLabel trans;
-		trans = new JLabel();
-		trans.setBackground(new Color(229, 246, 255, 60));
-		trans.setOpaque(true);
-		trans.setBounds(0, 0, 854, 480);
+    editorPane.setCaretPosition(0);
+    trans2 = new JLabel();
+    trans2.setBackground(new Color(229, 246, 255, 100));
+    trans2.setOpaque(true);
+    trans2.setBounds(473, 11, 372, 340);
 
-		usernameField.getEditor().addActionListener(this);
-		passwordField.addKeyListener(this);
-		rememberCheckbox.addKeyListener(this);
+    JLabel login = new JLabel();
+    login.setBackground(new Color(255, 255, 255, 120));
+    login.setOpaque(true);
+    login.setBounds(473, 362, 372, 99);
 
-		usernameField.setEditable(true);
-		contentPane.setLayout(null);
-		rememberCheckbox.setBounds(144, 66, 93, 23);
-		contentPane.add(lblLogo);
-		optionsButton.setBounds(272, 41, 86, 23);
-		modsButton.setBounds(15, 66, 93, 23);
-		contentPane.add(loginSkin1);
-		contentPane.add(loginSkin2);
+    JLabel trans;
+    trans = new JLabel();
+    trans.setBackground(new Color(229, 246, 255, 60));
+    trans.setOpaque(true);
+    trans.setBounds(0, 0, 854, 480);
 
-		loginPane.setBounds(473, 362, 372, 106);
-		loginPane.add(lblPassword);
-		loginPane.add(lblMinecraftUsername);
-		loginPane.add(passwordField);
-		loginPane.add(usernameField);
-		loginPane.add(loginButton);
-		loginPane.add(rememberCheckbox);
-		loginPane.add(purchaseAccount);
+    usernameField.getEditor().addActionListener(this);
+    passwordField.addKeyListener(this);
+    rememberCheckbox.addKeyListener(this);
+
+    usernameField.setEditable(true);
+    contentPane.setLayout(null);
+    rememberCheckbox.setBounds(144, 66, 93, 23);
+    contentPane.add(lblLogo);
+    optionsButton.setBounds(272, 41, 86, 23);
+    modsButton.setBounds(15, 66, 93, 23);
+    contentPane.add(loginSkin1);
+    contentPane.add(loginSkin2);
+
+    loginPane.setBounds(473, 362, 372, 106);
+    loginPane.add(lblPassword);
+    loginPane.add(lblMinecraftUsername);
+    loginPane.add(passwordField);
+    loginPane.add(usernameField);
+    loginPane.add(loginButton);
+    loginPane.add(rememberCheckbox);
+    loginPane.add(purchaseAccount);
 //		loginPane.add(wikiLink);
-		loginPane.add(optionsButton);
-		loginPane.add(modsButton);
-		contentPane.add(loginPane);
+    loginPane.add(optionsButton);
+    loginPane.add(modsButton);
+    contentPane.add(loginPane);
 
-		JLabel offlineMessage = new JLabel("Could not connect to minecraft.net");
-		offlineMessage.setFont(new Font("Arial", Font.PLAIN, 14));
-		offlineMessage.setBounds(25, 40, 217, 17);
+    JLabel offlineMessage = new JLabel("Could not connect to minecraft.net");
+    offlineMessage.setFont(new Font("Arial", Font.PLAIN, 14));
+    offlineMessage.setBounds(25, 40, 217, 17);
 
-		JButton tryAgain = new JButton("Try Again");
-		tryAgain.setOpaque(false);
-		tryAgain.setFont(new Font("Arial", Font.PLAIN, 12));
-		tryAgain.setBounds(257, 20, 100, 25);
+    JButton tryAgain = new JButton("Try Again");
+    tryAgain.setOpaque(false);
+    tryAgain.setFont(new Font("Arial", Font.PLAIN, 12));
+    tryAgain.setBounds(257, 20, 100, 25);
 
-		JButton offlineMode = new JButton("Offline Mode");
-		offlineMode.setOpaque(false);
-		offlineMode.setFont(new Font("Arial", Font.PLAIN, 12));
-		offlineMode.setBounds(257, 52, 100, 25);
+    JButton offlineMode = new JButton("Offline Mode");
+    offlineMode.setOpaque(false);
+    offlineMode.setFont(new Font("Arial", Font.PLAIN, 12));
+    offlineMode.setBounds(257, 52, 100, 25);
 
-		offlinePane.setBounds(473, 362, 372, 99);
-		offlinePane.add(tryAgain);
-		offlinePane.add(offlineMode);
-		offlinePane.add(offlineMessage);
-		offlinePane.setVisible(false);
-		contentPane.add(offlinePane);
+    offlinePane.setBounds(473, 362, 372, 99);
+    offlinePane.add(tryAgain);
+    offlinePane.add(offlineMode);
+    offlinePane.add(offlineMessage);
+    offlinePane.setVisible(false);
+    contentPane.add(offlinePane);
 
-		contentPane.add(scrollPane);
-		contentPane.add(trans2);
-		contentPane.add(login);
-		contentPane.add(trans);
-		contentPane.add(progressBar);
+    contentPane.add(scrollPane);
+    contentPane.add(trans2);
+    contentPane.add(login);
+    contentPane.add(trans);
+    contentPane.add(progressBar);
 
-		background.setVerticalAlignment(SwingConstants.CENTER);
-		background.setHorizontalAlignment(SwingConstants.CENTER);
-		background.setBounds(0, 0, 854, 480);
-		contentPane.add(background);
-		
-		//TODO: remove this after next release
-		(new File(PlatformUtils.getWorkingDirectory(), "launcher_cache.jpg")).delete();
-		
+    background.setVerticalAlignment(SwingConstants.CENTER);
+    background.setHorizontalAlignment(SwingConstants.CENTER);
+    background.setBounds(0, 0, 854, 480);
+    contentPane.add(background);
 
-		Vector<Component> order = new Vector<Component>(6);
-		order.add(usernameField.getEditor().getEditorComponent());
-		order.add(passwordField);
-		order.add(rememberCheckbox);
-		order.add(loginButton);
-		order.add(optionsButton);
-		order.add(modsButton);
+    //TODO: remove this after next release
+    (new File(PlatformUtils.getWorkingDirectory(), "launcher_cache.jpg")).delete();
 
-		setFocusTraversalPolicy(new SpoutFocusTraversalPolicy(order));
-		
-		loginButton.setEnabled(true); //enable once logins are read
-		modsButton.setEnabled(false);
-	}
 
-	public void loadLauncherData() {
-		MirrorUtils.updateMirrorsYMLCache();
-		MD5Utils.updateMD5Cache();
-		ModPackListYML.updateModPacksYMLCache();
-		
-		ModPackListYML.setCurrentModpack();
-		
-		MinecraftYML.updateMinecraftYMLCache();
-		LibrariesYML.updateLibrariesYMLCache();
-		ModLibraryYML.updateModLibraryYML();
-		ModPackYML.updateModPackYML();
+    List<Component> order = new ArrayList<Component>(6);
+    order.add(usernameField.getEditor().getEditorComponent());
+    order.add(passwordField);
+    order.add(rememberCheckbox);
+    order.add(loginButton);
+    order.add(optionsButton);
+    order.add(modsButton);
 
-		setBranding();
-		options = new OptionDialog();
-		options.updateBuildsList();
-		options.updateModPackList();
-		options.setVisible(false);
-	}
-	
-	public void setBranding() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
-		setResizable(false);
-		setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
-		lblLogo.setIcon(new ImageIcon(ModPackYML.getModPackLogo()));
-	}
-	
-	public void updateBranding() {
-		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
-			protected Object doInBackground() throws Exception {
-				String modpack = SettingsUtil.getModPackSelection();
-				ModPackListYML.setModPack(modpack, ModPackListYML.getModPacks().get(modpack));
-				ModPackYML.updateModPackYML(true);
-				return null;
-			}
-			
-			protected void done() {
-				setBranding();
-				options.updateBuildsList();
-			}
-		};
-		updateThread.execute();
-	}
+    setFocusTraversalPolicy(new SpoutFocusTraversalPolicy(order));
 
-	public void stateChanged(String fileName, float progress) {
-		int intProgress = Math.round(progress);
+    loginButton.setEnabled(true); //enable once logins are read
+    modsButton.setEnabled(false);
+  }
 
-		progressBar.setValue(intProgress);
-		
-		fileName = fileName.replace(workingDir, ".techniclauncher");
-		
-		if (fileName.length() > 60) {
-			fileName = fileName.substring(0, 60) + "...";
-		}
-		progressBar.setString(intProgress + "% " + fileName);
-	}
+  public void loadLauncherData() {
+    MirrorUtils.updateMirrorsYMLCache();
+    MD5Utils.updateMD5Cache();
+    ModPackListYML.updateModPacksYMLCache();
 
-	public void keyTyped(KeyEvent e) {
-	}
+    ModPackListYML.setCurrentModpack();
 
-	public void keyPressed(KeyEvent e) {
-		if (loginButton.isEnabled() && e.getKeyCode() == KeyEvent.VK_ENTER) {
-			doLogin();
-		}
-	}
+    MinecraftYML.updateMinecraftYMLCache();
+    LibrariesYML.updateLibrariesYMLCache();
+    ModLibraryYML.updateModLibraryYML();
+    ModPackYML.updateModPackYML();
 
-	public void keyReleased(KeyEvent e) {
-	}
+    setBranding();
+    options = new OptionDialog();
+    options.updateBuildsList();
+    options.updateModPackList();
+    options.setVisible(false);
+  }
 
-	private void readUsedUsernames() {
-		int i = 0;
-		try {
-			File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
-			if (!lastLogin.exists())
-				return;
-			Cipher cipher = getCipher(2, "passwordfile");
+  public void setBranding() {
+    setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
+    setResizable(false);
+    setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
+    lblLogo.setIcon(new ImageIcon(ModPackYML.getModPackLogo()));
+  }
 
-			DataInputStream dis;
-			if (cipher != null)
-				dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
-			else {
-				dis = new DataInputStream(new FileInputStream(lastLogin));
-			}
+  public void updateBranding() {
+    SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
 
-			try {
-				// noinspection InfiniteLoopStatement
-				while (true) {
-					String user = dis.readUTF();
-					boolean isHash = dis.readBoolean();
-					if (isHash) {
-						byte[] hash = new byte[32];
-						dis.read(hash);
+      protected Object doInBackground() throws Exception {
+        String modpack = SettingsUtil.getModPackSelection();
+        ModPackListYML.setModPack(modpack, ModPackListYML.getModPacks().get(modpack));
+        ModPackYML.updateModPackYML(true);
+        return null;
+      }
 
-						usernames.put(user, new UserPasswordInformation(hash));
-					} else {
-						String pass = dis.readUTF();
-						if (!pass.isEmpty()) {
-							i++;
-							if (i == 1) {
-								if (tumblerFeed != null) tumblerFeed.setUser(user);
-								loginSkin1.setText(user);
-								loginSkin1.setVisible(true);
-								ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 103, 170, loginSkin1Image);
-							} else if (i == 2) {
-								loginSkin2.setText(user);
-								loginSkin2.setVisible(true);
-								ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 293, 170, loginSkin2Image);
-							}
-						}
-						usernames.put(user, new UserPasswordInformation(pass));
-					}
-					this.usernameField.addItem(user);
-				}
-			} catch (EOFException ignored) {
-			}
-			dis.close();
+      @Override
+      protected void done() {
+        setBranding();
+        options.updateBuildsList();
+      }
+    };
+    updateThread.execute();
+  }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		updatePasswordField();
-	}
+  public void stateChanged(String fileName, float progress) {
+    int intProgress = Math.round(progress);
 
-	private void writeUsernameList() {
-		try {
-			File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
+    progressBar.setValue(intProgress);
 
-			Cipher cipher = getCipher(1, "passwordfile");
+    fileName = fileName.replace(workingDir, ".techniclauncher");
 
-			DataOutputStream dos;
-			if (cipher != null)
-				dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
-			else {
-				dos = new DataOutputStream(new FileOutputStream(lastLogin, true));
-			}
-			for (String user : usernames.keySet()) {
-				dos.writeUTF(user);
-				UserPasswordInformation info = usernames.get(user);
-				dos.writeBoolean(info.isHash);
-				if (info.isHash) {
-					dos.write(info.passwordHash);
-				} else {
-					dos.writeUTF(info.password);
-				}
-			}
-			dos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    if (fileName.length() > 60) {
+      fileName = fileName.substring(0, 60) + "...";
+    }
+    progressBar.setString(intProgress + "% " + fileName);
+  }
 
-	public void actionPerformed(ActionEvent event) {
-		String eventId = event.getActionCommand();
-		if (event.getSource() == loginSkin1 || event.getSource() == loginSkin2) {
-			eventId = "Login";
-			this.usernameField.setSelectedItem(((JButton) event.getSource()).getText());
-		} else if(loginSkin1Image.contains(event.getSource())) {
-			eventId = "Login";
-			this.usernameField.setSelectedItem(loginSkin1.getText());
-		} else if(loginSkin2Image.contains(event.getSource())) {
-			eventId = "Login";
-			this.usernameField.setSelectedItem(loginSkin2.getText());
-		}
-		if ((eventId.equals("Login") || eventId.equals(usernameField.getSelectedItem())) && loginButton.isEnabled()) {
-			doLogin();
-		} else if (eventId.equals("Options")) {
-			options.setVisible(true);
-			options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
-		} else if (eventId.equals("Mods")) {
-			mods.setVisible(true);
-		} else if (eventId.equals("comboBoxChanged")) {
-			updatePasswordField();
-		}
-	}
+  public void keyTyped(KeyEvent e) {
+  }
 
-	private void updatePasswordField() {
-		if (this.usernameField.getSelectedItem() != null){
-			UserPasswordInformation info = usernames.get(this.usernameField.getSelectedItem().toString());
-			if (info != null) {
-				if (info.isHash) {
-					this.passwordField.setText("");
-					this.rememberCheckbox.setSelected(false);
-				} else {
-					this.passwordField.setText(info.password);
-					this.rememberCheckbox.setSelected(true);
-				}
-			}
-		}
-	}
+  public void keyPressed(KeyEvent e) {
+    if (loginButton.isEnabled() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+      doLogin();
+    }
+  }
 
-	public void doLogin() {
-		doLogin(usernameField.getSelectedItem().toString(), new String(passwordField.getPassword()), false);
-	}
+  public void keyReleased(KeyEvent e) {
+  }
 
-	public void doLogin(final String user, final String pass) {
-		doLogin(user, pass, true);
-	}
+  private void readUsedUsernames() {
+    int i = 0;
+    try {
+      File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
+      if (!lastLogin.exists()) {
+        return;
+      }
+      Cipher cipher = getCipher(2, "passwordfile");
 
-	public void doLogin(final String user, final String pass, final boolean cmdLine) {
-		if (user == null || pass == null) {
-			return;
-		}
-		this.loginButton.setEnabled(false);
-		this.optionsButton.setEnabled(false);
-		this.modsButton.setEnabled(false);
-		this.loginSkin1.setEnabled(false);
-		this.loginSkin2.setEnabled(false);
-		options.setVisible(false);
-		SwingWorker<Boolean, Boolean> loginThread = new SwingWorker<Boolean, Boolean>() {
+      DataInputStream dis;
+      if (cipher != null) {
+        dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
+      } else {
+        dis = new DataInputStream(new FileInputStream(lastLogin));
+      }
 
-			protected Boolean doInBackground() {
-				progressBar.setVisible(true);
-				progressBar.setString("Connecting to www.minecraft.net...");
-				try {
-					values = MinecraftUtils.doLogin(user, pass, progressBar);
-					return true;
-				} catch (BadLoginException e) {
-					JOptionPane.showMessageDialog(getParent(), "Incorrect usernameField/passwordField combination");
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (MinecraftUserNotPremiumException e){
-					JOptionPane.showMessageDialog(getParent(), "You purchase a minecraft account to play");
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (MCNetworkException e) {
-					UserPasswordInformation info = null;
-					
-					for (String username : usernames.keySet()) {
-						if (username.equalsIgnoreCase(user)) {
-							info = usernames.get(username);
-							break;
-						}
-					}
-					
-					boolean authFailed = (info == null);
+      try {
+        // noinspection InfiniteLoopStatement
+        while (true) {
+          String user = dis.readUTF();
+          boolean isHash = dis.readBoolean();
+          if (isHash) {
+            byte[] hash = new byte[32];
+            dis.read(hash);
 
-					if (!authFailed) {
-						if (info.isHash) {
-							try {
-								MessageDigest digest = MessageDigest.getInstance("SHA-256");
-								byte[] hash = digest.digest(pass.getBytes());
-								for (int i = 0; i < hash.length; i++) {
-									if (hash[i] != info.passwordHash[i]) {
-										authFailed = true;
-										break;
-									}
-								}
-							}
-							catch (NoSuchAlgorithmException ex) {
-								authFailed = true;
-							}
-						} else {
-							authFailed = !(pass.equals(info.password));
-						}
-					}
+            usernames.put(user, new UserPasswordInformation(hash));
+          } else {
+            String password = dis.readUTF();
+            if (!password.isEmpty()) {
+              i++;
+              if (i == 1) {
+                if (tumblerFeed != null) {
+                  tumblerFeed.setUser(user);
+                }
+                loginSkin1.setText(user);
+                loginSkin1.setVisible(true);
+                ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 103, 170, loginSkin1Image);
+              } else if (i == 2) {
+                loginSkin2.setText(user);
+                loginSkin2.setVisible(true);
+                ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 293, 170, loginSkin2Image);
+              }
+            }
+            usernames.put(user, new UserPasswordInformation(password));
+          }
+          this.usernameField.addItem(user);
+        }
+      } catch (EOFException ignored) {
+      }
+      dis.close();
 
-					if (authFailed) {
-						JOptionPane.showMessageDialog(getParent(), "Unable to authenticate account with minecraft.net");
-					} else {
-						int result = JOptionPane.showConfirmDialog(getParent(), "Would you like to run in offline mode?", "Unable to Connect to Minecraft.net", JOptionPane.YES_NO_OPTION);
-						if (result == JOptionPane.YES_OPTION) {
-							values = new String[] { "0", "0", user, "0" };
-							return true;
-						}
-					}
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (OutdatedMCLauncherException e) {
-					JOptionPane.showMessageDialog(getParent(), "Incompatible Login Version.");
-					progressBar.setVisible(false);
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-					this.cancel(true);
-					progressBar.setVisible(false);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				loginButton.setEnabled(true);
-				optionsButton.setEnabled(true);
-				modsButton.setEnabled(true);
-				loginSkin1.setEnabled(true);
-				loginSkin2.setEnabled(true);
-				this.cancel(true);
-				return false;
-			}
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    updatePasswordField();
+  }
 
-			protected void done() {
-				if (values == null || values.length < 4)
-					return;
-				LoginForm.pass = pass;
+  private void writeUsernameList() {
+    try {
+      File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
 
-				MessageDigest digest = null;
+      Cipher cipher = getCipher(1, "passwordfile");
 
-				try {
-					digest = MessageDigest.getInstance("SHA-256");
-				} catch (NoSuchAlgorithmException e) {
-				}
+      DataOutputStream dos;
+      if (cipher != null) {
+        dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
+      } else {
+        dos = new DataOutputStream(new FileOutputStream(lastLogin, true));
+      }
+      for (String user : usernames.keySet()) {
+        dos.writeUTF(user);
+        UserPasswordInformation info = usernames.get(user);
+        dos.writeBoolean(info.isHash);
+        if (info.isHash) {
+          dos.write(info.passwordHash);
+        } else {
+          dos.writeUTF(info.password);
+        }
+      }
+      dos.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-				gameUpdater.user = values[2].trim();
-				gameUpdater.downloadTicket = values[1].trim();
-				if (!cmdLine) {
-					String password = new String(passwordField.getPassword());
-					if (rememberCheckbox.isSelected()) {
-						usernames.put(gameUpdater.user, new UserPasswordInformation(password));
-					}
-					else {
-						if (digest == null) {
-							usernames.put(gameUpdater.user, new UserPasswordInformation(""));
-						}
-						else {
-							usernames.put(gameUpdater.user, new UserPasswordInformation(digest.digest(password.getBytes())));
-						}
-					}
-					writeUsernameList();
-				}
+  public void actionPerformed(ActionEvent event) {
+    String eventId = event.getActionCommand();
+    if (event.getSource() == loginSkin1 || event.getSource() == loginSkin2) {
+      eventId = "Login";
+      this.usernameField.setSelectedItem(((JButton) event.getSource()).getText());
+    } else if (loginSkin1Image.contains(event.getSource())) {
+      eventId = "Login";
+      this.usernameField.setSelectedItem(loginSkin1.getText());
+    } else if (loginSkin2Image.contains(event.getSource())) {
+      eventId = "Login";
+      this.usernameField.setSelectedItem(loginSkin2.getText());
+    }
+    if ((eventId.equals("Login") || eventId.equals(usernameField.getSelectedItem())) && loginButton.isEnabled()) {
+      doLogin();
+    } else if (eventId.equals("Options")) {
+      options.setVisible(true);
+      options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
+    } else if (eventId.equals("Mods")) {
+      mods.setVisible(true);
+    } else if (eventId.equals("comboBoxChanged")) {
+      updatePasswordField();
+    }
+  }
 
-				SwingWorker<Boolean, String> updateThread = new SwingWorker<Boolean, String>() {
+  private void updatePasswordField() {
+    if (this.usernameField.getSelectedItem() != null) {
+      UserPasswordInformation info = usernames.get(this.usernameField.getSelectedItem().toString());
+      if (info != null) {
+        if (info.isHash) {
+          this.passwordField.setText("");
+          this.rememberCheckbox.setSelected(false);
+        } else {
+          this.passwordField.setText(info.password);
+          this.rememberCheckbox.setSelected(true);
+        }
+      }
+    }
+  }
 
-					protected Boolean doInBackground() throws Exception {
-						publish("Checking for Minecraft Update...\n");
-						mcUpdate = gameUpdater.checkMCUpdate();
+  public void doLogin() {
+    doLogin(usernameField.getSelectedItem().toString(), new String(passwordField.getPassword()), false);
+  }
 
-						publish("Checking for Spoutcraft update...\n");
-						spoutUpdate = gameUpdater.isSpoutcraftUpdateAvailable();
-						
-						publish(String.format("Checking for %s update...\n", ModPackListYML.currentModPackLabel));
-						modpackUpdate = gameUpdater.isModpackUpdateAvailable();
-						return true;
-					}
-					
-					protected void done() {
-						if (mcUpdate) {
-							updateDialog.setToUpdate("Minecraft");
-						} else if (spoutUpdate) {
-							updateDialog.setToUpdate("Spoutcraft");
-						} else if (modpackUpdate) {
-							updateDialog.setToUpdate(ModPackListYML.currentModPackLabel);
-						}
-						if (mcUpdate || spoutUpdate || modpackUpdate) {
-							if (!GameUpdater.binDir.exists())
-								updateThread();
-							else
-								LoginForm.updateDialog.setVisible(true);
-						} else {
-							runGame();
-						}
-						this.cancel(true);
-					}
+  public void doLogin(final String user, final String pass) {
+    doLogin(user, pass, true);
+  }
 
-					protected void process(List<String> chunks) {
-						progressBar.setString(chunks.get(0));
-					}
-				};
-				updateThread.execute();
-				this.cancel(true);
-			}
-		};
-		loginThread.execute();
-	}
+  public void doLogin(final String user, final String pass, final boolean cmdLine) {
+    if (user == null || pass == null) {
+      return;
+    }
+    this.loginButton.setEnabled(false);
+    this.optionsButton.setEnabled(false);
+    this.modsButton.setEnabled(false);
+    this.loginSkin1.setEnabled(false);
+    this.loginSkin2.setEnabled(false);
+    options.setVisible(false);
+    SwingWorker<Boolean, Boolean> loginThread = new SwingWorker<Boolean, Boolean>() {
 
-	public void updateThread() {
-		SwingWorker<Boolean, String> updateThread = new SwingWorker<Boolean, String>() {
-			boolean error = false;
-			protected void done() {
-				progressBar.setVisible(false);
-				if (!error){
-					runGame();
-				}
-				this.cancel(true);
-			}
+      protected Boolean doInBackground() {
+        progressBar.setVisible(true);
+        progressBar.setString("Connecting to www.minecraft.net...");
+        try {
+          values = MinecraftUtils.doLogin(user, pass, progressBar);
+          return true;
+        } catch (BadLoginException e) {
+          JOptionPane.showMessageDialog(getParent(), "Incorrect usernameField/passwordField combination");
+          this.cancel(true);
+          progressBar.setVisible(false);
+        } catch (MinecraftUserNotPremiumException e) {
+          JOptionPane.showMessageDialog(getParent(), "You purchase a minecraft account to play");
+          this.cancel(true);
+          progressBar.setVisible(false);
+        } catch (MCNetworkException e) {
+          UserPasswordInformation info = null;
 
-			protected Boolean doInBackground() throws Exception {
-				try {
-					if (mcUpdate) {
-						gameUpdater.updateMC();
-					}
+          for (String username : usernames.keySet()) {
+            if (username.equalsIgnoreCase(user)) {
+              info = usernames.get(username);
+              break;
+            }
+          }
 
-					if (spoutUpdate) {
-						gameUpdater.updateSpoutcraft();
-					}
-					if (modpackUpdate) {
-						gameUpdater.updateModPackMods();
-					}
-				}
-				catch (NoMirrorsAvailableException e) {
-					JOptionPane.showMessageDialog(getParent(), "No Mirrors Are Available to download from!\nTry again later.");
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(getParent(), "Download Interrupted!");
-					error = true;
-					loginButton.setEnabled(true);
-					optionsButton.setEnabled(true);
-					modsButton.setEnabled(true);
-					loginSkin1.setEnabled(true);
-					loginSkin2.setEnabled(true);
-					this.cancel(true);
-					return false;
-				}
-				return true;
-			}
+          boolean authFailed = (info == null);
 
-			protected void process(List<String> chunks) {
-				progressBar.setString(chunks.get(0));
-			}
+          if (!authFailed) {
+            if (info.isHash) {
+              try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] hash = digest.digest(pass.getBytes());
+                for (int i = 0; i < hash.length; i++) {
+                  if (hash[i] != info.passwordHash[i]) {
+                    authFailed = true;
+                    break;
+                  }
+                }
+              } catch (NoSuchAlgorithmException ex) {
+                authFailed = true;
+              }
+            } else {
+              authFailed = !(pass.equals(info.password));
+            }
+          }
 
-		};
-		updateThread.execute();
-	}
+          if (authFailed) {
+            JOptionPane.showMessageDialog(getParent(), "Unable to authenticate account with minecraft.net");
+          } else {
+            int result = JOptionPane.showConfirmDialog(getParent(), "Would you like to run in offline mode?", "Unable to Connect to Minecraft.net", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.YES_OPTION) {
+              values = new String[]{"0", "0", user, "0"};
+              return true;
+            }
+          }
+          this.cancel(true);
+          progressBar.setVisible(false);
+        } catch (OutdatedMCLauncherException e) {
+          JOptionPane.showMessageDialog(getParent(), "Incompatible Login Version.");
+          progressBar.setVisible(false);
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+          this.cancel(true);
+          progressBar.setVisible(false);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        loginButton.setEnabled(true);
+        optionsButton.setEnabled(true);
+        modsButton.setEnabled(true);
+        loginSkin1.setEnabled(true);
+        loginSkin2.setEnabled(true);
+        this.cancel(true);
+        return false;
+      }
 
-	private Cipher getCipher(int mode, String password) throws Exception {
-		Random random = new Random(43287234L);
-		byte[] salt = new byte[8];
-		random.nextBytes(salt);
-		PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 5);
+      @Override
+      protected void done() {
+        if (values == null || values.length < 4) {
+          return;
+        }
+        LoginForm.pass = pass;
 
-		SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(new PBEKeySpec(password.toCharArray()));
-		Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
-		cipher.init(mode, pbeKey, pbeParamSpec);
-		return cipher;
-	}
+        MessageDigest digest = null;
 
-	public void runGame() {
-		LauncherFrame launcher = new LauncherFrame();
-		launcher.setLoginForm(this);
-		int result = launcher.runGame(values[2].trim(), values[3].trim(), values[1].trim(), pass);
-		if (result == LauncherFrame.SUCCESSFUL_LAUNCH) {
-			LoginForm.updateDialog.dispose();
-			LoginForm.updateDialog = null;
-			setVisible(false);
-			dispose();
-		}
-		else if (result == LauncherFrame.ERROR_IN_LAUNCH){
-			loginButton.setEnabled(true);
-			optionsButton.setEnabled(true);
-			modsButton.setEnabled(true);
-			loginSkin1.setEnabled(true);
-			loginSkin2.setEnabled(true);
-			progressBar.setVisible(false);
-		}
-		
-		this.success = result;
-		//Do nothing for retrying launch
-	}
-	
-	public void windowOpened(WindowEvent e) {
-		tumblerFeed = new TumblerFeedParsingWorker(editorPane);
-		tumblerFeed.execute();
+        try {
+          digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+        }
 
-		File cacheDir = new File(PlatformUtils.getWorkingDirectory(), "cache");
-		cacheDir.mkdir();
-		File backgroundImage = new File(cacheDir, "launcher_background.jpg");
-		(new BackgroundImageWorker(backgroundImage, background)).execute();
-	}
+        gameUpdater.user = values[2].trim();
+        gameUpdater.downloadTicket = values[1].trim();
+        if (!cmdLine) {
+          String password = new String(passwordField.getPassword());
+          if (rememberCheckbox.isSelected()) {
+            usernames.put(gameUpdater.user, new UserPasswordInformation(password));
+          } else {
+            if (digest == null) {
+              usernames.put(gameUpdater.user, new UserPasswordInformation(""));
+            } else {
+              usernames.put(gameUpdater.user, new UserPasswordInformation(digest.digest(password.getBytes())));
+            }
+          }
+          writeUsernameList();
+        }
 
-	public void windowClosing(WindowEvent e) {
-	}
+        SwingWorker<Boolean, String> updateThread = new SwingWorker<Boolean, String>() {
 
-	public void windowClosed(WindowEvent e) {
-		if (success == LauncherFrame.ERROR_IN_LAUNCH) {
-			System.out.println("Exiting the Technic Launcher");
-			System.exit(0);
-		}
-	}
+          protected Boolean doInBackground() throws Exception {
+            publish("Checking for Minecraft Update...\n");
+            mcUpdate = gameUpdater.checkMCUpdate();
 
-	public void windowIconified(WindowEvent e) {
-	}
+            publish("Checking for Spoutcraft update...\n");
+            spoutUpdate = gameUpdater.isSpoutcraftUpdateAvailable();
 
-	public void windowDeiconified(WindowEvent e) {
-	}
+            publish(String.format("Checking for %s update...\n", ModPackListYML.currentModPackLabel));
+            modpackUpdate = gameUpdater.isModpackUpdateAvailable();
+            return true;
+          }
 
-	public void windowActivated(WindowEvent e) {
-	}
+          @Override
+          protected void done() {
+            if (mcUpdate) {
+              updateDialog.setToUpdate("Minecraft");
+            } else if (spoutUpdate) {
+              updateDialog.setToUpdate("Spoutcraft");
+            } else if (modpackUpdate) {
+              updateDialog.setToUpdate(ModPackListYML.currentModPackLabel);
+            }
+            if (mcUpdate || spoutUpdate || modpackUpdate) {
+              if (!GameUpdater.binDir.exists() || mcUpdate) {
+                updateThread();
+              } else {
+                LoginForm.updateDialog.setVisible(true);
+              }
+            } else {
+              runGame();
+            }
+            this.cancel(true);
+          }
 
-	public void windowDeactivated(WindowEvent e) {
-	}
-	
-	private static final class UserPasswordInformation {
-		public boolean isHash;
-		public byte[] passwordHash = null;
-		public String password = null;
+          @Override
+          protected void process(List<String> chunks) {
+            progressBar.setString(chunks.get(0));
+          }
+        };
+        updateThread.execute();
+        this.cancel(true);
+      }
+    };
+    loginThread.execute();
+  }
 
-		public UserPasswordInformation(String pass) {
-			isHash = false;
-			password = pass;
-		}
-		public UserPasswordInformation(byte[] hash) {
-			isHash = true;
-			passwordHash = hash;
-		}
-	}
+  public void updateThread() {
+    SwingWorker<Boolean, String> updateThread = new SwingWorker<Boolean, String>() {
+
+      boolean error = false;
+
+      @Override
+      protected void done() {
+        progressBar.setVisible(false);
+        if (!error) {
+          runGame();
+        }
+        this.cancel(true);
+      }
+
+      protected Boolean doInBackground() throws Exception {
+        try {
+          if (mcUpdate) {
+            gameUpdater.updateMC();
+          }
+          if (spoutUpdate) {
+            gameUpdater.updateSpoutcraft();
+          }
+          if (modpackUpdate) {
+            gameUpdater.updateModPackMods();
+          }
+        } catch (NoMirrorsAvailableException e) {
+          JOptionPane.showMessageDialog(getParent(), "No Mirrors Are Available to download from!\nTry again later.");
+        } catch (Exception e) {
+          e.printStackTrace();
+          JOptionPane.showMessageDialog(getParent(), "Update Failed!");
+          error = true;
+          loginButton.setEnabled(true);
+          optionsButton.setEnabled(true);
+          modsButton.setEnabled(true);
+          loginSkin1.setEnabled(true);
+          loginSkin2.setEnabled(true);
+          this.cancel(true);
+          return false;
+        }
+        return true;
+      }
+
+      @Override
+      protected void process(List<String> chunks) {
+        progressBar.setString(chunks.get(0));
+      }
+    };
+    updateThread.execute();
+  }
+
+  private Cipher getCipher(int mode, String password) throws Exception {
+    Random random = new Random(43287234L);
+    byte[] salt = new byte[8];
+    random.nextBytes(salt);
+    PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 5);
+
+    SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(new PBEKeySpec(password.toCharArray()));
+    Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
+    cipher.init(mode, pbeKey, pbeParamSpec);
+    return cipher;
+  }
+
+  public void runGame() {
+    LauncherFrame launcher = new LauncherFrame();
+    launcher.setLoginForm(this);
+    int result = launcher.runGame(values[2].trim(), values[3].trim(), values[1].trim(), pass);
+    if (result == LauncherFrame.SUCCESSFUL_LAUNCH) {
+      LoginForm.updateDialog.dispose();
+      LoginForm.updateDialog = null;
+      setVisible(false);
+      dispose();
+    } else if (result == LauncherFrame.ERROR_IN_LAUNCH) {
+      loginButton.setEnabled(true);
+      optionsButton.setEnabled(true);
+      modsButton.setEnabled(true);
+      loginSkin1.setEnabled(true);
+      loginSkin2.setEnabled(true);
+      progressBar.setVisible(false);
+    }
+
+    this.success = result;
+    //Do nothing for retrying launch
+  }
+
+  public void windowOpened(WindowEvent e) {
+    tumblerFeed = new TumblerFeedParsingWorker(editorPane);
+    tumblerFeed.execute();
+
+    File cacheDir = new File(PlatformUtils.getWorkingDirectory(), "cache");
+    cacheDir.mkdir();
+    File backgroundImage = new File(cacheDir, "launcher_background.jpg");
+    (new BackgroundImageWorker(backgroundImage, background)).execute();
+  }
+
+  public void windowClosing(WindowEvent e) {
+  }
+
+  public void windowClosed(WindowEvent e) {
+    if (success == LauncherFrame.ERROR_IN_LAUNCH) {
+      System.out.println("Exiting the Technic Launcher");
+      System.exit(0);
+    }
+  }
+
+  public void windowIconified(WindowEvent e) {
+  }
+
+  public void windowDeiconified(WindowEvent e) {
+  }
+
+  public void windowActivated(WindowEvent e) {
+  }
+
+  public void windowDeactivated(WindowEvent e) {
+  }
+
+  private static final class UserPasswordInformation {
+
+    public boolean isHash;
+    public byte[] passwordHash = null;
+    public String password = null;
+
+    public UserPasswordInformation(String pass) {
+      isHash = false;
+      password = pass;
+    }
+
+    public UserPasswordInformation(byte[] hash) {
+      isHash = true;
+      passwordHash = hash;
+    }
+  }
 }
-

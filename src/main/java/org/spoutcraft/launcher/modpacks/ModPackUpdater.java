@@ -1,12 +1,6 @@
 package org.spoutcraft.launcher.modpacks;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
@@ -15,209 +9,209 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.spoutcraft.launcher.DownloadUtils;
-import org.spoutcraft.launcher.GameUpdater;
-import org.spoutcraft.launcher.MD5Utils;
-import org.spoutcraft.launcher.MirrorUtils;
-import org.spoutcraft.launcher.PlatformUtils;
-import org.spoutcraft.launcher.SpoutcraftBuild;
+import org.spoutcraft.launcher.*;
 import org.spoutcraft.launcher.async.Download;
 
 public class ModPackUpdater extends GameUpdater {
-	static volatile boolean updated = false;
 
-	public static final String defaultModPackName = "technicssp";
+  public static final String defaultModPackName = "technicssp";
+  
+  private static final String baseFallbackURL = "http://technic.freeworldsgaming.com/";
+  private static final String fallbackModsURL = baseFallbackURL + "mods/";
 
-	private static String baseFallbackURL = "http://technic.freeworldsgaming.com/";
-	private static String fallbackModsURL = baseFallbackURL + "mods/";
+  public void updateModPackMods() {
+    try {
 
-	static Object key = new Object();
+      Map<String, Object> modLibrary = (Map<String, Object>) ModLibraryYML.getModLibraryYML().getProperty("mods");
+      Map<String, Object> currentModList = ModpackBuild.getSpoutcraftBuild().getMods();
 
-	public void updateModPackMods() {
-		try {
+      // Remove Mods no longer in previous version
+      removeOldMods(currentModList.keySet());
 
-			Map<String, Object> modLibrary = (Map<String, Object>) ModLibraryYML.getModLibraryYML().getProperty("mods");
-			Map<String, Object> currentModList = SpoutcraftBuild.getSpoutcraftBuild().getMods();
+      for (Map.Entry<String, Object> modEntry2 : currentModList.entrySet()) {
+        String modName = modEntry2.getKey();
 
-			// Remove Mods no longer in previous version
-			removeOldMods(currentModList.keySet());
+        if (!modLibrary.containsKey(modName)) {
+          throw new IOException(String.format("Mod '%s' is missing from the mod library", modName));
+        }
 
-			for (Map.Entry<String, Object> modEntry2 : currentModList.entrySet()) {
-				String modName = modEntry2.getKey();
+        Map<String, Object> modProperties = (Map<String, Object>) modLibrary.get(modName);
+        Map<String, Object> modVersions = (Map<String, Object>) modProperties.get("versions");
 
-				if (!modLibrary.containsKey(modName))
-					throw new IOException(String.format("Mod '%s' is missing from the mod library", modName));
+        String version = modEntry2.getValue().toString();
 
-				Map<String, Object> modProperties = (Map<String, Object>) modLibrary.get(modName);
-				Map<String, Object> modVersions = (Map<String, Object>) modProperties.get("versions");
+        if (!modVersions.containsKey(version)) {
+          throw new IOException(String.format("Mod '%s' version '%s' is missing from the mod library", modName, version));
+        }
 
-				String version = modEntry2.getValue().toString();
+        String installType = modProperties.containsKey("installtype") ? (String) modProperties.get("installtype") : "zip";
+        String fullFilename = modName + "-" + version + "." + installType;
+        Boolean isOptional = modProperties.containsKey("optional") ? (Boolean) modProperties.get("optional") : false;
 
-				if (!modVersions.containsKey(version))
-					throw new IOException(String.format("Mod '%s' version '%s' is missing from the mod library", modName, version));
+        String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
 
-				String installType = modProperties.containsKey("installtype") ? (String) modProperties.get("installtype") : "zip";
-				String fullFilename = modName + "-" + version + "." + installType;
-				Boolean isOptional = modProperties.containsKey("optional") ? (Boolean) modProperties.get("optional") : false;
+        // If installed mods md5 hash is the same as server's version
+        // then go to next mod.
+        if (installedModVersion != null && installedModVersion.equals(version)) {
+          String md5ModPath = String.format("mods/%s/%s", modName, fullFilename);
+          if (MD5Utils.checksumCachePath(fullFilename, md5ModPath)) {
+            continue;
+          }
+        }
 
-				String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
+        File modFile = new File(tempDir, fullFilename);
 
-				// If installed mods md5 hash is the same as server's version
-				// then go to next mod.
-				if (installedModVersion != null && installedModVersion.equals(version)) {
-					String md5ModPath = String.format("mods/%s/%s", modName, fullFilename);
-					if (MD5Utils.checksumCachePath(fullFilename, md5ModPath)) {
-						continue;
-					}
-				}
+        // If have the mod file then update
+        if (downloadModPackage(modName, fullFilename, modFile)) {
+          updateMod(modFile, modName, version);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
-				File modFile = new File(tempDir, fullFilename);
+  private void removeOldMods(Set<String> modsToInstall) {
+    Map<String, String> installedMods = InstalledModsYML.getInstalledMods();
 
-				// If have the mod file then update
-				if (downloadModPackage(modName, fullFilename, modFile))
-					updateMod(modFile, modName, version);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    if (installedMods == null || modsToInstall == null || modsToInstall.size() <= 0) {
+      return;
+    }
 
-	private void removeOldMods(Set<String> modsToInstall) {
-		Map<String, String> installedMods = InstalledModsYML.getInstalledMods();
+    Set<String> modsToRemove = installedMods.keySet();
+    modsToRemove.removeAll(modsToInstall);
 
-		if (installedMods == null || modsToInstall == null || modsToInstall.size() <= 0)
-			return;
+    for (String modName : modsToRemove) {
+      removePreviousModVersion(modName, installedMods.get(modName));
+    }
+  }
 
-		Set<String> modsToRemove = installedMods.keySet();
-		modsToRemove.removeAll(modsToInstall);
+  public boolean downloadModPackage(String name, String filename, File downloadedFile) {
+    try {
+      // Install from cache if md5 matches otherwise download and insert
+      // to cache
+      File modCache = new File(cacheDir, filename);
+      String md5Name = "mods\\" + name + "\\" + filename;
+      if (modCache.exists() && MD5Utils.checksumCachePath(filename, md5Name)) {
+        copy(modCache, downloadedFile);
+        return true;
+      } else {
+        String mirrorURL = "mods/" + name + "/" + filename;
+        String fallbackURL = fallbackModsURL + name + "/" + filename;
+        String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
+        String fileMD5 = MD5Utils.getMD5FromList(mirrorURL);
+        Download download = DownloadUtils.downloadFile(url, downloadedFile.getPath(), filename, fileMD5, this);
+        return download.isSuccess();
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
 
-		for (String modName : modsToRemove) {
-			removePreviousModVersion(modName, installedMods.get(modName));
-		}
-	}
+  public boolean createJar(File jarFilename, File... filesToAdd) {
+    try {
+      FileOutputStream stream = new FileOutputStream(jarFilename);
+      JarOutputStream out = new JarOutputStream(stream, new Manifest());
+      BufferedOutputStream bos = new BufferedOutputStream(out);
+      for (File fileToAdd : filesToAdd) {
+        if (fileToAdd == null || !fileToAdd.exists() || fileToAdd.isDirectory()) {
+          continue; // Just in case...
+        }
+        JarEntry jarAdd = new JarEntry(fileToAdd.getName());
+        jarAdd.setTime(fileToAdd.lastModified());
+        out.putNextEntry(jarAdd);
+        FileInputStream in = new FileInputStream(fileToAdd);
+        BufferedInputStream bis = new BufferedInputStream(in);
+        int data;
+        while ((data = bis.read()) != -1) {
+          bos.write(data);
+        }
+        bis.close();
+        in.close();
+      }
+      bos.close();
+      out.close();
+      stream.close();
+    } catch (FileNotFoundException e) {
+      // skip not found file
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return true;
+  }
 
-	public boolean downloadModPackage(String name, String filename, File downloadedFile) {
-		try {
-			// Install from cache if md5 matches otherwise download and insert
-			// to cache
-			File modCache = new File(cacheDir, filename);
-			String md5Name = "mods\\" + name + "\\" + filename;
-			if (modCache.exists() && MD5Utils.checksumCachePath(filename, md5Name)) {
-				copy(modCache, downloadedFile);
-				return true;
-			} else {
-				String mirrorURL = "mods/" + name + "/" + filename;
-				String fallbackURL = fallbackModsURL + name + "/" + filename;
-				String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
-				String fileMD5 = MD5Utils.getMD5FromList(mirrorURL);
-				Download download = DownloadUtils.downloadFile(url, downloadedFile.getPath(), filename, fileMD5, this);
-				return download.isSuccess();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+  public void updateMod(File modFile, String modName, String modVersion) {
+    // Check if previous version of mod is installed
+    String installedVersion = InstalledModsYML.getInstalledModVersion(modName);
 
-	public boolean createJar(File jarFilename, File... filesToAdd) {
-		try {
-			FileOutputStream stream = new FileOutputStream(jarFilename);
-			JarOutputStream out = new JarOutputStream(stream, new Manifest());
-			BufferedOutputStream bos = new BufferedOutputStream(out);
-			for (File fileToAdd : filesToAdd) {
-				if (fileToAdd == null || !fileToAdd.exists() || fileToAdd.isDirectory())
-					continue; // Just in case...
-				JarEntry jarAdd = new JarEntry(fileToAdd.getName());
-				jarAdd.setTime(fileToAdd.lastModified());
-				out.putNextEntry(jarAdd);
-				FileInputStream in = new FileInputStream(fileToAdd);
-				BufferedInputStream bis = new BufferedInputStream(in);
-				int data;
-				while ((data = bis.read()) != -1)
-					bos.write(data);
-				bis.close();
-				in.close();
-			}
-			bos.close();
-			out.close();
-			stream.close();
-		} catch (FileNotFoundException e) {
-			// skip not found file
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return true;
-	}
+    if (installedVersion != null) {
+      removePreviousModVersion(modName, installedVersion);
+    }
 
-	public void updateMod(File modFile, String modName, String modVersion) {
-		// Check if previous version of mod is installed
-		String installedVersion = InstalledModsYML.getInstalledModVersion(modName);
+    stateChanged("Extracting Files ...", 0);
+    // Extract Natives
+    extractNatives2(PlatformUtils.getWorkingDirectory(), modFile);
 
-		if (installedVersion != null)
-			removePreviousModVersion(modName, installedVersion);
+    InstalledModsYML.setInstalledModVersion(modName, modVersion);
 
-		stateChanged("Extracting Files ...", 0);
-		// Extract Natives
-		extractNatives2(PlatformUtils.getWorkingDirectory(), modFile);
+    modFile.delete();
+  }
 
-		InstalledModsYML.setInstalledModVersion(modName, modVersion);
+  private void removePreviousModVersion(String modName, String installedVersion) {
+    try {
+      // Mod has been previously installed uninstall previous version
+      File previousModZip = new File(cacheDir, modName + "-" + installedVersion + ".zip");
+      ZipFile zf = new ZipFile(previousModZip);
+      Enumeration<? extends ZipEntry> entries = zf.entries();
+      // Go through zipfile of previous version and delete all file from
+      // Madpack that exist in the zip
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = entries.nextElement();
+        if (entry.isDirectory()) {
+          continue;
+        }
+        File file = new File(PlatformUtils.getWorkingDirectory(), entry.getName());
+        if (file.exists()) {
+          // File from mod exists.. delete it
+          file.delete();
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
-		modFile.delete();
-	}
+  public boolean isModpackUpdateAvailable() throws IOException {
 
-	private void removePreviousModVersion(String modName, String installedVersion) {
-		try {
-			// Mod has been previously installed uninstall previous version
-			File previousModZip = new File(cacheDir, modName + "-" + installedVersion + ".zip");
-			ZipFile zf = new ZipFile(previousModZip);
-			Enumeration<? extends ZipEntry> entries = zf.entries();
-			// Go through zipfile of previous version and delete all file from
-			// Madpack that exist in the zip
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = entries.nextElement();
-				if (entry.isDirectory())
-					continue;
-				File file = new File(PlatformUtils.getWorkingDirectory(), entry.getName());
-				if (file.exists()) {
-					// File from mod exists.. delete it
-					file.delete();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    Map<String, Object> modLibrary = (Map<String, Object>) ModLibraryYML.getModLibraryYML().getProperty("mods");
+    Map<String, Object> currentModList = ModpackBuild.getSpoutcraftBuild().getMods();
 
-	public boolean isModpackUpdateAvailable() throws IOException {
+    for (Map.Entry<String, Object> modEntry2 : currentModList.entrySet()) {
+      String modName = modEntry2.getKey();
 
-		Map<String, Object> modLibrary = (Map<String, Object>) ModLibraryYML.getModLibraryYML().getProperty("mods");
-		Map<String, Object> currentModList = SpoutcraftBuild.getSpoutcraftBuild().getMods();
+      if (!modLibrary.containsKey(modName)) {
+        throw new IOException("Mod is missing from the mod library");
+      }
 
-		for (Map.Entry<String, Object> modEntry2 : currentModList.entrySet()) {
-			String modName = modEntry2.getKey();
+      Map<String, Object> modProperties = (Map<String, Object>) modLibrary.get(modName);
+      Map<String, Object> modVersions = (Map<String, Object>) modProperties.get("versions");
 
-			if (!modLibrary.containsKey(modName))
-				throw new IOException("Mod is missing from the mod library");
+      String version = modEntry2.getValue().toString();
 
-			Map<String, Object> modProperties = (Map<String, Object>) modLibrary.get(modName);
-			Map<String, Object> modVersions = (Map<String, Object>) modProperties.get("versions");
+      if (!modVersions.containsKey(version)) {
+        throw new IOException("Mod version is missing from the mod library");
+      }
 
-			String version = modEntry2.getValue().toString();
+      String installType = modProperties.get("installtype").toString();
+      String fullFilename = modName + "-" + version + "." + installType;
 
-			if (!modVersions.containsKey(version))
-				throw new IOException("Mod version is missing from the mod library");
+      String md5Name = "mods\\" + modName + "\\" + fullFilename;
+      if (MD5Utils.checksumCachePath(fullFilename, md5Name)) {
+        return true;
+      }
+    }
 
-			String installType = modProperties.get("installtype").toString();
-			String fullFilename = modName + "-" + version + "." + installType;
-
-			String md5Name = "mods\\" + modName + "\\" + fullFilename;
-			if (MD5Utils.checksumCachePath(fullFilename, md5Name)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
+    return false;
+  }
 }

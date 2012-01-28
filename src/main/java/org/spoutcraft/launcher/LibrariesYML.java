@@ -1,19 +1,14 @@
 package org.spoutcraft.launcher;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Map;
-
 import org.bukkit.util.config.Configuration;
 
 public class LibrariesYML {
 	private static final String LIBRARIES_YML = "libraries.yml";
 	private static volatile boolean updated = false;
 	private static File librariesYMLFile = new File(GameUpdater.workDir, LIBRARIES_YML);
-	private static Object key = new Object();
+	private static final Object key = new Object();
 
 	public static Configuration getLibrariesYML() {
 		updateLibrariesYMLCache();

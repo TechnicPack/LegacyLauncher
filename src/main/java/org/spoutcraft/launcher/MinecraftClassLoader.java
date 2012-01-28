@@ -50,8 +50,7 @@ public class MinecraftClassLoader extends URLClassLoader{
 	
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		Class<?> result = null;
-		result = loadedClasses.get(name); //checks in cached classes  
+		Class<?> result = loadedClasses.get(name); //checks in cached classes  
 		if (result != null) {
 			return result;
 		}
@@ -71,8 +70,6 @@ public class MinecraftClassLoader extends URLClassLoader{
 	}
 	
 	private Class<?> findClassInjar(String name, File file) throws ClassNotFoundException {
-		byte classByte[];
-		Class<?> result = null;
 		try {
 			JarFile jar = new JarFile(file);
 			JarEntry entry = jar.getJarEntry(name.replace(".", "/") + ".class");  
@@ -85,8 +82,8 @@ public class MinecraftClassLoader extends URLClassLoader{
 					next = is.read();
 				}
 	
-				classByte = byteStream.toByteArray();
-				result = defineClass(name, classByte, 0, classByte.length, new CodeSource(file.toURI().toURL(), (CodeSigner[])null));
+				byte classByte[] = byteStream.toByteArray();
+				Class<?> result = defineClass(name, classByte, 0, classByte.length, new CodeSource(file.toURI().toURL(), (CodeSigner[])null));
 				loadedClasses.put(name, result);
 				return result;
 			}

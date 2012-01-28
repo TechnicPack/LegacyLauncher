@@ -16,19 +16,17 @@
  */
 package org.spoutcraft.launcher;
 
+import com.beust.jcommander.JCommander;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import javax.swing.UIManager;
-
 import org.spoutcraft.launcher.gui.LoadingScreen;
 import org.spoutcraft.launcher.gui.LoginForm;
 import org.spoutcraft.launcher.logs.SystemConsoleListener;
-
-import com.beust.jcommander.JCommander;
 
 public class Main {
 
@@ -61,9 +59,7 @@ public class Main {
 			params.add("-classpath");
 			params.add(pathToJar);
 			params.add("org.spoutcraft.launcher.Main");
-			for (String arg : args_temp) {
-				params.add(arg);
-			}
+      params.addAll(Arrays.asList(args_temp));
 
 			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
 				params.add("-Xdock:name=\"Technic Launcher\"");

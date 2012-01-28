@@ -2,13 +2,14 @@ package org.spoutcraft.launcher;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpoutFocusTraversalPolicy extends FocusTraversalPolicy {
-	Vector<Component> order;
+	List<Component> order;
 
-	public SpoutFocusTraversalPolicy(Vector<Component> order) {
-		this.order = new Vector<Component>(order.size());
+	public SpoutFocusTraversalPolicy(List<Component> order) {
+		this.order = new ArrayList<Component>(order.size());
 		this.order.addAll(order);
 	}
 
@@ -30,7 +31,7 @@ public class SpoutFocusTraversalPolicy extends FocusTraversalPolicy {
 	}
 
 	public Component getLastComponent(Container focusCycleRoot) {
-		return order.lastElement();
+		return order.get(order.size() - 1);
 	}
 
 	public Component getFirstComponent(Container focusCycleRoot) {

@@ -23,10 +23,7 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-
 import javax.swing.JOptionPane;
-
-import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.Launcher;
 import org.spoutcraft.launcher.MinecraftAppletEnglober;
 import org.spoutcraft.launcher.MinecraftUtils;
@@ -94,7 +91,7 @@ public class LauncherFrame extends Frame implements WindowListener{
 		minecraft.addParameter("downloadticket", downloadTicket);
 		minecraft.addParameter("mppass", mcpass);
 		minecraft.addParameter("spoutcraftlauncher", "true");
-		minecraft.addParameter("portable", MinecraftUtils.getOptions().isPortable() + "");
+		minecraft.addParameter("portable", String.valueOf(MinecraftUtils.getOptions().isPortable()));
 		if (MinecraftUtils.getOptions().getServer() != null) {
 			minecraft.addParameter("server", MinecraftUtils.getOptions().getServer());
 			if (MinecraftUtils.getOptions().getPort() != null) {

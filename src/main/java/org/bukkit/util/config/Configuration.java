@@ -1,25 +1,14 @@
 package org.bukkit.util.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
-
 import org.spoutcraft.launcher.Util;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.nodes.CollectionNode;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.SequenceNode;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.nodes.*;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;

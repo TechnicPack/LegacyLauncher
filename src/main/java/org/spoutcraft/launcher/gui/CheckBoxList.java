@@ -1,9 +1,11 @@
 package org.spoutcraft.launcher.gui;
 
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 public class CheckBoxList extends JList
 {
