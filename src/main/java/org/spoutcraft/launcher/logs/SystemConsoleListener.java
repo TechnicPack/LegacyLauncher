@@ -18,7 +18,12 @@ package org.spoutcraft.launcher.logs;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
+
 import org.spoutcraft.launcher.PlatformUtils;
 
 public class SystemConsoleListener {

@@ -8,7 +8,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
+
+import javax.swing.AbstractButton;
+import javax.swing.AbstractListModel;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 
 public class ModsDialog extends JDialog implements ActionListener {
 	private final JPanel								contentPanel	= new JPanel();

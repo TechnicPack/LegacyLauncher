@@ -23,7 +23,9 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
 import javax.swing.JOptionPane;
+
 import org.spoutcraft.launcher.Launcher;
 import org.spoutcraft.launcher.MinecraftAppletEnglober;
 import org.spoutcraft.launcher.MinecraftUtils;

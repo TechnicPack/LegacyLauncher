@@ -3,6 +3,7 @@ package org.spoutcraft.launcher.modpacks;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.YmlUtils;

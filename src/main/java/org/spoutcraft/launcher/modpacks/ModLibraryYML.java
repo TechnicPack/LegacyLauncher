@@ -1,6 +1,7 @@
 package org.spoutcraft.launcher.modpacks;
 
 import java.io.File;
+
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.YmlUtils;

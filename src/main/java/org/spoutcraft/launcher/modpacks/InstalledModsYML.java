@@ -2,6 +2,7 @@ package org.spoutcraft.launcher.modpacks;
 
 import java.io.File;
 import java.util.Map;
+
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.PlatformUtils;
 

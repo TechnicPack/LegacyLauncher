@@ -1,10 +1,12 @@
 package org.spoutcraft.launcher.gui;
 
 import java.io.File;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.async.Download;
 

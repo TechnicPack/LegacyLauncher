@@ -1,8 +1,9 @@
 package SevenZip.Compression.LZMA;
 
-import SevenZip.Compression.RangeCoder.BitTreeEncoder;
-import SevenZip.ICodeProgress;
 import java.io.IOException;
+
+import SevenZip.ICodeProgress;
+import SevenZip.Compression.RangeCoder.BitTreeEncoder;
 
 public class Encoder {
 	public static final int	EMatchFinderTypeBT2	= 0;

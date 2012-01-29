@@ -24,11 +24,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Map;
+
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
-import org.spoutcraft.launcher.*;
+
+import org.spoutcraft.launcher.ComboItem;
+import org.spoutcraft.launcher.FileUtils;
+import org.spoutcraft.launcher.GameUpdater;
+import org.spoutcraft.launcher.Main;
+import org.spoutcraft.launcher.MinecraftYML;
+import org.spoutcraft.launcher.SettingsUtil;
+import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
 import org.spoutcraft.launcher.modpacks.ModPackYML;
 
