@@ -49,33 +49,33 @@ import org.spoutcraft.launcher.logs.SystemConsoleListener;
 import SevenZip.LzmaAlone;
 
 public class GameUpdater implements DownloadListener {
-	public static final String LAUNCHER_DIRECTORY = "launcher";	
-	public static final File WORKING_DIRECTORY = PlatformUtils.getWorkingDirectory();
-	
+	public static final String	LAUNCHER_DIRECTORY	= "launcher";
+	public static final File		WORKING_DIRECTORY		= PlatformUtils.getWorkingDirectory();
+
 	/* Minecraft Updating Arguments */
-	public String user = "Player";
-	public String downloadTicket = "1";
+	public String								user								= "Player";
+	public String								downloadTicket			= "1";
 
 	/* Files */
-	public static final File binDir = new File(WORKING_DIRECTORY, "bin");
-	public static final File cacheDir = new File(WORKING_DIRECTORY, "cache");
-	public static final File tempDir = new File(WORKING_DIRECTORY, "temp");
-	public static final File backupDir = new File(WORKING_DIRECTORY, "backups");
-	public static final File workDir = new File(WORKING_DIRECTORY, LAUNCHER_DIRECTORY);
-	public static final File savesDir = new File(WORKING_DIRECTORY, "saves");
-	public static final File modsDir = new File(WORKING_DIRECTORY, "mods");
-	public static final File modpackModsDir = new File(WORKING_DIRECTORY, "mods-modpack");
-	public static final File modpackSavesDir = new File(WORKING_DIRECTORY, "saves-modpack");
-	public static final File modconfigsDir = new File(WORKING_DIRECTORY, "config");
-	public static final File resourceDir = new File(WORKING_DIRECTORY, "resources");
-	
+	public static final File		binDir							= new File(WORKING_DIRECTORY, "bin");
+	public static final File		cacheDir						= new File(WORKING_DIRECTORY, "cache");
+	public static final File		tempDir							= new File(WORKING_DIRECTORY, "temp");
+	public static final File		backupDir						= new File(WORKING_DIRECTORY, "backups");
+	public static final File		workDir							= new File(WORKING_DIRECTORY, LAUNCHER_DIRECTORY);
+	public static final File		savesDir						= new File(WORKING_DIRECTORY, "saves");
+	public static final File		modsDir							= new File(WORKING_DIRECTORY, "mods");
+	public static final File		modpackModsDir			= new File(WORKING_DIRECTORY, "mods-modpack");
+	public static final File		modpackSavesDir			= new File(WORKING_DIRECTORY, "saves-modpack");
+	public static final File		modconfigsDir				= new File(WORKING_DIRECTORY, "config");
+	public static final File		resourceDir					= new File(WORKING_DIRECTORY, "resources");
 
 	/* Minecraft Updating Arguments */
-	public final String baseURL = "http://s3.amazonaws.com/MinecraftDownload/";
-	public final String latestLWJGLURL = "http://www.minedev.net/spout/lwjgl/";
-	public final String spoutcraftMirrors = "http://cdn.getspout.org/mirrors.html";
-	
-	private DownloadListener listener;
+	public final String					baseURL							= "http://s3.amazonaws.com/MinecraftDownload/";
+	public final String					latestLWJGLURL			= "http://www.minedev.net/spout/lwjgl/";
+	public final String					spoutcraftMirrors		= "http://cdn.getspout.org/mirrors.html";
+
+	private DownloadListener		listener;
+
 	public GameUpdater() {
 	}
 
@@ -83,17 +83,16 @@ public class GameUpdater implements DownloadListener {
 
 		binDir.mkdir();
 		cacheDir.mkdirs();
-		if (tempDir.exists())
-			FileUtils.deleteDirectory(tempDir);
+		if (tempDir.exists()) FileUtils.deleteDirectory(tempDir);
 		tempDir.mkdirs();
-		
+
 		String minecraftMD5 = MD5Utils.getMD5(FileType.minecraft);
 		String jinputMD5 = MD5Utils.getMD5(FileType.jinput);
 		String lwjglMD5 = MD5Utils.getMD5(FileType.lwjgl);
 		String lwjgl_utilMD5 = MD5Utils.getMD5(FileType.lwjgl_util);
-		
-		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
-		
+
+		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
+
 		// Processs minecraft.jar \\
 		File mcCache = new File(cacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
 		if (!mcCache.exists() || !minecraftMD5.equals(MD5Utils.getMD5(mcCache))) {
@@ -109,25 +108,22 @@ public class GameUpdater implements DownloadListener {
 		// Process other Downloads
 		mcCache = new File(cacheDir, "jinput.jar");
 		if (!mcCache.exists() || !jinputMD5.equals(MD5Utils.getMD5(mcCache))) {
-			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar",binDir.getPath() + File.separator + "jinput.jar", "jinput.jar", jinputMD5, listener);
-		}
-		else {
+			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar", binDir.getPath() + File.separator + "jinput.jar", "jinput.jar", jinputMD5, listener);
+		} else {
 			copy(mcCache, new File(binDir, "jinput.jar"));
 		}
-		
+
 		mcCache = new File(cacheDir, "lwjgl.jar");
 		if (!mcCache.exists() || !lwjglMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl.jar", binDir.getPath() + File.separator + "lwjgl.jar", "lwjgl.jar", lwjglMD5, listener);
-		}
-		else {
+		} else {
 			copy(mcCache, new File(binDir, "lwjgl.jar"));
 		}
-		
+
 		mcCache = new File(cacheDir, "lwjgl_util.jar");
 		if (!mcCache.exists() || !lwjgl_utilMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl_util.jar", binDir.getPath() + File.separator + "lwjgl_util.jar", "lwjgl_util.jar", lwjgl_utilMD5, listener);
-		}
-		else {
+		} else {
 			copy(mcCache, new File(binDir, "lwjgl_util.jar"));
 		}
 
@@ -137,53 +133,45 @@ public class GameUpdater implements DownloadListener {
 		// Extract Natives
 		try {
 			extractNatives(nativesDir, new File(GameUpdater.tempDir.getPath() + File.separator + "natives.zip"));
+		} catch (FileNotFoundException inUse) {
+			// If we previously loaded this dll with a failed launch, we will be
+			// unable to access the files
+			// This is because the previous classloader opened them with the
+			// parent classloader, and while the mc classloader
+			// has been gc'd, the parent classloader is still around, holding
+			// the file open. In that case, we have to assume
+			// the files are good, since they got loaded last time...
 		}
-		catch (FileNotFoundException inUse) {
-			//If we previously loaded this dll with a failed launch, we will be unable to access the files
-			//This is because the previous classloader opened them with the parent classloader, and while the mc classloader
-			//has been gc'd, the parent classloader is still around, holding the file open. In that case, we have to assume
-			//the files are good, since they got loaded last time...
-		}
-		
+
 		MinecraftYML.setInstalledVersion(build.getMinecraftVersion());
 	}
-	
+
 	public String getNativesUrl() {
-		if (SettingsUtil.isLatestLWJGL()) {
-			return latestLWJGLURL;
-		}
+		if (SettingsUtil.isLatestLWJGL()) { return latestLWJGLURL; }
 		return baseURL;
 	}
 
 	public String getNativesUrl(String fileName) {
-		if (SettingsUtil.isLatestLWJGL()) {
-			return latestLWJGLURL + fileName + ".zip";
-		}
+		if (SettingsUtil.isLatestLWJGL()) { return latestLWJGLURL + fileName + ".zip"; }
 		return baseURL + fileName + ".jar.lzma";
 	}
 
 	public boolean checkMCUpdate() {
-		if (!GameUpdater.binDir.exists())
-			return true;
-		if (!new File(binDir, "natives").exists())
-			return true;
+		if (!GameUpdater.binDir.exists()) return true;
+		if (!new File(binDir, "natives").exists()) return true;
 		File minecraft = new File(binDir, "minecraft.jar");
-		if (!minecraft.exists())
-			return true;
-		
+		if (!minecraft.exists()) return true;
+
 		File lib = new File(binDir, "jinput.jar");
-		if (!lib.exists())
-			return true;
-		
+		if (!lib.exists()) return true;
+
 		lib = new File(binDir, "lwjgl.jar");
-		if (!lib.exists())
-			return true;
-		
+		if (!lib.exists()) return true;
+
 		lib = new File(binDir, "lwjgl_util.jar");
-		if (!lib.exists())
-			return true;
-		
-		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
+		if (!lib.exists()) return true;
+
+		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
 		String installed = MinecraftYML.getInstalledVersion();
 		String required = build.getMinecraftVersion();
 		return !installed.equals(required);
@@ -191,26 +179,22 @@ public class GameUpdater implements DownloadListener {
 
 	private void extractNatives(File nativesDir, File nativesJar) throws Exception {
 
-		if (!nativesDir.exists())
-			nativesDir.mkdir();
+		if (!nativesDir.exists()) nativesDir.mkdir();
 
 		JarFile jar = new JarFile(nativesJar);
 		Enumeration<JarEntry> entries = jar.entries();
-		
+
 		float progressStep = 100F / jar.size();
 		float progress = 0;
-		
+
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
 			String name = entry.getName();
-			if (entry.isDirectory())
-				continue;
-			if (name.startsWith("META-INF"))
-				continue;
+			if (entry.isDirectory()) continue;
+			if (name.startsWith("META-INF")) continue;
 			InputStream inputStream = jar.getInputStream(entry);
 			File outFile = new File(nativesDir.getPath() + File.separator + name);
-			if (!outFile.exists())
-				outFile.createNewFile();
+			if (!outFile.exists()) outFile.createNewFile();
 			OutputStream out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
 
 			int read;
@@ -219,7 +203,7 @@ public class GameUpdater implements DownloadListener {
 			while ((read = inputStream.read(bytes)) != -1) {
 				out.write(bytes, 0, read);
 			}
-			
+
 			progress += progressStep;
 			stateChanged("Extracting Files...", progress);
 
@@ -229,46 +213,43 @@ public class GameUpdater implements DownloadListener {
 		}
 
 	}
-	
-	//Extracts zip to the folder
+
+	// Extracts zip to the folder
 	protected void extractNatives2(File nativesDir, File nativesJar) {
 		String name = null;
 
-		if (!nativesDir.exists())
-			nativesDir.mkdirs();
+		if (!nativesDir.exists()) nativesDir.mkdirs();
 
 		try {
 			JarFile jar = new JarFile(nativesJar);
 			Enumeration<JarEntry> entries = jar.entries();
-			
+
 			float progressStep = 100F / jar.size();
 			float progress = 0;
-			
+
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
 				name = entry.getName();
-				if (entry.isDirectory())
-				{
-					(new File(nativesDir.getPath() +  File.separator + entry.getName())).mkdirs();
+				if (entry.isDirectory()) {
+					(new File(nativesDir.getPath() + File.separator + entry.getName())).mkdirs();
 					continue;
 				}
 				InputStream inputStream = jar.getInputStream(entry);
 				File outFile = new File(nativesDir.getPath() + File.separator + name);
-				if (!outFile.exists())
-					outFile.createNewFile();
+				if (!outFile.exists()) outFile.createNewFile();
 				OutputStream out;
 				out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
 
 				int read;
 				byte[] bytes = new byte[1024];
-	
+
 				while ((read = inputStream.read(bytes)) != -1) {
 					out.write(bytes, 0, read);
 				}
-				
+
 				progress += progressStep;
 				stateChanged("Extracting Files...", progress);
-	
+
 				inputStream.close();
 				out.flush();
 				out.close();
@@ -298,50 +279,48 @@ public class GameUpdater implements DownloadListener {
 			throw new UnsupportedOSException();
 		}
 
-		if (!tempDir.exists())
-			tempDir.mkdir();
+		if (!tempDir.exists()) tempDir.mkdir();
 
 		DownloadUtils.downloadFile(getNativesUrl(fname), tempDir.getPath() + File.separator + (!SettingsUtil.isLatestLWJGL() ? "natives.jar.lzma" : "natives.zip"));
 
-		if (!SettingsUtil.isLatestLWJGL())
-			extractLZMA(GameUpdater.tempDir.getPath() + File.separator + "natives.jar.lzma", GameUpdater.tempDir.getPath() + File.separator + "natives.zip");
+		if (!SettingsUtil.isLatestLWJGL()) extractLZMA(GameUpdater.tempDir.getPath() + File.separator + "natives.jar.lzma", GameUpdater.tempDir.getPath() + File.separator + "natives.zip");
 
 		return new File(tempDir.getPath() + File.separator + "natives.jar.lzma");
 	}
 
 	public void updateSpoutcraft() throws Exception {
 		performBackup();
-		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
+		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
 
 		tempDir.mkdirs();
 		workDir.mkdirs();
-		
+
 		File mcCache = new File(cacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
 		File updateMC = new File(tempDir.getPath() + File.separator + "minecraft.jar");
 		if (mcCache.exists()) {
 			copy(mcCache, updateMC);
 		}
-		
+
 		File libDir = new File(binDir, "lib");
 		libDir.mkdir();
-		
+
 		Map<String, Object> libraries = build.getLibraries();
 		Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
 		while (i.hasNext()) {
 			Entry<String, Object> lib = i.next();
 			String version = String.valueOf(lib.getValue());
 			String name = lib.getKey() + "-" + version;
-						
+
 			File libraryFile = new File(libDir, lib.getKey() + ".jar");
 			String MD5 = LibrariesYML.getMD5(lib.getKey(), version);
-			
+
 			if (libraryFile.exists()) {
 				String computedMD5 = MD5Utils.getMD5(libraryFile);
 				if (!computedMD5.equals(MD5)) {
 					libraryFile.delete();
 				}
 			}
-			
+
 			if (!libraryFile.exists()) {
 				String mirrorURL = "Libraries/" + lib.getKey() + "/" + name + ".jar";
 				String fallbackURL = "http://spouty.org/Libraries/" + lib.getKey() + "/" + name + ".jar";
@@ -349,44 +328,37 @@ public class GameUpdater implements DownloadListener {
 				Download download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
 			}
 		}
-	
 
-		
 		build.install();
-		
-		//TODO: remove this once this build has been out for a few weeks
+
+		// TODO: remove this once this build has been out for a few weeks
 		File spoutcraftVersion = new File(GameUpdater.workDir, "versionLauncher");
 		spoutcraftVersion.delete();
-		
+
 	}
 
 	public boolean isSpoutcraftUpdateAvailable() {
-//		try {
-			if (!WORKING_DIRECTORY.exists())
-				return true;
-			if (!GameUpdater.workDir.exists())
-				return true;
-			
-			SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
+		// try {
+		if (!WORKING_DIRECTORY.exists()) return true;
+		if (!GameUpdater.workDir.exists()) return true;
 
-			if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild())) 
-				return true;
-			
-			File libDir = new File(binDir, "lib");
-			libDir.mkdir();
-			
-			Map<String, Object> libraries = build.getLibraries();
-			Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-			while (i.hasNext()) {
-				Entry<String, Object> lib = i.next();						
-				File libraryFile = new File(libDir, lib.getKey() + ".jar");
-				if (!libraryFile.exists()) {
-					return true;
-				}
-			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
+
+		if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild())) return true;
+
+		File libDir = new File(binDir, "lib");
+		libDir.mkdir();
+
+		Map<String, Object> libraries = build.getLibraries();
+		Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
+		while (i.hasNext()) {
+			Entry<String, Object> lib = i.next();
+			File libraryFile = new File(libDir, lib.getKey() + ".jar");
+			if (!libraryFile.exists()) { return true; }
+		}
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 		return false;
 	}
 
@@ -400,7 +372,7 @@ public class GameUpdater implements DownloadListener {
 		}
 		return count;
 	}
-	
+
 	public static void copy(File input, File output) throws IOException {
 		FileInputStream inputStream = null;
 		FileOutputStream outputStream = null;
@@ -408,12 +380,9 @@ public class GameUpdater implements DownloadListener {
 			inputStream = new FileInputStream(input);
 			outputStream = new FileOutputStream(output);
 			copy(inputStream, outputStream);
-		}
-		finally {
-			if (inputStream != null)
-				inputStream.close();
-			if (outputStream != null)
-				outputStream.close();
+		} finally {
+			if (inputStream != null) inputStream.close();
+			if (outputStream != null) outputStream.close();
 		}
 	}
 
@@ -421,8 +390,8 @@ public class GameUpdater implements DownloadListener {
 		if (!backupDir.exists()) {
 			backupDir.mkdir();
 		}
-		
-		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
+
+		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
 
 		File zip = new File(GameUpdater.backupDir, build.getBuild() + "-backup.zip");
 
@@ -436,23 +405,19 @@ public class GameUpdater implements DownloadListener {
 			}
 			exclude.add(GameUpdater.tempDir);
 			exclude.add(SystemConsoleListener.logDir);
-			
+
 			File[] existingBackups = backupDir.listFiles();
 			(new BackupCleanupThread(existingBackups)).start();
 			zip.createNewFile();
 			addFilesToExistingZip(zip, getFiles(WORKING_DIRECTORY, exclude, rootDir), rootDir, false);
-			
-			if (modpackModsDir.exists())
-				FileUtils.deleteDirectory(modpackModsDir);
-			
-			if (modsDir.exists())
-				FileUtils.deleteDirectory(modsDir);
-			
-			if (modconfigsDir.exists())
-				FileUtils.deleteDirectory(modconfigsDir);
-			
-			if (resourceDir.exists())
-				FileUtils.deleteDirectory(resourceDir);
+
+			if (modpackModsDir.exists()) FileUtils.deleteDirectory(modpackModsDir);
+
+			if (modsDir.exists()) FileUtils.deleteDirectory(modsDir);
+
+			if (modconfigsDir.exists()) FileUtils.deleteDirectory(modconfigsDir);
+
+			if (resourceDir.exists()) FileUtils.deleteDirectory(resourceDir);
 		}
 	}
 
@@ -465,14 +430,10 @@ public class GameUpdater implements DownloadListener {
 				}
 			});
 			File dir = new File(path);
-			if (!dir.exists()) {
-				return false;
-			}
+			if (!dir.exists()) { return false; }
 
 			dir = new File(dir, "minecraft.jar");
-			if (!dir.exists()) {
-				return false;
-			}
+			if (!dir.exists()) { return false; }
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -489,13 +450,12 @@ public class GameUpdater implements DownloadListener {
 		if (!renameOk) {
 			if (tempFile.exists()) {
 				zipFile.delete();
-			}
-			else {
+			} else {
 				throw new RuntimeException("could not rename the file " + zipFile.getAbsolutePath() + " to " + tempFile.getAbsolutePath());
 			}
 		}
 		byte[] buf = new byte[1024];
-		
+
 		float progress = 0F;
 		float progressStep = 0F;
 		if (progressBar) {
@@ -517,7 +477,7 @@ public class GameUpdater implements DownloadListener {
 				}
 			}
 			entry = zin.getNextEntry();
-			
+
 			progress += progressStep;
 			if (progressBar) {
 				stateChanged("Merging Madpack Files Into Minecraft Jar...", progress);
@@ -537,7 +497,7 @@ public class GameUpdater implements DownloadListener {
 				while ((len = in.read(buf)) > 0) {
 					out.write(buf, 0, len);
 				}
-				
+
 				progress += progressStep;
 				if (progressBar) {
 					stateChanged("Merging Madpack Files Into Minecraft Jar...", progress);
@@ -552,17 +512,17 @@ public class GameUpdater implements DownloadListener {
 		out.close();
 	}
 
-	// I know that is is not the best method but screw it, I am tired of trying to do it myself :P
+	// I know that is is not the best method but screw it, I am tired of trying
+	// to do it myself :P
 	private void extractLZMA(String in, String out) throws Exception {
 		String[] args = { "d", in, out };
 		LzmaAlone.main(args);
 	}
 
-	//@SuppressWarnings("unused")
+	// @SuppressWarnings("unused")
 	private void extractPack(String in, String out) throws Exception {
 		File f = new File(in);
-		if (!f.exists())
-			return;
+		if (!f.exists()) return;
 
 		FileOutputStream fostream = new FileOutputStream(out);
 		JarOutputStream jostream = new JarOutputStream(fostream);

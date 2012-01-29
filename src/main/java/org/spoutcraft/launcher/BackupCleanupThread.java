@@ -1,16 +1,18 @@
 package org.spoutcraft.launcher;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class BackupCleanupThread extends Thread{
-	File[] oldFiles;
+public class BackupCleanupThread extends Thread {
+
+	File[]	oldFiles;
+
 	public BackupCleanupThread(File[] oldFiles) {
 		this.oldFiles = oldFiles;
 	}
-	
+
+	@Override
 	public void run() {
 		ArrayList<Integer> builds = new ArrayList<Integer>();
 		for (File file : oldFiles) {
@@ -22,17 +24,14 @@ public class BackupCleanupThread extends Thread{
 					int build = Integer.parseInt(path.split("-")[0]);
 					builds.add(build);
 				} catch (NumberFormatException e) {
-					
 				}
 			}
 		}
-		
-		if (builds.size() < 6) {
-			return;
-		}
-		
+
+		if (builds.size() < 6) { return; }
+
 		Collections.sort(builds);
-		
+
 		int minSafeBuild = builds.get(builds.size() - 5);
 		for (File file : oldFiles) {
 			if (file.getPath().endsWith("-backup.zip")) {
@@ -45,13 +44,10 @@ public class BackupCleanupThread extends Thread{
 						file.delete();
 					}
 				} catch (NumberFormatException e) {
-					
 				}
-			}
-			else if (file.getPath().endsWith(".tmp")) {
+			} else if (file.getPath().endsWith(".tmp")) {
 				file.delete();
 			}
 		}
 	}
-
 }

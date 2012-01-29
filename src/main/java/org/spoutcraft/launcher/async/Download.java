@@ -17,24 +17,27 @@
 package org.spoutcraft.launcher.async;
 
 import java.io.*;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * Downloads stuff asynchroniously.
- * In fact, it's a modified version of StackOverflow sample ;)
+ * Downloads stuff asynchronously. In fact, it's a modified version of
+ * StackOverflow sample ;)
  */
 public class Download implements Runnable {
-	private static final long TIMEOUT = 30000;
-	
-	private URL url;
-	private long size = -1;
-	private long downloaded = 0;
-	private String outPath;
-	private DownloadListener listener;
-	private boolean success = false;
-	private File outFile = null;
+
+	private static final long	TIMEOUT			= 30000;
+	private URL								url;
+	private long							size				= -1;
+	private long							downloaded	= 0;
+	private String						outPath;
+	private DownloadListener	listener;
+	private boolean						success			= false;
+	private File							outFile			= null;
+
 	public Download(String url, String outPath) throws MalformedURLException {
 		this.url = new URL(url);
 		this.outPath = outPath;
@@ -49,29 +52,33 @@ public class Download implements Runnable {
 			URLConnection conn = url.openConnection();
 			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 			InputStream in = getConnectionInputStream(conn);
-			
+
 			size = conn.getContentLength();
 			outFile = new File(outPath);
 			outFile.delete();
-			
+
 			final ReadableByteChannel rbc = Channels.newChannel(in);
 			final FileOutputStream fos = new FileOutputStream(outFile);
-			
+
 			stateChanged();
-			
-			//Create a thread to monitor progress
+
+			// Create a thread to monitor progress
 			final Thread instance = Thread.currentThread();
 			Thread progress = new Thread() {
-				long last = System.currentTimeMillis();
+
+				long	last	= System.currentTimeMillis();
+
+				@Override
 				public void run() {
-					while(!this.isInterrupted()) {
-						
+					while (!this.isInterrupted()) {
+
 						long diff = outFile.length() - downloaded;
 						downloaded = outFile.length();
-						
-						if (diff == 0) { //nothing downloaded
-							if ((System.currentTimeMillis() - last) > TIMEOUT) { //waited too long
-								if (listener != null) { //alert ui
+
+						if (diff == 0) { // nothing downloaded
+							if ((System.currentTimeMillis() - last) > TIMEOUT) { // waited too
+																																		// long
+								if (listener != null) { // alert ui
 									listener.stateChanged("Download Failed", getProgress());
 								}
 								try {
@@ -82,46 +89,46 @@ public class Download implements Runnable {
 								}
 								return;
 							}
-						}
-						else {
+						} else {
 							last = System.currentTimeMillis();
 						}
-						
+
 						stateChanged();
 						try {
 							sleep(100);
-						} catch (InterruptedException ignore) {break;}
+						} catch (InterruptedException ignore) {
+							break;
+						}
 					}
 				}
 			};
 			progress.start();
-			
-			
+
 			fos.getChannel().transferFrom(rbc, 0, size > 0 ? size : Integer.MAX_VALUE);
 			in.close();
 			rbc.close();
 			progress.interrupt();
 			success = size > 0 ? (size == outFile.length()) : true;
-		}
-		catch (IOException ioe)
-		{
+		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			System.out.println(String.format("[Error] Cannot open '%s' for download.", url));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected InputStream getConnectionInputStream(final URLConnection urlconnection) throws Exception {
 		final InputStream[] is = new InputStream[1];
 
 		for (int j = 0; (j < 3) && (is[0] == null); j++) {
 			Thread stream = new Thread() {
+
+				@Override
 				public void run() {
 					try {
 						is[0] = urlconnection.getInputStream();
-					} catch (IOException ignore) { }
+					} catch (IOException ignore) {
+					}
 				}
 			};
 			stream.start();
@@ -129,25 +136,27 @@ public class Download implements Runnable {
 			while ((is[0] == null) && (iterationCount++ < 5)) {
 				try {
 					stream.join(1000L);
+				} catch (InterruptedException ignore) {
 				}
-				catch (InterruptedException ignore) { }
 			}
-			if (is[0] != null) continue;
+			if (is[0] != null) {
+				continue;
+			}
 			try {
 				stream.interrupt();
 				stream.join();
+			} catch (InterruptedException ignore) {
 			}
-			catch (InterruptedException ignore) { }
 		}
 
-		if (is[0] == null) {
-			throw new Exception("Unable to download file");
-		}
+		if (is[0] == null) { throw new Exception("Unable to download file"); }
 		return new BufferedInputStream(is[0]);
 	}
 
 	private void stateChanged() {
-		if (listener != null) listener.stateChanged(outPath, getProgress());
+		if (listener != null) {
+			listener.stateChanged(outPath, getProgress());
+		}
 	}
 
 	public void setListener(DownloadListener listener) {

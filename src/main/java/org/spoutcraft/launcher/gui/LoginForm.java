@@ -17,125 +17,73 @@
  */
 package org.spoutcraft.launcher.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
+import javax.crypto.*;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import org.spoutcraft.launcher.GameUpdater;
-import org.spoutcraft.launcher.LibrariesYML;
-import org.spoutcraft.launcher.MD5Utils;
-import org.spoutcraft.launcher.MinecraftUtils;
-import org.spoutcraft.launcher.MinecraftYML;
-import org.spoutcraft.launcher.MirrorUtils;
-import org.spoutcraft.launcher.PlatformUtils;
-import org.spoutcraft.launcher.SettingsUtil;
-import org.spoutcraft.launcher.SpoutFocusTraversalPolicy;
+import org.spoutcraft.launcher.*;
 import org.spoutcraft.launcher.async.DownloadListener;
-import org.spoutcraft.launcher.exception.BadLoginException;
-import org.spoutcraft.launcher.exception.MCNetworkException;
-import org.spoutcraft.launcher.exception.MinecraftUserNotPremiumException;
-import org.spoutcraft.launcher.exception.NoMirrorsAvailableException;
-import org.spoutcraft.launcher.exception.OutdatedMCLauncherException;
+import org.spoutcraft.launcher.exception.*;
 import org.spoutcraft.launcher.modpacks.ModLibraryYML;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
 import org.spoutcraft.launcher.modpacks.ModPackUpdater;
 import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class LoginForm extends JFrame implements ActionListener, DownloadListener, KeyListener, WindowListener {
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JPasswordField passwordField;
-	private JComboBox usernameField = new JComboBox();
-	private JButton loginButton = new JButton("Login");
-	JButton optionsButton = new JButton("Options");
-	JButton modsButton = new JButton("Mods");
-	private JCheckBox rememberCheckbox = new JCheckBox("Remember");
-	final JLabel background = new JLabel("Loading...");
-	final JTextPane editorPane = new JTextPane();
-	private JButton loginSkin1;
-	private List<JButton> loginSkin1Image;
-	private JButton loginSkin2;
-	private List<JButton> loginSkin2Image;
-	private TumblerFeedParsingWorker tumblerFeed;
-	public final JProgressBar progressBar;
-	HashMap<String, UserPasswordInformation> usernames = new HashMap<String, UserPasswordInformation>();
-	public boolean mcUpdate = false;
-	public boolean spoutUpdate = false;
-	public boolean modpackUpdate = false;
-	public static UpdateDialog updateDialog;
-	private static String pass = null;
-	public static String[] values = null;
-	private int success = LauncherFrame.ERROR_IN_LAUNCH;
-	
-	public String workingDir = PlatformUtils.getWorkingDirectory().getAbsolutePath();
 
-	public static final ModPackUpdater gameUpdater = new ModPackUpdater();
-	OptionDialog options = null;
-	ModsDialog mods = new ModsDialog(ModPackYML.getModList());
-
-	
-	Container loginPane = new Container();
-	Container offlinePane = new Container();
-	private JLabel lblLogo;
+	private static final long									serialVersionUID	= 1L;
+	private JPanel														contentPane;
+	private JPasswordField										passwordField;
+	private JComboBox													usernameField			= new JComboBox();
+	private JButton														loginButton				= new JButton("Login");
+	JButton																		optionsButton			= new JButton("Options");
+	JButton																		modsButton				= new JButton("Mods");
+	private JCheckBox													rememberCheckbox	= new JCheckBox("Remember");
+	final JLabel															background				= new JLabel("Loading...");
+	final JTextPane														editorPane				= new JTextPane();
+	private JButton														loginSkin1;
+	private List<JButton>											loginSkin1Image;
+	private JButton														loginSkin2;
+	private List<JButton>											loginSkin2Image;
+	private TumblerFeedParsingWorker					tumblerFeed;
+	public final JProgressBar									progressBar;
+	HashMap<String, UserPasswordInformation>	usernames					= new HashMap<String, UserPasswordInformation>();
+	public boolean														mcUpdate					= false;
+	public boolean														spoutUpdate				= false;
+	public boolean														modpackUpdate			= false;
+	public static UpdateDialog								updateDialog;
+	private static String											pass							= null;
+	public static String[]										values						= null;
+	private int																success						= LauncherFrame.ERROR_IN_LAUNCH;
+	public String															workingDir				= PlatformUtils.getWorkingDirectory().getAbsolutePath();
+	public static final ModPackUpdater				gameUpdater				= new ModPackUpdater();
+	OptionDialog															options						= null;
+	ModsDialog																mods							= new ModsDialog(ModPackYML.getModList());
+	Container																	loginPane					= new Container();
+	Container																	offlinePane				= new Container();
+	private JLabel														lblLogo;
 
 	public LoginForm() {
 		LoginForm.updateDialog = new UpdateDialog(this);
 		gameUpdater.setListener(this);
-		
+
 		this.addWindowListener(this);
 
 		loginButton.setFont(new Font("Arial", Font.PLAIN, 11));
 		loginButton.setBounds(272, 13, 86, 23);
 		loginButton.setOpaque(false);
 		loginButton.addActionListener(this);
-		loginButton.setEnabled(false); //disable until login info is read
+		loginButton.setEnabled(false); // disable until login info is read
 		optionsButton.setFont(new Font("Arial", Font.PLAIN, 11));
 		optionsButton.setOpaque(false);
 		optionsButton.addActionListener(this);
@@ -145,10 +93,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		usernameField.setFont(new Font("Arial", Font.PLAIN, 11));
 		usernameField.addActionListener(this);
 		usernameField.setOpaque(false);
-		
-		
-		
-		
+
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -161,7 +106,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		lblLogo = new JLabel("");
 		lblLogo.setBounds(8, 0, 294, 99);
-		
+
 		JLabel lblMinecraftUsername = new JLabel("Minecraft Username: ");
 		lblMinecraftUsername.setFont(new Font("Arial", Font.PLAIN, 11));
 		lblMinecraftUsername.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -183,7 +128,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		loginSkin1.addActionListener(this);
 		loginSkin1.setVisible(false);
 		loginSkin1Image = new ArrayList<JButton>();
-		
+
 		loginSkin2 = new JButton("Login as Player");
 		loginSkin2.setFont(new Font("Arial", Font.PLAIN, 11));
 		loginSkin2.setBounds(261, 428, 119, 23);
@@ -198,8 +143,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		progressBar.setStringPainted(true);
 		progressBar.setOpaque(true);
 
-		
-
 		JLabel purchaseAccount = new HyperlinkJLabel("<html><u>Need a minecraft account?</u></html>", "http://www.minecraft.net/register.jsp");
 		purchaseAccount.setHorizontalAlignment(SwingConstants.RIGHT);
 		purchaseAccount.setBounds(243, 70, 111, 14);
@@ -207,22 +150,24 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		purchaseAccount.setText("<html><u>Need an account?</u></html>");
 		purchaseAccount.setFont(new Font("Arial", Font.PLAIN, 11));
 		purchaseAccount.setForeground(new Color(0, 0, 255));
-		
-//		JLabel wikiLink = new HyperlinkJLabel("<html><u>Technic Wiki</u></html>", "http://wiki.technicpack.net/index.php?title=Main_Page");
-//		wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
-//		wikiLink.setBounds(233, 85, 109, 14);
-//		
-//		wikiLink.setText("<html><u>Technic Wiki</u></html>");
-//		wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
-//		wikiLink.setForeground(new Color(0, 0, 255));
-		
+
+		// JLabel wikiLink = new
+		// HyperlinkJLabel("<html><u>Technic Wiki</u></html>",
+		// "http://wiki.technicpack.net/index.php?title=Main_Page");
+		// wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
+		// wikiLink.setBounds(233, 85, 109, 14);
+		//
+		// wikiLink.setText("<html><u>Technic Wiki</u></html>");
+		// wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
+		// wikiLink.setForeground(new Color(0, 0, 255));
+
 		usernameField.setBounds(143, 14, 119, 25);
 		rememberCheckbox.setFont(new Font("Arial", Font.PLAIN, 11));
 
 		rememberCheckbox.setOpaque(false);
 
 		editorPane.setContentType("text/html");
-		
+
 		readUsedUsernames();
 
 		editorPane.setEditable(false);
@@ -274,7 +219,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		loginPane.add(loginButton);
 		loginPane.add(rememberCheckbox);
 		loginPane.add(purchaseAccount);
-//		loginPane.add(wikiLink);
+		// loginPane.add(wikiLink);
 		loginPane.add(optionsButton);
 		loginPane.add(modsButton);
 		contentPane.add(loginPane);
@@ -310,12 +255,11 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		background.setHorizontalAlignment(SwingConstants.CENTER);
 		background.setBounds(0, 0, 854, 480);
 		contentPane.add(background);
-		
-		//TODO: remove this after next release
-		(new File(PlatformUtils.getWorkingDirectory(), "launcher_cache.jpg")).delete();
-		
 
-		Vector<Component> order = new Vector<Component>(6);
+		// TODO: remove this after next release
+		(new File(PlatformUtils.getWorkingDirectory(), "launcher_cache.jpg")).delete();
+
+		List<Component> order = new ArrayList<Component>(6);
 		order.add(usernameField.getEditor().getEditorComponent());
 		order.add(passwordField);
 		order.add(rememberCheckbox);
@@ -324,8 +268,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		order.add(modsButton);
 
 		setFocusTraversalPolicy(new SpoutFocusTraversalPolicy(order));
-		
-		loginButton.setEnabled(true); //enable once logins are read
+
+		loginButton.setEnabled(true); // enable once logins are read
 		modsButton.setEnabled(false);
 	}
 
@@ -333,9 +277,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		MirrorUtils.updateMirrorsYMLCache();
 		MD5Utils.updateMD5Cache();
 		ModPackListYML.updateModPacksYMLCache();
-		
+
 		ModPackListYML.setCurrentModpack();
-		
+
 		MinecraftYML.updateMinecraftYMLCache();
 		LibrariesYML.updateLibrariesYMLCache();
 		ModLibraryYML.updateModLibraryYML();
@@ -347,23 +291,25 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		options.updateModPackList();
 		options.setVisible(false);
 	}
-	
+
 	public void setBranding() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
 		setResizable(false);
 		setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
 		lblLogo.setIcon(new ImageIcon(ModPackYML.getModPackLogo()));
 	}
-	
+
 	public void updateBranding() {
 		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
+
 			protected Object doInBackground() throws Exception {
 				String modpack = SettingsUtil.getModPackSelection();
 				ModPackListYML.setModPack(modpack, ModPackListYML.getModPacks().get(modpack));
 				ModPackYML.updateModPackYML(true);
 				return null;
 			}
-			
+
+			@Override
 			protected void done() {
 				setBranding();
 				options.updateBuildsList();
@@ -376,9 +322,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		int intProgress = Math.round(progress);
 
 		progressBar.setValue(intProgress);
-		
+
 		fileName = fileName.replace(workingDir, ".techniclauncher");
-		
+
 		if (fileName.length() > 60) {
 			fileName = fileName.substring(0, 60) + "...";
 		}
@@ -401,14 +347,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		int i = 0;
 		try {
 			File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
-			if (!lastLogin.exists())
-				return;
+			if (!lastLogin.exists()) { return; }
 			Cipher cipher = getCipher(2, "passwordfile");
 
 			DataInputStream dis;
-			if (cipher != null)
+			if (cipher != null) {
 				dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
-			else {
+			} else {
 				dis = new DataInputStream(new FileInputStream(lastLogin));
 			}
 
@@ -423,11 +368,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 						usernames.put(user, new UserPasswordInformation(hash));
 					} else {
-						String pass = dis.readUTF();
-						if (!pass.isEmpty()) {
+						String password = dis.readUTF();
+						if (!password.isEmpty()) {
 							i++;
 							if (i == 1) {
-								if (tumblerFeed != null) tumblerFeed.setUser(user);
+								if (tumblerFeed != null) {
+									tumblerFeed.setUser(user);
+								}
 								loginSkin1.setText(user);
 								loginSkin1.setVisible(true);
 								ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 103, 170, loginSkin1Image);
@@ -437,7 +384,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 								ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 293, 170, loginSkin2Image);
 							}
 						}
-						usernames.put(user, new UserPasswordInformation(pass));
+						usernames.put(user, new UserPasswordInformation(password));
 					}
 					this.usernameField.addItem(user);
 				}
@@ -458,9 +405,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			Cipher cipher = getCipher(1, "passwordfile");
 
 			DataOutputStream dos;
-			if (cipher != null)
+			if (cipher != null) {
 				dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
-			else {
+			} else {
 				dos = new DataOutputStream(new FileOutputStream(lastLogin, true));
 			}
 			for (String user : usernames.keySet()) {
@@ -484,10 +431,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		if (event.getSource() == loginSkin1 || event.getSource() == loginSkin2) {
 			eventId = "Login";
 			this.usernameField.setSelectedItem(((JButton) event.getSource()).getText());
-		} else if(loginSkin1Image.contains(event.getSource())) {
+		} else if (loginSkin1Image.contains(event.getSource())) {
 			eventId = "Login";
 			this.usernameField.setSelectedItem(loginSkin1.getText());
-		} else if(loginSkin2Image.contains(event.getSource())) {
+		} else if (loginSkin2Image.contains(event.getSource())) {
 			eventId = "Login";
 			this.usernameField.setSelectedItem(loginSkin2.getText());
 		}
@@ -504,7 +451,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	}
 
 	private void updatePasswordField() {
-		if (this.usernameField.getSelectedItem() != null){
+		if (this.usernameField.getSelectedItem() != null) {
 			UserPasswordInformation info = usernames.get(this.usernameField.getSelectedItem().toString());
 			if (info != null) {
 				if (info.isHash) {
@@ -527,9 +474,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	}
 
 	public void doLogin(final String user, final String pass, final boolean cmdLine) {
-		if (user == null || pass == null) {
-			return;
-		}
+		if (user == null || pass == null) { return; }
 		this.loginButton.setEnabled(false);
 		this.optionsButton.setEnabled(false);
 		this.modsButton.setEnabled(false);
@@ -548,20 +493,20 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					JOptionPane.showMessageDialog(getParent(), "Incorrect usernameField/passwordField combination");
 					this.cancel(true);
 					progressBar.setVisible(false);
-				} catch (MinecraftUserNotPremiumException e){
+				} catch (MinecraftUserNotPremiumException e) {
 					JOptionPane.showMessageDialog(getParent(), "You purchase a minecraft account to play");
 					this.cancel(true);
 					progressBar.setVisible(false);
 				} catch (MCNetworkException e) {
 					UserPasswordInformation info = null;
-					
+
 					for (String username : usernames.keySet()) {
 						if (username.equalsIgnoreCase(user)) {
 							info = usernames.get(username);
 							break;
 						}
 					}
-					
+
 					boolean authFailed = (info == null);
 
 					if (!authFailed) {
@@ -575,8 +520,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 										break;
 									}
 								}
-							}
-							catch (NoSuchAlgorithmException ex) {
+							} catch (NoSuchAlgorithmException ex) {
 								authFailed = true;
 							}
 						} else {
@@ -614,9 +558,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				return false;
 			}
 
+			@Override
 			protected void done() {
-				if (values == null || values.length < 4)
-					return;
+				if (values == null || values.length < 4) { return; }
 				LoginForm.pass = pass;
 
 				MessageDigest digest = null;
@@ -632,12 +576,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					String password = new String(passwordField.getPassword());
 					if (rememberCheckbox.isSelected()) {
 						usernames.put(gameUpdater.user, new UserPasswordInformation(password));
-					}
-					else {
+					} else {
 						if (digest == null) {
 							usernames.put(gameUpdater.user, new UserPasswordInformation(""));
-						}
-						else {
+						} else {
 							usernames.put(gameUpdater.user, new UserPasswordInformation(digest.digest(password.getBytes())));
 						}
 					}
@@ -652,12 +594,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 						publish("Checking for Spoutcraft update...\n");
 						spoutUpdate = gameUpdater.isSpoutcraftUpdateAvailable();
-						
+
 						publish(String.format("Checking for %s update...\n", ModPackListYML.currentModPackLabel));
 						modpackUpdate = gameUpdater.isModpackUpdateAvailable();
 						return true;
 					}
-					
+
+					@Override
 					protected void done() {
 						if (mcUpdate) {
 							updateDialog.setToUpdate("Minecraft");
@@ -667,16 +610,18 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 							updateDialog.setToUpdate(ModPackListYML.currentModPackLabel);
 						}
 						if (mcUpdate || spoutUpdate || modpackUpdate) {
-							if (!GameUpdater.binDir.exists() || mcUpdate)
+							if (!GameUpdater.binDir.exists() || mcUpdate) {
 								updateThread();
-							else
+							} else {
 								LoginForm.updateDialog.setVisible(true);
+							}
 						} else {
 							runGame();
 						}
 						this.cancel(true);
 					}
 
+					@Override
 					protected void process(List<String> chunks) {
 						progressBar.setString(chunks.get(0));
 					}
@@ -690,10 +635,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 	public void updateThread() {
 		SwingWorker<Boolean, String> updateThread = new SwingWorker<Boolean, String>() {
-			boolean error = false;
+
+			boolean	error	= false;
+
+			@Override
 			protected void done() {
 				progressBar.setVisible(false);
-				if (!error){
+				if (!error) {
 					runGame();
 				}
 				this.cancel(true);
@@ -704,20 +652,17 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					if (mcUpdate) {
 						gameUpdater.updateMC();
 					}
-
 					if (spoutUpdate) {
 						gameUpdater.updateSpoutcraft();
 					}
 					if (modpackUpdate) {
 						gameUpdater.updateModPackMods();
 					}
-				}
-				catch (NoMirrorsAvailableException e) {
+				} catch (NoMirrorsAvailableException e) {
 					JOptionPane.showMessageDialog(getParent(), "No Mirrors Are Available to download from!\nTry again later.");
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(getParent(), "Download Interrupted!");
+					JOptionPane.showMessageDialog(getParent(), "Update Failed!");
 					error = true;
 					loginButton.setEnabled(true);
 					optionsButton.setEnabled(true);
@@ -730,10 +675,10 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				return true;
 			}
 
+			@Override
 			protected void process(List<String> chunks) {
 				progressBar.setString(chunks.get(0));
 			}
-
 		};
 		updateThread.execute();
 	}
@@ -759,8 +704,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			LoginForm.updateDialog = null;
 			setVisible(false);
 			dispose();
-		}
-		else if (result == LauncherFrame.ERROR_IN_LAUNCH){
+		} else if (result == LauncherFrame.ERROR_IN_LAUNCH) {
 			loginButton.setEnabled(true);
 			optionsButton.setEnabled(true);
 			modsButton.setEnabled(true);
@@ -768,11 +712,11 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			loginSkin2.setEnabled(true);
 			progressBar.setVisible(false);
 		}
-		
+
 		this.success = result;
-		//Do nothing for retrying launch
+		// Do nothing for retrying launch
 	}
-	
+
 	public void windowOpened(WindowEvent e) {
 		tumblerFeed = new TumblerFeedParsingWorker(editorPane);
 		tumblerFeed.execute();
@@ -804,20 +748,21 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 	public void windowDeactivated(WindowEvent e) {
 	}
-	
+
 	private static final class UserPasswordInformation {
-		public boolean isHash;
-		public byte[] passwordHash = null;
-		public String password = null;
+
+		public boolean	isHash;
+		public byte[]		passwordHash	= null;
+		public String		password			= null;
 
 		public UserPasswordInformation(String pass) {
 			isHash = false;
 			password = pass;
 		}
+
 		public UserPasswordInformation(byte[] hash) {
 			isHash = true;
 			passwordHash = hash;
 		}
 	}
 }
-

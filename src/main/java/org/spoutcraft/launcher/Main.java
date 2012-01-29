@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.UIManager;
 
@@ -32,11 +33,11 @@ import com.beust.jcommander.JCommander;
 
 public class Main {
 
-	static String[] args_temp;
-	public static String build = "0.5.0";
-	public static String currentPack;
-	static File recursion;
-	public static LoginForm loginForm;
+	static String[]					args_temp;
+	public static String		build	= "0.5.0";
+	public static String		currentPack;
+	static File							recursion;
+	public static LoginForm	loginForm;
 
 	public Main() throws Exception {
 		main(new String[0]);
@@ -61,9 +62,7 @@ public class Main {
 			params.add("-classpath");
 			params.add(pathToJar);
 			params.add("org.spoutcraft.launcher.Main");
-			for (String arg : args_temp) {
-				params.add(arg);
-			}
+			params.addAll(Arrays.asList(args_temp));
 
 			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
 				params.add("-Xdock:name=\"Technic Launcher\"");
@@ -77,8 +76,7 @@ public class Main {
 			}
 			ProcessBuilder pb = new ProcessBuilder(params);
 			Process process = pb.start();
-			if (process == null)
-				throw new Exception("!");
+			if (process == null) throw new Exception("!");
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,8 +90,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		LoadingScreen ls = new LoadingScreen();
-		if (!isDebug())
-			ls.setVisible(true);
+		if (!isDebug()) ls.setVisible(true);
 		Options options = new Options();
 		try {
 			new JCommander(options, args);
@@ -120,10 +117,8 @@ public class Main {
 			if (SettingsUtil.getMemorySelection() < 6) {
 				int mem = 1 << (9 + SettingsUtil.getMemorySelection());
 				recursion.createNewFile();
-				if (isDebug())
-					System.exit(0);
-				else
-					reboot("-Xmx" + mem + "m");
+				if (isDebug()) System.exit(0);
+				else reboot("-Xmx" + mem + "m");
 			}
 		}
 

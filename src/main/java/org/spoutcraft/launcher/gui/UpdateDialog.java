@@ -2,35 +2,29 @@ package org.spoutcraft.launcher.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Toolkit;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JLabel;
-
-import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
-import org.spoutcraft.launcher.modpacks.ModPackYML;
-
-import java.awt.Font;
 
 public class UpdateDialog extends JDialog implements ActionListener {
 
-	private static final long serialVersionUID = -4617588853047124397L;
-	private final JPanel contentPanel = new JPanel();
-	private JLabel label = new JLabel("There is a new update for %TO_UPDATE%.");
-	private LoginForm lf;
-	
+	private static final long	serialVersionUID	= -4617588853047124397L;
+	private final JPanel			contentPanel			= new JPanel();
+	private JLabel						label							= new JLabel("There is a new update for %TO_UPDATE%.");
+	private LoginForm					lf;
+
 	public void setToUpdate(String str) {
-		if(str.equals("Spoutcraft"))
-			label.setText(label.getText().replace("%TO_UPDATE%", "Madpack"));
+		if (str.equals("Spoutcraft")) label.setText(label.getText().replace("%TO_UPDATE%", "Madpack"));
 		label.setText(label.getText().replace("%TO_UPDATE%", str));
 	}
-	
+
 	public UpdateDialog(LoginForm lf) {
 		this.lf = lf;
 		setBounds((Toolkit.getDefaultToolkit().getScreenSize().width - 450) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - 136) / 2, 450, 136);
@@ -40,7 +34,7 @@ public class UpdateDialog extends JDialog implements ActionListener {
 		contentPanel.setLayout(new FlowLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		
+
 		setIconImage(ModPackListYML.favIcon);
 
 		label.setFont(new Font("Arial", Font.PLAIN, 18));

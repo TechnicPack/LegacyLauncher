@@ -29,25 +29,23 @@ import org.spoutcraft.launcher.exception.MinecraftVerifyException;
 import org.spoutcraft.launcher.exception.UnknownMinecraftException;
 
 public class Launcher {
-	
+
 	@SuppressWarnings("rawtypes")
-	public static Applet getMinecraftApplet() throws CorruptedMinecraftJarException, MinecraftVerifyException{
-			   
+	public static Applet getMinecraftApplet() throws CorruptedMinecraftJarException, MinecraftVerifyException {
+
 		File mcBinFolder = new File(PlatformUtils.getWorkingDirectory(), "bin");
-		
+
 		File spoutcraftJar = new File(mcBinFolder, "modpack.jar");
 		File minecraftJar = new File(mcBinFolder, "minecraft.jar");
 		File jinputJar = new File(mcBinFolder, "jinput.jar");
 		File lwglJar = new File(mcBinFolder, "lwjgl.jar");
 		File lwjgl_utilJar = new File(mcBinFolder, "lwjgl_util.jar");
-		
-		
-		
-		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
+
+		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
 		Map<String, Object> libraries = build.getLibraries();
-		
+
 		File[] files = new File[4 + libraries.size()];
-		
+
 		int index = 0;
 		Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
 		while (i.hasNext()) {
@@ -58,46 +56,39 @@ public class Launcher {
 		}
 
 		URL urls[] = new URL[5];
-		
+
 		try {
 			urls[0] = minecraftJar.toURI().toURL();
-			files[index+0] = minecraftJar;
+			files[index + 0] = minecraftJar;
 			urls[1] = jinputJar.toURI().toURL();
-			files[index+1] = jinputJar;
+			files[index + 1] = jinputJar;
 			urls[2] = lwglJar.toURI().toURL();
-			files[index+2] = lwglJar;
+			files[index + 2] = lwglJar;
 			urls[3] = lwjgl_utilJar.toURI().toURL();
-			files[index+3] = lwjgl_utilJar;
+			files[index + 3] = lwjgl_utilJar;
 			urls[4] = spoutcraftJar.toURI().toURL();
 
 			ClassLoader classLoader = new MinecraftClassLoader(urls, ClassLoader.getSystemClassLoader(), spoutcraftJar, files);
-			
+
 			String nativesPath = new File(mcBinFolder, "natives").getAbsolutePath();
 			System.setProperty("org.lwjgl.librarypath", nativesPath);
 			System.setProperty("net.java.games.input.librarypath", nativesPath);
-			
+
 			Class minecraftClass = classLoader.loadClass("net.minecraft.client.MinecraftApplet");
 			return (Applet) minecraftClass.newInstance();
-		}
-		catch (MalformedURLException ex) {
+		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 			return null;
-		} 
-		catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			throw new CorruptedMinecraftJarException(ex);
-		}
-		catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			throw new CorruptedMinecraftJarException(ex);
-		}
-		catch (InstantiationException ex) {
+		} catch (InstantiationException ex) {
 			throw new CorruptedMinecraftJarException(ex);
-		}
-		catch (VerifyError ex) {
+		} catch (VerifyError ex) {
 			throw new MinecraftVerifyException(ex);
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			throw new UnknownMinecraftException(t);
 		}
 	}
-	
 }

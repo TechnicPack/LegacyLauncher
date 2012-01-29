@@ -1,22 +1,19 @@
 package org.spoutcraft.launcher.modpacks;
 
-import java.awt.Image;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.util.config.Configuration;
-import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
-import org.spoutcraft.launcher.PlatformUtils;
 import org.spoutcraft.launcher.YmlUtils;
 
 public class ModPackYML {
-	private static final String MODPACK_YML = "modpack.yml";
-	private static final String FALLBACK_URL = String.format("http://technic.freeworldsgaming.com/%s", MODPACK_YML);
-	private static volatile boolean updated = false;
-	private static File modPackYML = new File(PlatformUtils.getWorkingDirectory(), "Modpack" + File.separator + MODPACK_YML);
-	private static Object key = new Object();
+
+	private static final String			MODPACK_YML		= "modpack.yml";
+	private static final String			FALLBACK_URL	= String.format("http://technic.freeworldsgaming.com/%s", MODPACK_YML);
+
+	private static volatile boolean	updated				= false;
+	private static final Object			key						= new Object();
 
 	private static File getModPackYMLFile() {
 		return new File(ModPackListYML.currentModPackDirectory, MODPACK_YML);
@@ -28,24 +25,24 @@ public class ModPackYML {
 		config.load();
 		return config;
 	}
-	
+
 	public static void updateModPackYML() {
 		updateModPackYML(false);
 	}
-	
+
 	public static void updateModPackYML(boolean doUpdate) {
 		if (doUpdate || !updated) {
-			synchronized(key) {
+			synchronized (key) {
 				String selected = doUpdate ? null : getSelectedBuild();
-				
+
 				YmlUtils.downloadYmlFile(ModPackListYML.currentModPack + "/" + MODPACK_YML, FALLBACK_URL, getModPackYMLFile());
-				
+
 				Configuration config = new Configuration(getModPackYMLFile());
 				config.load();
 				config.setProperty("current", selected);
 				config.setProperty("launcher", Main.build);
 				config.save();
-				
+
 				updated = true;
 			}
 		}
@@ -58,10 +55,10 @@ public class ModPackYML {
 				Configuration config = new Configuration(getModPackYMLFile());
 				config.load();
 				selected = config.getString("current");
-				if (selected == null || !isValidBuild(selected))
+				if (selected == null || !isValidBuild(selected)) {
 					selected = config.getString("recommended");
-			}
-			catch (Exception ex){
+				}
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -88,17 +85,13 @@ public class ModPackYML {
 	public static String getModPackFavIcon() {
 		return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "favicon.png").getAbsolutePath();
 	}
-	
-//	public static Map<String, Object> getBuilds() {
-//		
-//	}
 
 	public static String[] getModpackBuilds() {
 		Configuration config = getModPackYML();
 		Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
 		String latest = config.getString("latest", null);
 		String recommended = config.getString("recommended", null);
-		
+
 		if (builds != null) {
 			String[] results = new String[builds.size()];
 			int index = 0;

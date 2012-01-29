@@ -15,6 +15,7 @@ import java.net.URLConnection;
 import org.yaml.snakeyaml.Yaml;
 
 public class YmlUtils {
+
 	public static boolean downloadMirrorsYmlFile(String mirrorYmlUrl) {
 		return downloadYmlFile(mirrorYmlUrl, null, MirrorUtils.mirrorsYML);
 	}
@@ -26,8 +27,7 @@ public class YmlUtils {
 	public static boolean downloadYmlFile(String ymlUrl, String fallbackUrl, File ymlFile) {
 		boolean isRelative = !ymlUrl.contains("http");
 
-		if (isRelative && ymlFile.exists() && MD5Utils.checksumPath(ymlUrl))
-			return true;
+		if (isRelative && ymlFile.exists() && MD5Utils.checksumPath(ymlUrl)) { return true; }
 
 		URL url = null;
 		InputStream io = null;

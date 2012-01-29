@@ -17,6 +17,7 @@ import org.spoutcraft.launcher.async.Download;
 import org.spoutcraft.launcher.async.DownloadListener;
 
 public class DownloadUtils {
+
 	public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
 		int tries = SettingsUtil.getLoginTries();
 		File outputFile = new File(output);
@@ -35,14 +36,16 @@ public class DownloadUtils {
 					download.getOutFile().delete();
 				}
 				System.err.println("Download of " + url + " Failed!");
-				if (listener != null)
+				if (listener != null) {
 					listener.stateChanged("Download Failed, retries remaining: " + tries, 0F);
+				}
 			} else {
 				String fileMD5 = MD5Utils.getMD5(download.getOutFile());
 				if (md5 == null || fileMD5.equals(md5)) {
 					Util.log("Copying: %s to: %s", tempfile, outputFile);
-					if (!areFilesIdentical)
+					if (!areFilesIdentical) {
 						GameUpdater.copy(tempfile, outputFile);
+					}
 					Util.log("File Downloaded: %s", outputFile);
 					break;
 				} else if (md5 != null && !fileMD5.equals(md5)) {
@@ -59,8 +62,9 @@ public class DownloadUtils {
 			}
 		}
 
-		if (!areFilesIdentical)
+		if (!areFilesIdentical) {
 			tempfile.delete();
+		}
 		return download;
 	}
 
@@ -72,8 +76,8 @@ public class DownloadUtils {
 		return downloadFile(url, output, null, null, null);
 	}
 
-	private static int filesToDownload = 0;
-	private static int filesDownloaded = 0;
+	private static int	filesToDownload	= 0;
+	private static int	filesDownloaded	= 0;
 
 	public static int downloadFiles(Map<String, String> downloadFileList, long timeout, TimeUnit unit) {
 		filesToDownload = downloadFileList.size();
@@ -82,6 +86,7 @@ public class DownloadUtils {
 		ExecutorService es = Executors.newCachedThreadPool();
 		for (final Map.Entry<String, String> file : downloadFileList.entrySet()) {
 			es.execute(new Runnable() {
+
 				public void run() {
 					Download downloadFile = null;
 					try {
@@ -99,9 +104,7 @@ public class DownloadUtils {
 		}
 		es.shutdown();
 		try {
-			if (es.awaitTermination(timeout, unit)) {
-				return filesDownloaded;
-			}
+			if (es.awaitTermination(timeout, unit)) { return filesDownloaded; }
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -110,8 +113,7 @@ public class DownloadUtils {
 	}
 
 	public static boolean downloadFile(String relativePath) {
-		if (MD5Utils.checksumPath(relativePath))
-			return true;
+		if (MD5Utils.checksumPath(relativePath)) { return true; }
 
 		URL url = null;
 		File tempFile = null;

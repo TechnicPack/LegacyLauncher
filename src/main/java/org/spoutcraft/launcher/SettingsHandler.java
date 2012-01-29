@@ -29,105 +29,119 @@ import java.util.HashMap;
 
 /**
  * <b>Settings Handler</b><br>
- * A new better way of handling settings/configs without the complexity of
- * YAML or using Bukkit's Configuration Class (If this is for a Bukkit plugin). 
+ * A new better way of handling settings/configs without the complexity of YAML
+ * or using Bukkit's Configuration Class (If this is for a Bukkit plugin).
+ * 
  * @author alta189
  * @version 1.4
- * @see <a href="http://www.alta189.com">www.alta189.com - My incomplete web site :P</a>
- *
+ * @see <a href="http://www.alta189.com">www.alta189.com - My incomplete web
+ *      site :P</a>
+ * 
  */
-
 public class SettingsHandler {
-	
-	private File out;
-	private Boolean cached = false;
-	private String resource = null;
-	private HashMap<String,String> cache;
-	private InputStream input = null;
-	
+
+	private final File							out;
+	private Boolean									cached		= false;
+	private String									resource	= null;
+	private HashMap<String, String>	cache;
+	private InputStream							input			= null;
+
 	/**
-	 * Constructor for the Settings/Config file.
-	 * Note: The resource must be in the same package or sub package
-	 * as this. If in a Sub directory the resource parameter
-	 * is the path to it from this class file.
-	 * @param String resource
-	 * @param File out
+	 * Constructor for the Settings/Config file. Note: The resource must be in the
+	 * same package or sub package as this. If in a Sub directory the resource
+	 * parameter is the path to it from this class file.
+	 * 
+	 * @param String
+	 *          resource
+	 * @param File
+	 *          out
 	 */
 	public SettingsHandler(String resource, String out) {
 		this.resource = resource;
 		this.out = new File(out);
 	}
-	
+
 	/**
-	 * Constructor for the Settings/Config file.
-	 * Note: The resource must be in the same package or sub package
-	 * as this. If in a sub directory the resource parameter
-	 * is the path to it from this class file.
-	 * @param String resource
-	 * @param File out
+	 * Constructor for the Settings/Config file. Note: The resource must be in the
+	 * same package or sub package as this. If in a sub directory the resource
+	 * parameter is the path to it from this class file.
+	 * 
+	 * @param String
+	 *          resource
+	 * @param File
+	 *          out
 	 */
 	public SettingsHandler(String resource, File out) {
 		this.resource = resource;
 		this.out = out;
 	}
-	
+
 	/**
-	 * Constructor for the Settings/Config file.
-	 * Note: I discourage the use of this constructor, as it is not a fully tested as it should be.
-	 * @param InputStream input
-	 * @param File out
+	 * Constructor for the Settings/Config file. Note: I discourage the use of
+	 * this constructor, as it is not a fully tested as it should be.
+	 * 
+	 * @param InputStream
+	 *          input
+	 * @param File
+	 *          out
 	 */
 	public SettingsHandler(InputStream input, File out) {
 		this.input = input;
 		this.out = out;
 	}
-	
+
 	/**
-	 * Constructor for the Settings/Config file.
-	 * Note: This file must exist.
-	 * @param String out
+	 * Constructor for the Settings/Config file. Note: This file must exist.
+	 * 
+	 * @param String
+	 *          out
 	 * @throws FileNotFoundException
 	 */
 	public SettingsHandler(File out) throws FileNotFoundException {
-		if (!out.exists()) throw new FileNotFoundException("The out does not exist.");
+		if (!out.exists()) { throw new FileNotFoundException("The out does not exist."); }
 		this.out = out;
 	}
-	
+
 	/**
 	 * Returns whether caching is enabled. <br>
 	 * See {@link #setCached(Boolean) setCached(Boolean)} for more info on caching
+	 * 
 	 * @return Boolean cached
 	 */
 	public Boolean isCached() {
 		return this.cached;
 	}
-	
+
 	/**
 	 * 
-	 * @param Boolean cached
+	 * @param Boolean
+	 *          cached
 	 */
 	public void setCached(Boolean cached) {
 		this.cached = cached;
-		if (this.cached = false) this.cache = null;
+		if (this.cached = false) {
+			this.cache = null;
+		}
 	}
-	
+
 	/**
 	 * Private method that takes the resource and writes it to the File out.
-	 * @param String name
+	 * 
+	 * @param String
+	 *          name
 	 */
 	private void create(String resource) {
-		InputStream input = getClass().getResourceAsStream(resource);
-		if (input != null) {
+		InputStream is = getClass().getResourceAsStream(resource);
+		if (is != null) {
 			FileOutputStream output = null;
-			try
-			{
-				//noinspection ResultOfMethodCallIgnored
+			try {
+				// noinspection ResultOfMethodCallIgnored
 				out.getParentFile().mkdirs();
 				output = new FileOutputStream(out);
 				byte[] buf = new byte[8192];
 				int length;
 
-				while ((length = input.read(buf)) > 0) {
+				while ((length = is.read(buf)) > 0) {
 					output.write(buf, 0, length);
 				}
 
@@ -135,29 +149,29 @@ public class SettingsHandler {
 				e.printStackTrace();
 			} finally {
 				try {
-					input.close();
+					is.close();
 				} catch (Exception ignored) {
 				}
 				try {
-					if (output != null)
+					if (output != null) {
 						output.close();
-				}
-				catch (Exception ignored)
-				{
+					}
+				} catch (Exception ignored) {
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Private method that takes the InputStream and it writes it to the File out
-	 * @param InputStream input
+	 * 
+	 * @param InputStream
+	 *          input
 	 */
 	private void create(InputStream input) {
 		if (input != null) {
 			FileOutputStream output = null;
-			try
-			{
+			try {
 				output = new FileOutputStream(out);
 				byte[] buf = new byte[8192];
 				int length;
@@ -174,29 +188,31 @@ public class SettingsHandler {
 				} catch (Exception ignored) {
 				}
 				try {
-					if (output != null)
+					if (output != null) {
 						output.close();
-				}
-				catch (Exception ignored)
-				{
+					}
+				} catch (Exception ignored) {
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Private method that loads the properties in a HashMap.
+	 * 
 	 * @return HashMap result
 	 */
 	private HashMap<String, String> loadHashMap() {
-		HashMap<String,String> result = new HashMap<String,String>();
-		
+		HashMap<String, String> result = new HashMap<String, String>();
+
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(out));
 			String line;
-			
-			while((line = br.readLine()) != null) {
-				if ((line.isEmpty()) || (line.length() > 0 && line.charAt(0) == '#') || (!line.contains(": "))) continue;
+
+			while ((line = br.readLine()) != null) {
+				if ((line.isEmpty()) || (line.length() > 0 && line.charAt(0) == '#') || (!line.contains(": "))) {
+					continue;
+				}
 				String[] args = line.split(": ");
 				if (args.length < 2) {
 					result.put(args[0], null);
@@ -204,18 +220,18 @@ public class SettingsHandler {
 				}
 				result.put(args[0], args[1]);
 			}
-			
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * Call this method before doing anything else with SettingsHandler. 
-	 * The only exception to this is {@link #setCached(Boolean) setCanced(Boolean)}.
-	 * If caching is enabled then it will load the Properties into the cache.
+	 * Call this method before doing anything else with SettingsHandler. The only
+	 * exception to this is {@link #setCached(Boolean) setCanced(Boolean)}. If
+	 * caching is enabled then it will load the Properties into the cache.
 	 */
 	public void load() {
 		if (this.resource != null && !out.exists()) {
@@ -227,12 +243,14 @@ public class SettingsHandler {
 		if (this.cached) {
 			this.cache = this.loadHashMap();
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns the value of a property as a String
-	 * @param String property
+	 * 
+	 * @param String
+	 *          property
 	 * @return String value
 	 */
 	public String getPropertyString(String property) {
@@ -240,7 +258,7 @@ public class SettingsHandler {
 			if (this.cached) {
 				return this.cache.get(property);
 			} else {
-				HashMap<String,String> contents = this.loadHashMap();
+				HashMap<String, String> contents = this.loadHashMap();
 				return contents.get(property);
 			}
 		} catch (Exception e) {
@@ -248,10 +266,12 @@ public class SettingsHandler {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the value of a property as a Integer
-	 * @param String property
+	 * 
+	 * @param String
+	 *          property
 	 * @return Integer value
 	 */
 	public Integer getPropertyInteger(String property) {
@@ -259,7 +279,7 @@ public class SettingsHandler {
 			if (this.cached) {
 				return Integer.parseInt(this.cache.get(property));
 			} else {
-				HashMap<String,String> contents = this.loadHashMap();
+				HashMap<String, String> contents = this.loadHashMap();
 				return Integer.parseInt(contents.get(property));
 			}
 		} catch (Exception e) {
@@ -267,10 +287,12 @@ public class SettingsHandler {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the value of a property as a Boolean
-	 * @param String property
+	 * 
+	 * @param String
+	 *          property
 	 * @return Boolean value
 	 */
 	public Boolean getPropertyBoolean(String property) {
@@ -279,7 +301,7 @@ public class SettingsHandler {
 			if (this.cached) {
 				result = this.cache.get(property);
 			} else {
-				HashMap<String,String> contents = this.loadHashMap();
+				HashMap<String, String> contents = this.loadHashMap();
 				result = contents.get(property);
 			}
 			return (result != null && result.equalsIgnoreCase("true"));
@@ -288,10 +310,12 @@ public class SettingsHandler {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the value of a property as a Double
-	 * @param String property
+	 * 
+	 * @param String
+	 *          property
 	 * @return Double value
 	 */
 	public Double getPropertyDouble(String property) {
@@ -300,20 +324,24 @@ public class SettingsHandler {
 			if (this.cached) {
 				result = this.cache.get(property);
 			} else {
-				HashMap<String,String> contents = this.loadHashMap();
+				HashMap<String, String> contents = this.loadHashMap();
 				result = contents.get(property);
 			}
-			if (!result.contains(".")) result += ".0";
+			if (!result.contains(".")) {
+				result += ".0";
+			}
 			return Double.parseDouble(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns true if a property exists
-	 * @param String property
+	 * 
+	 * @param String
+	 *          property
 	 * @return Boolean check
 	 */
 	public Boolean checkProperty(String property) {
@@ -322,185 +350,207 @@ public class SettingsHandler {
 			if (this.cached) {
 				check = this.cache.get(property);
 			} else {
-				HashMap<String,String> contents = this.loadHashMap();
+				HashMap<String, String> contents = this.loadHashMap();
 				check = contents.get(property);
 			}
-			if(check != null) return true;
+			if (check != null) { return true; }
 		} catch (Exception e) {
 			return false;
 		}
-		
+
 		return false;
 	}
-	
-	
+
 	// Editing the Settings/Config File Methods \\
-	
 	/**
-	 * Private method that writes out the new Settings/Config file after changes are made. 
-	 * If caching is enabled, it will call the 
-	 * {@link #load() load()} method.
+	 * Private method that writes out the new Settings/Config file after changes
+	 * are made. If caching is enabled, it will call the {@link #load() load()}
+	 * method.
 	 * 
-	 * @param HashMap newContents
+	 * @param HashMap
+	 *          newContents
 	 */
-	private void flush(HashMap<Integer,String> newContents) {
+	private void flush(HashMap<Integer, String> newContents) {
 		try {
 			this.delFile(out);
-			//noinspection ResultOfMethodCallIgnored
+			// noinspection ResultOfMethodCallIgnored
 			out.createNewFile();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(out));
-			for (int i = 1; i <= newContents.size(); i ++) {
+			for (int i = 1; i <= newContents.size(); i++) {
 				String line = newContents.get(i);
 				if (line == null) {
 					writer.append("\n");
-					continue; 
+					continue;
 				}
 				writer.append(line);
 				writer.append("\n");
 			}
 			writer.flush();
 			writer.close();
-			if (cached) this.load();
+			if (cached) {
+				this.load();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Private method used by {@link #flush(HashMap) flush(HashMap)} to delete the old
-	 * Settings/Config file.
-	 * @param File file
+	 * Private method used by {@link #flush(HashMap) flush(HashMap)} to delete the
+	 * old Settings/Config file.
+	 * 
+	 * @param File
+	 *          file
 	 */
 	private void delFile(File file) {
 		if (file.exists()) {
-			//noinspection ResultOfMethodCallIgnored
+			// noinspection ResultOfMethodCallIgnored
 			file.delete();
 		}
 	}
-	
+
 	/**
-	 * Private method to get a HashMap of the contents of the Settings/Contents file.
-	 * They are stored as lines indexed by the line number.
+	 * Private method to get a HashMap of the contents of the Settings/Contents
+	 * file. They are stored as lines indexed by the line number.
+	 * 
 	 * @return HashMap contents
 	 */
-	private HashMap<Integer,String> getAllFileContents() {
-		HashMap<Integer,String> result = new HashMap<Integer,String>();
+	private HashMap<Integer, String> getAllFileContents() {
+		HashMap<Integer, String> result = new HashMap<Integer, String>();
 		Integer i = 1;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(out));
 			String line;
-			
-			while((line = br.readLine()) != null) {
+
+			while ((line = br.readLine()) != null) {
 				if (line.isEmpty()) {
 					result.put(i, null);
-					i ++;
+					i++;
 					continue;
 				}
-				
+
 				result.put(i, line);
-				i ++;
+				i++;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Allows you to add a comment to the end of the end of the file.
-	 * @param String comment
+	 * 
+	 * @param String
+	 *          comment
 	 */
 	public void insertComment(String comment) {
-		HashMap<Integer,String> contents = this.getAllFileContents();
+		HashMap<Integer, String> contents = this.getAllFileContents();
 		contents.put(contents.size() + 1, "#" + comment);
 		this.flush(contents);
 	}
-	
+
 	/**
 	 * Allows to add a comment at the line that you specify.
-	 * @param String comment
-	 * @param Integer line
+	 * 
+	 * @param String
+	 *          comment
+	 * @param Integer
+	 *          line
 	 */
 	public void insertComment(String comment, Integer line) {
-		HashMap<Integer,String> contents = this.getAllFileContents();
-		if (line >= contents.size() + 1) return;
-		HashMap<Integer,String> newContents = new HashMap<Integer,String>();
-		for (int i = 1; i < line; i ++) {
+		HashMap<Integer, String> contents = this.getAllFileContents();
+		if (line >= contents.size() + 1) { return; }
+		HashMap<Integer, String> newContents = new HashMap<Integer, String>();
+		for (int i = 1; i < line; i++) {
 			newContents.put(i, contents.get(i));
 		}
 		newContents.put(line, "#" + comment);
-		for (int i = line; i <= contents.size(); i ++) {
+		for (int i = line; i <= contents.size(); i++) {
 			newContents.put(i + 1, contents.get(i));
 		}
 		this.flush(newContents);
 	}
-	
+
 	/**
 	 * Allows you to add a property at the end of the file.
-	 * @param String property
-	 * @param Object obj
+	 * 
+	 * @param String
+	 *          property
+	 * @param Object
+	 *          obj
 	 */
 	public void put(String property, Object obj) {
-		HashMap<Integer,String> contents = this.getAllFileContents();
+		HashMap<Integer, String> contents = this.getAllFileContents();
 		contents.put(contents.size() + 1, property + ": " + obj.toString());
 		this.flush(contents);
 	}
-	
+
 	/**
 	 * Allows you to add a property at the line that you specify
-	 * @param String property
-	 * @param Object obj
-	 * @param Integer line
+	 * 
+	 * @param String
+	 *          property
+	 * @param Object
+	 *          obj
+	 * @param Integer
+	 *          line
 	 */
 	public void put(String property, Object obj, Integer line) {
-		HashMap<Integer,String> contents = this.getAllFileContents();
-		if (line >= contents.size() + 1) return;
-		HashMap<Integer,String> newContents = new HashMap<Integer,String>();
-		for (int i = 1; i < line; i ++) {
+		HashMap<Integer, String> contents = this.getAllFileContents();
+		if (line >= contents.size() + 1) { return; }
+		HashMap<Integer, String> newContents = new HashMap<Integer, String>();
+		for (int i = 1; i < line; i++) {
 			newContents.put(i, contents.get(i));
 		}
 		newContents.put(line, property + ": " + obj.toString());
-		for (int i = line; i <= contents.size(); i ++) {
+		for (int i = line; i <= contents.size(); i++) {
 			newContents.put(i + 1, contents.get(i));
 		}
 		this.flush(newContents);
 	}
-	
+
 	/**
 	 * Allows you to change the value of a property.
-	 * @param String property
-	 * @param Object obj
+	 * 
+	 * @param String
+	 *          property
+	 * @param Object
+	 *          obj
 	 */
 	public void changeProperty(String property, Object obj) {
-		HashMap<Integer,String> contents = this.getAllFileContents();
-		if ((contents == null)) {
-			return;
-		}
+		HashMap<Integer, String> contents = this.getAllFileContents();
+		if ((contents == null)) { return; }
 		boolean found = false;
-		for (int i = 1; i <= contents.size(); i ++) {
-			if (contents.get(i) == null) continue;
+		for (int i = 1; i <= contents.size(); i++) {
+			if (contents.get(i) == null) {
+				continue;
+			}
 			String check = contents.get(i);
 			if (check.startsWith(property)) {
 				check = check.replace(property, "");
-				if (!(check.startsWith(": "))) continue;
+				if (!(check.startsWith(": "))) {
+					continue;
+				}
 				contents.remove(i);
-				if (!found)
+				if (!found) {
 					contents.put(i, property + ": " + obj.toString());
+				}
 				found = true;
 			}
 		}
 		this.flush(contents);
 	}
-	
+
 	/**
-	 * Returns the amount of the lines in the file. It ignores the last line if it is empty.
+	 * Returns the amount of the lines in the file. It ignores the last line if it
+	 * is empty.
+	 * 
 	 * @return Integer lineCount
 	 */
 	public Integer getLineCount() {
-		HashMap<Integer,String> contents = this.getAllFileContents();
+		HashMap<Integer, String> contents = this.getAllFileContents();
 		return contents.size();
 	}
 }
-
-

@@ -12,11 +12,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.bukkit.util.config.Configuration;
 
 public class MD5Utils {
-	private static final String CHECKSUM_MD5 = "CHECKSUM.md5";
-	private static final File CHECKSUM_FILE = new File(GameUpdater.workDir, CHECKSUM_MD5);
-	private static boolean updated;
 
-	private static final Map<String, String> md5Map = new HashMap<String, String>();
+	private static final String								CHECKSUM_MD5	= "CHECKSUM.md5";
+	private static final File									CHECKSUM_FILE	= new File(GameUpdater.workDir, CHECKSUM_MD5);
+	private static boolean										updated;
+	private static final Map<String, String>	md5Map				= new HashMap<String, String>();
 
 	public static String getMD5(File file) {
 		FileInputStream stream = null;
@@ -96,11 +96,9 @@ public class MD5Utils {
 	}
 
 	public static boolean checksumPath(File file, String md5Path) {
-		if (!file.exists())
-			return false;
-		String fileMD5 = null;
+		if (!file.exists()) { return false; }
+		String fileMD5 = getMD5(file);
 		String storedMD5 = getMD5FromList(md5Path);
-		fileMD5 = getMD5(file);
 		boolean doesMD5Match = storedMD5.equalsIgnoreCase(fileMD5);
 		if (!doesMD5Match) {
 			Util.log("[MD5 Mismatch] File '%s' has md5 of '%s' instead of '%s'", file, fileMD5, storedMD5);

@@ -1,10 +1,10 @@
 package org.spoutcraft.launcher.exception;
 
-public class MinecraftVerifyException extends Exception{
-	private static final long serialVersionUID = 1L;
-	private final Throwable cause;
-	private final String message;
-	
+public class MinecraftVerifyException extends Exception {
+	private static final long	serialVersionUID	= 1L;
+	private final Throwable		cause;
+	private final String			message;
+
 	public MinecraftVerifyException(String message) {
 		this(null, message);
 	}
@@ -13,7 +13,7 @@ public class MinecraftVerifyException extends Exception{
 		this.cause = throwable;
 		this.message = message;
 	}
-	
+
 	public MinecraftVerifyException(Throwable throwable) {
 		this.cause = throwable;
 		this.message = null;

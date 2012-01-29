@@ -16,11 +16,11 @@ import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.async.DownloadListener;
 
 public class MirrorUtils {
-	public static final String[] MIRRORS_URL = { "https://raw.github.com/TechnicPack/Technic/master/mirrors.yml", "https://raw.github.com/icew01f/Technic/master/mirrors.yml", "http://technic.freeworldsgaming.com/mirrors.yml" };
-	public static File mirrorsYML = new File(GameUpdater.workDir, "mirrors.yml");
 
-	private static boolean updated = false;
-	private static final Random rand = new Random();
+	public static final String[]	MIRRORS_URL	= { "https://raw.github.com/TechnicPack/Technic/master/mirrors.yml", "https://raw.github.com/icew01f/Technic/master/mirrors.yml", "http://technic.freeworldsgaming.com/mirrors.yml" };
+	public static File						mirrorsYML	= new File(GameUpdater.workDir, "mirrors.yml");
+	private static boolean				updated			= false;
+	private static final Random		rand				= new Random();
 
 	public static String getMirrorUrl(String mirrorURI, String fallbackUrl, DownloadListener listener) {
 		try {
@@ -33,9 +33,7 @@ public class MirrorUtils {
 				Entry<String, Integer> e = iterator.next();
 				String url = e.getKey();
 				String mirror = (!url.contains("github.com")) ? "http://" + e.getKey() + "/" + mirrorURI : "https://" + e.getKey() + "/" + mirrorURI;
-				if (isAddressReachable(mirror)) {
-					return mirror;
-				}
+				if (isAddressReachable(mirror)) { return mirror; }
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,13 +80,10 @@ public class MirrorUtils {
 	}
 
 	public static void updateMirrorsYMLCache() {
-		if (updated)
-			return;
+		if (updated) { return; }
 		updated = true;
 		for (String urlentry : MIRRORS_URL) {
-			if (YmlUtils.downloadMirrorsYmlFile(urlentry)) {
-				return;
-			}
+			if (YmlUtils.downloadMirrorsYmlFile(urlentry)) { return; }
 		}
 	}
 }

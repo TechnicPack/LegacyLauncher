@@ -1,59 +1,44 @@
 package org.spoutcraft.launcher.gui;
 
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
-public class CheckBoxList extends JList
-{
-   protected static Border noFocusBorder =
-                                 new EmptyBorder(1, 1, 1, 1);
+public class CheckBoxList extends JList {
+	protected static Border	noFocusBorder	= new EmptyBorder(1, 1, 1, 1);
 
-   public CheckBoxList()
-   {
-      setCellRenderer(new CellRenderer());
+	public CheckBoxList() {
+		setCellRenderer(new CellRenderer());
 
-      addMouseListener(new MouseAdapter()
-         {
-            public void mousePressed(MouseEvent e)
-            {
-               int index = locationToIndex(e.getPoint());
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				int index = locationToIndex(e.getPoint());
 
-               if (index != -1) {
-            	   JToggleButton checkbox = (JToggleButton)
-                              getModel().getElementAt(index);
-                  checkbox.setSelected(
-                                     !checkbox.isSelected());
-                  repaint();
-               }
-            }
-         }
-      );
+				if (index != -1) {
+					JToggleButton checkbox = (JToggleButton) getModel().getElementAt(index);
+					checkbox.setSelected(!checkbox.isSelected());
+					repaint();
+				}
+			}
+		});
 
-      setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-   }
+		setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	}
 
-   protected class CellRenderer implements ListCellRenderer
-   {
-      public Component getListCellRendererComponent(
-                    JList list, Object value, int index,
-                    boolean isSelected, boolean cellHasFocus)
-      {
-    	  JToggleButton checkbox = (JToggleButton) value;
-         checkbox.setBackground(isSelected ?
-                 getSelectionBackground() : getBackground());
-         checkbox.setForeground(isSelected ?
-                 getSelectionForeground() : getForeground());
-         checkbox.setEnabled(isEnabled());
-         checkbox.setFont(getFont());
-         checkbox.setFocusPainted(false);
-         checkbox.setBorderPainted(true);
-         checkbox.setBorder(isSelected ?
-          UIManager.getBorder(
-           "List.focusCellHighlightBorder") : noFocusBorder);
-         return checkbox;
-      }
-   }
+	protected class CellRenderer implements ListCellRenderer {
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JToggleButton checkbox = (JToggleButton) value;
+			checkbox.setBackground(isSelected ? getSelectionBackground() : getBackground());
+			checkbox.setForeground(isSelected ? getSelectionForeground() : getForeground());
+			checkbox.setEnabled(isEnabled());
+			checkbox.setFont(getFont());
+			checkbox.setFocusPainted(false);
+			checkbox.setBorderPainted(true);
+			checkbox.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : noFocusBorder);
+			return checkbox;
+		}
+	}
 }
-

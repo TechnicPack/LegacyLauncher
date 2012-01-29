@@ -18,51 +18,46 @@ package org.spoutcraft.launcher.logs;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
-
+import java.util.logging.*;
 import org.spoutcraft.launcher.PlatformUtils;
 
 public class SystemConsoleListener {
-	
-	public static File logDir = new File(PlatformUtils.getWorkingDirectory() + File.separator + "logs");
-	
-	public static PrintStream out = null;
-	
-	public void initialize() throws Exception {
-			LogManager logManager = LogManager.getLogManager();
-			logManager.reset();
-			
-			logDir.mkdirs();
-			
-			Handler fileHandler = new FileHandler(new File(logDir, "launcher_%g.log").getPath(), 100000, 5, true);
-			fileHandler.setFormatter(new ClientLoggerFormatter());
-			Logger.getLogger("").addHandler(fileHandler);   
-		   
-			PrintStream stdout = System.out;
-			PrintStream stderr = System.err;
-			
-			Handler ConsoleHandle = new StreamHandler(stdout, new ClientLoggerFormatter());
-			Logger.getLogger("").addHandler(ConsoleHandle);   
-			
-			Handler ErrHandle = new StreamHandler(stderr, new ClientLoggerFormatter());
-			Logger.getLogger("").addHandler(ErrHandle);
-			
-			Logger logger;
-			SystemListenerStream los;
 
-			logger = Logger.getLogger("stdout");
-			los = new SystemListenerStream(logger, SystemListenerLevel.STDOUT);
-			System.setOut(new PrintStream(los, true));
-			
-			logger = Logger.getLogger("stderr");
-			los= new SystemListenerStream(logger, SystemListenerLevel.STDERR);
-			System.setErr(new PrintStream(los, true));
-			
-			SystemConsoleListener.out = stdout;
-			
+	public static File				logDir	= new File(PlatformUtils.getWorkingDirectory() + File.separator + "logs");
+
+	public static PrintStream	out			= null;
+
+	public void initialize() throws Exception {
+		LogManager logManager = LogManager.getLogManager();
+		logManager.reset();
+
+		logDir.mkdirs();
+
+		Handler fileHandler = new FileHandler(new File(logDir, "launcher_%g.log").getPath(), 100000, 5, true);
+		fileHandler.setFormatter(new ClientLoggerFormatter());
+		Logger.getLogger("").addHandler(fileHandler);
+
+		PrintStream stdout = System.out;
+		PrintStream stderr = System.err;
+
+		Handler ConsoleHandle = new StreamHandler(stdout, new ClientLoggerFormatter());
+		Logger.getLogger("").addHandler(ConsoleHandle);
+
+		Handler ErrHandle = new StreamHandler(stderr, new ClientLoggerFormatter());
+		Logger.getLogger("").addHandler(ErrHandle);
+
+		Logger logger;
+		SystemListenerStream los;
+
+		logger = Logger.getLogger("stdout");
+		los = new SystemListenerStream(logger, SystemListenerLevel.STDOUT);
+		System.setOut(new PrintStream(los, true));
+
+		logger = Logger.getLogger("stderr");
+		los = new SystemListenerStream(logger, SystemListenerLevel.STDERR);
+		System.setErr(new PrintStream(los, true));
+
+		SystemConsoleListener.out = stdout;
+
 	}
 }

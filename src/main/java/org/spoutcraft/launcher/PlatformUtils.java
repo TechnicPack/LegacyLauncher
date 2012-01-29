@@ -31,65 +31,56 @@ import javax.swing.JProgressBar;
 
 public class PlatformUtils {
 
-	private static File workDir = null;
+	private static File	workDir	= null;
+
 	public static File getWorkingDirectory() {
-		if (workDir == null)
+		if (workDir == null) {
 			workDir = getWorkingDirectory("techniclauncher");
+		}
 		return workDir;
 	}
 
 	public static File getWorkingDirectory(String applicationName) {
-		if (MinecraftUtils.getOptions().isPortable()) {
-			return new File("techniclauncher");
-		}
+		if (MinecraftUtils.getOptions().isPortable()) { return new File("techniclauncher"); }
 		String userHome = System.getProperty("user.home", ".");
 		File workingDirectory;
 		switch (getPlatform()) {
-			case linux:
-			case solaris:
+		case linux:
+		case solaris:
+			workingDirectory = new File(userHome, '.' + applicationName + '/');
+			break;
+		case windows:
+			String applicationData = System.getenv("APPDATA");
+			if (applicationData != null) {
+				workingDirectory = new File(applicationData, "." + applicationName + '/');
+			} else {
 				workingDirectory = new File(userHome, '.' + applicationName + '/');
-				break;
-			case windows:
-				String applicationData = System.getenv("APPDATA");
-				if (applicationData != null)
-					workingDirectory = new File(applicationData, "." + applicationName + '/');
-				else
-					workingDirectory = new File(userHome, '.' + applicationName + '/');
-				break;
-			case macos:
-				workingDirectory = new File(userHome, "Library/Application Support/" + applicationName);
-				break;
-			default:
-				workingDirectory = new File(userHome, applicationName + '/');
+			}
+			break;
+		case macos:
+			workingDirectory = new File(userHome, "Library/Application Support/" + applicationName);
+			break;
+		default:
+			workingDirectory = new File(userHome, applicationName + '/');
 		}
-		if ((!workingDirectory.exists()) && (!workingDirectory.mkdirs()))
-			throw new RuntimeException("The working directory could not be created: " + workingDirectory);
+		if ((!workingDirectory.exists()) && (!workingDirectory.mkdirs())) { throw new RuntimeException("The working directory could not be created: " + workingDirectory); }
 		return workingDirectory;
 	}
 
 	public static OS getPlatform() {
 		String osName = System.getProperty("os.name").toLowerCase();
-		if (osName.contains("win"))
-			return OS.windows;
-		if (osName.contains("mac"))
-			return OS.macos;
-		if (osName.contains("solaris"))
-			return OS.solaris;
-		if (osName.contains("sunos"))
-			return OS.solaris;
-		if (osName.contains("linux"))
-			return OS.linux;
-		if (osName.contains("unix"))
-			return OS.linux;
+		if (osName.contains("win")) { return OS.windows; }
+		if (osName.contains("mac")) { return OS.macos; }
+		if (osName.contains("solaris")) { return OS.solaris; }
+		if (osName.contains("sunos")) { return OS.solaris; }
+		if (osName.contains("linux")) { return OS.linux; }
+		if (osName.contains("unix")) { return OS.linux; }
 		return OS.unknown;
 	}
 
 	public enum OS {
-		linux,
-		solaris,
-		windows,
-		macos,
-		unknown
+
+		linux, solaris, windows, macos, unknown
 	}
 
 	public static String excutePost(String targetURL, String urlParameters, JProgressBar progress) {
@@ -106,7 +97,7 @@ public class PlatformUtils {
 			connection.setUseCaches(false);
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
-			
+
 			connection.setConnectTimeout(10000);
 
 			connection.connect();
@@ -122,8 +113,9 @@ public class PlatformUtils {
 			byte[] data = pk.getEncoded();
 
 			for (int j = 0; j < data.length; j++) {
-				if (data[j] == bytes[j])
+				if (data[j] == bytes[j]) {
 					continue;
+				}
 				throw new RuntimeException("Public key mismatch");
 			}
 

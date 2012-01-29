@@ -28,11 +28,11 @@ import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class MinecraftClassLoader extends URLClassLoader{
-	private HashMap<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>(1000);
-	private File spoutcraft = null;
-	private File[] libraries;
-	
+public class MinecraftClassLoader extends URLClassLoader {
+	private final HashMap<String, Class<?>>	loadedClasses	= new HashMap<String, Class<?>>(1000);
+	private File														spoutcraft		= null;
+	private final File[]										libraries;
+
 	public MinecraftClassLoader(URL[] urls, ClassLoader parent, File spoutcraft, File[] libraries) {
 		super(urls, parent);
 		this.spoutcraft = spoutcraft;
@@ -45,53 +45,44 @@ public class MinecraftClassLoader extends URLClassLoader{
 			}
 		}
 	}
-	
-	//NOTE: VerifyException is due to multiple classes of the same type in jars, need to override all classloader methods to fix...
-	
+
+	// NOTE: VerifyException is due to multiple classes of the same type in
+	// jars, need to override all classloader methods to fix...
+
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		Class<?> result = null;
-		result = loadedClasses.get(name); //checks in cached classes  
-		if (result != null) {
-			return result;
-		}
+		Class<?> result = loadedClasses.get(name); // checks in cached classes
+		if (result != null) { return result; }
 
 		result = findClassInjar(name, spoutcraft);
-		if (result != null) {
-			return result;
-		}
-		
+		if (result != null) { return result; }
+
 		for (File file : libraries) {
 			result = findClassInjar(name, file);
-			if (result != null) {
-				return result;
-			}
+			if (result != null) { return result; }
 		}
 		return super.findClass(name);
 	}
-	
+
 	private Class<?> findClassInjar(String name, File file) throws ClassNotFoundException {
-		byte classByte[];
-		Class<?> result = null;
 		try {
 			JarFile jar = new JarFile(file);
-			JarEntry entry = jar.getJarEntry(name.replace(".", "/") + ".class");  
+			JarEntry entry = jar.getJarEntry(name.replace(".", "/") + ".class");
 			if (entry != null) {
-				InputStream is = jar.getInputStream(entry);  
+				InputStream is = jar.getInputStream(entry);
 				ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 				int next = is.read();
 				while (-1 != next) {
 					byteStream.write(next);
 					next = is.read();
 				}
-	
-				classByte = byteStream.toByteArray();
-				result = defineClass(name, classByte, 0, classByte.length, new CodeSource(file.toURI().toURL(), (CodeSigner[])null));
+
+				byte classByte[] = byteStream.toByteArray();
+				Class<?> result = defineClass(name, classByte, 0, classByte.length, new CodeSource(file.toURI().toURL(), (CodeSigner[]) null));
 				loadedClasses.put(name, result);
 				return result;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;

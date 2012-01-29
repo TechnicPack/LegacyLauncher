@@ -1,19 +1,15 @@
 package org.spoutcraft.launcher;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Map;
 
 import org.bukkit.util.config.Configuration;
 
 public class LibrariesYML {
-	private static final String LIBRARIES_YML = "libraries.yml";
-	private static volatile boolean updated = false;
-	private static File librariesYMLFile = new File(GameUpdater.workDir, LIBRARIES_YML);
-	private static Object key = new Object();
+	private static final String			LIBRARIES_YML			= "libraries.yml";
+	private static volatile boolean	updated						= false;
+	private static File							librariesYMLFile	= new File(GameUpdater.workDir, LIBRARIES_YML);
+	private static final Object			key								= new Object();
 
 	public static Configuration getLibrariesYML() {
 		updateLibrariesYMLCache();
@@ -21,16 +17,16 @@ public class LibrariesYML {
 		config.load();
 		return config;
 	}
-	
+
 	public static void updateLibrariesYMLCache() {
 		if (!updated) {
-			synchronized(key) {
+			synchronized (key) {
 				YmlUtils.downloadYmlFile(LIBRARIES_YML, "http://technic.freeworldsgaming.com/libraries.yml", librariesYMLFile);
 				updated = true;
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static String getMD5(String library, String version) {
 		Configuration config = getLibrariesYML();
@@ -40,8 +36,8 @@ public class LibrariesYML {
 		if (result == null) {
 			try {
 				result = versions.get(Double.parseDouble(version));
+			} catch (NumberFormatException ignore) {
 			}
-			catch (NumberFormatException ignore) {}
 		}
 		return result;
 	}
