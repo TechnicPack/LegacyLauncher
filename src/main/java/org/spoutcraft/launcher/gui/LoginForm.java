@@ -65,6 +65,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.spoutcraft.launcher.GameUpdater;
@@ -142,7 +143,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		usernameField.addActionListener(this);
 		usernameField.setOpaque(false);
 
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		setBounds((dim.width - 860) / 2, (dim.height - 500) / 2, 860, 500);
@@ -350,6 +351,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	public void updateBranding() {
 		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
 
+			@Override
 			protected Object doInBackground() throws Exception {
 				String modpack = SettingsUtil.getModPackSelection();
 				ModPackListYML.setModPack(modpack, ModPackListYML.getModPacks().get(modpack));
@@ -531,6 +533,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		options.setVisible(false);
 		SwingWorker<Boolean, Boolean> loginThread = new SwingWorker<Boolean, Boolean>() {
 
+			@Override
 			protected Boolean doInBackground() {
 				progressBar.setVisible(true);
 				progressBar.setString("Connecting to www.minecraft.net...");
@@ -636,6 +639,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 				SwingWorker<Boolean, String> updateThread = new SwingWorker<Boolean, String>() {
 
+					@Override
 					protected Boolean doInBackground() throws Exception {
 						publish("Checking for Minecraft Update...\n");
 						mcUpdate = gameUpdater.checkMCUpdate();
@@ -695,6 +699,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				this.cancel(true);
 			}
 
+			@Override
 			protected Boolean doInBackground() throws Exception {
 				try {
 					if (mcUpdate) {

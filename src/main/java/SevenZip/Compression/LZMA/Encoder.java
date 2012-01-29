@@ -220,6 +220,7 @@ public class Encoder {
 				UpdateTable(posState);
 		}
 
+		@Override
 		public void Encode(SevenZip.Compression.RangeCoder.Encoder rangeEncoder, int symbol, int posState) throws IOException {
 			super.Encode(rangeEncoder, symbol, posState);
 			if (--_counters[posState] == 0) UpdateTable(posState);
@@ -379,7 +380,7 @@ public class Encoder {
 		_numDistancePairs = _matchFinder.GetMatches(_matchDistances);
 		if (_numDistancePairs > 0) {
 			lenRes = _matchDistances[_numDistancePairs - 2];
-			if (lenRes == _numFastBytes) lenRes += _matchFinder.GetMatchLen((int) lenRes - 1, _matchDistances[_numDistancePairs - 1], Base.kMatchMaxLen - lenRes);
+			if (lenRes == _numFastBytes) lenRes += _matchFinder.GetMatchLen(lenRes - 1, _matchDistances[_numDistancePairs - 1], Base.kMatchMaxLen - lenRes);
 		}
 		_additionalOffset++;
 		return lenRes;
@@ -921,10 +922,10 @@ public class Encoder {
 			int complexState = (_state << Base.kNumPosStatesBitsMax) + posState;
 			if (len == 1 && pos == -1) {
 				_rangeEncoder.Encode(_isMatch, complexState, 0);
-				byte curByte = _matchFinder.GetIndexByte((int) (0 - _additionalOffset));
+				byte curByte = _matchFinder.GetIndexByte((0 - _additionalOffset));
 				LiteralEncoder.Encoder2 subCoder = _literalEncoder.GetSubCoder((int) nowPos64, _previousByte);
 				if (!Base.StateIsCharState(_state)) {
-					byte matchByte = _matchFinder.GetIndexByte((int) (0 - _repDistances[0] - 1 - _additionalOffset));
+					byte matchByte = _matchFinder.GetIndexByte((0 - _repDistances[0] - 1 - _additionalOffset));
 					subCoder.EncodeMatched(_rangeEncoder, matchByte, curByte);
 				} else subCoder.Encode(_rangeEncoder, curByte);
 				_previousByte = curByte;
@@ -966,7 +967,7 @@ public class Encoder {
 					_posSlotEncoder[lenToPosState].Encode(_rangeEncoder, posSlot);
 
 					if (posSlot >= Base.kStartPosModelIndex) {
-						int footerBits = (int) ((posSlot >> 1) - 1);
+						int footerBits = ((posSlot >> 1) - 1);
 						int baseVal = ((2 | (posSlot & 1)) << footerBits);
 						int posReduced = pos - baseVal;
 
@@ -1085,7 +1086,7 @@ public class Encoder {
 	void FillDistancesPrices() {
 		for (int i = Base.kStartPosModelIndex; i < Base.kNumFullDistances; i++) {
 			int posSlot = GetPosSlot(i);
-			int footerBits = (int) ((posSlot >> 1) - 1);
+			int footerBits = ((posSlot >> 1) - 1);
 			int baseVal = ((2 | (posSlot & 1)) << footerBits);
 			tempPrices[i] = BitTreeEncoder.ReverseGetPrice(_posEncoders, baseVal - posSlot - 1, footerBits, i - baseVal);
 		}

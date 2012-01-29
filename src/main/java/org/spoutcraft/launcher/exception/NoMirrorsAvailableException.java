@@ -20,10 +20,12 @@ public class NoMirrorsAvailableException extends IOException {
 		this(null, "No Mirrors Are Available");
 	}
 
+	@Override
 	public Throwable getCause() {
 		return this.cause;
 	}
 
+	@Override
 	public String getMessage() {
 		return this.message;
 	}

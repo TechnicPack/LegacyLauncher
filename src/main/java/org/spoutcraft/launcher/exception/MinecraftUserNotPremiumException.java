@@ -38,10 +38,12 @@ public class MinecraftUserNotPremiumException extends Exception {
 		this(null, "User not premium");
 	}
 
+	@Override
 	public Throwable getCause() {
 		return this.cause;
 	}
 
+	@Override
 	public String getMessage() {
 		return this.message;
 	}

@@ -46,7 +46,7 @@ public class LzmaBench {
 			numBits -= NumBits;
 			result = (Value << numBits);
 			Value = RG.GetRnd();
-			result |= Value & (((int) 1 << numBits) - 1);
+			result |= Value & ((1 << numBits) - 1);
 			Value >>>= numBits;
 			NumBits = 32 - numBits;
 			return result;
@@ -76,7 +76,7 @@ public class LzmaBench {
 
 		int GetLogRandBits(int numBits) {
 			int len = RG.GetRnd(numBits);
-			return RG.GetRnd((int) len);
+			return RG.GetRnd(len);
 		}
 
 		int GetOffset() {
@@ -85,11 +85,11 @@ public class LzmaBench {
 		}
 
 		int GetLen1() {
-			return RG.GetRnd(1 + (int) RG.GetRnd(2));
+			return RG.GetRnd(1 + RG.GetRnd(2));
 		}
 
 		int GetLen2() {
-			return RG.GetRnd(2 + (int) RG.GetRnd(2));
+			return RG.GetRnd(2 + RG.GetRnd(2));
 		}
 
 		public void Generate() {
@@ -125,14 +125,17 @@ public class LzmaBench {
 			return CRC.GetDigest();
 		}
 
+		@Override
 		public void write(byte[] b) {
 			CRC.Update(b);
 		}
 
+		@Override
 		public void write(byte[] b, int off, int len) {
 			CRC.Update(b, off, len);
 		}
 
+		@Override
 		public void write(int b) {
 			CRC.UpdateByte(b);
 		}
@@ -152,6 +155,7 @@ public class LzmaBench {
 			_pos = 0;
 		}
 
+		@Override
 		public void write(int b) throws IOException {
 			if (_pos >= _size) throw new IOException("Error");
 			_buffer[_pos++] = (byte) b;
@@ -172,10 +176,12 @@ public class LzmaBench {
 			_size = size;
 		}
 
+		@Override
 		public void reset() {
 			_pos = 0;
 		}
 
+		@Override
 		public int read() {
 			if (_pos >= _size) return -1;
 			return _buffer[_pos++] & 0xFF;
@@ -222,7 +228,7 @@ public class LzmaBench {
 	static long GetCompressRating(int dictionarySize, long elapsedTime, long size) {
 		long t = GetLogSize(dictionarySize) - (18 << kSubBits);
 		long numCommandsForOne = 1060 + ((t * t * 10) >> (2 * kSubBits));
-		long numCommands = (long) (size) * numCommandsForOne;
+		long numCommands = (size) * numCommandsForOne;
 		return MyMultDiv64(numCommands, elapsedTime);
 	}
 
@@ -327,7 +333,7 @@ public class LzmaBench {
 				decodeTime = System.currentTimeMillis() - startTime;
 				if (crcOutStream.GetDigest() != crc.GetDigest()) throw (new Exception("CRC Error"));
 			}
-			long benchSize = kBufferSize - (long) progressInfo.InSize;
+			long benchSize = kBufferSize - progressInfo.InSize;
 			PrintResults(dictionarySize, encodeTime, benchSize, false, 0);
 			System.out.print("	 ");
 			PrintResults(dictionarySize, decodeTime, kBufferSize, true, compressedSize);

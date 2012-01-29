@@ -35,6 +35,7 @@ public class SystemListenerStream extends ByteArrayOutputStream {
 		lineSeparator = System.getProperty("line.separator");
 	}
 
+	@Override
 	public void flush() throws IOException {
 
 		String record;

@@ -43,6 +43,7 @@ public class BinTree extends InWindow {
 		}
 	}
 
+	@Override
 	public void Init() throws IOException {
 		super.Init();
 		for (int i = 0; i < _hashSizeSum; i++)
@@ -51,6 +52,7 @@ public class BinTree extends InWindow {
 		ReduceOffsets(-1);
 	}
 
+	@Override
 	public void MovePos() throws IOException {
 		if (++_cyclicBufferPos >= _cyclicBufferSize) _cyclicBufferPos = 0;
 		super.MovePos();
@@ -109,10 +111,10 @@ public class BinTree extends InWindow {
 		if (HASH_ARRAY) {
 			int temp = CrcTable[_bufferBase[cur] & 0xFF] ^ (_bufferBase[cur + 1] & 0xFF);
 			hash2Value = temp & (kHash2Size - 1);
-			temp ^= ((int) (_bufferBase[cur + 2] & 0xFF) << 8);
+			temp ^= ((_bufferBase[cur + 2] & 0xFF) << 8);
 			hash3Value = temp & (kHash3Size - 1);
 			hashValue = (temp ^ (CrcTable[_bufferBase[cur + 3] & 0xFF] << 5)) & _hashMask;
-		} else hashValue = ((_bufferBase[cur] & 0xFF) ^ ((int) (_bufferBase[cur + 1] & 0xFF) << 8));
+		} else hashValue = ((_bufferBase[cur] & 0xFF) ^ ((_bufferBase[cur + 1] & 0xFF) << 8));
 
 		int curMatch = _hash[kFixHashSize + hashValue];
 		if (HASH_ARRAY) {
@@ -215,11 +217,11 @@ public class BinTree extends InWindow {
 				int temp = CrcTable[_bufferBase[cur] & 0xFF] ^ (_bufferBase[cur + 1] & 0xFF);
 				int hash2Value = temp & (kHash2Size - 1);
 				_hash[hash2Value] = _pos;
-				temp ^= ((int) (_bufferBase[cur + 2] & 0xFF) << 8);
+				temp ^= ((_bufferBase[cur + 2] & 0xFF) << 8);
 				int hash3Value = temp & (kHash3Size - 1);
 				_hash[kHash3Offset + hash3Value] = _pos;
 				hashValue = (temp ^ (CrcTable[_bufferBase[cur + 3] & 0xFF] << 5)) & _hashMask;
-			} else hashValue = ((_bufferBase[cur] & 0xFF) ^ ((int) (_bufferBase[cur + 1] & 0xFF) << 8));
+			} else hashValue = ((_bufferBase[cur] & 0xFF) ^ ((_bufferBase[cur + 1] & 0xFF) << 8));
 
 			int curMatch = _hash[kFixHashSize + hashValue];
 			_hash[kFixHashSize + hashValue] = _pos;

@@ -21,6 +21,7 @@ import java.util.logging.LogRecord;
 
 public class ClientLoggerFormatter extends Formatter {
 
+	@Override
 	public String format(LogRecord record) {
 
 		// Create a StringBuffer to contain the formatted record

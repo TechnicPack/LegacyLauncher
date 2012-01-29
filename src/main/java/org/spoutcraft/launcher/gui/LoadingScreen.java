@@ -44,14 +44,17 @@ public class LoadingScreen extends JDialog {
 		closePanel = new JPanel(new BorderLayout());
 	}
 
+	@Override
 	public JPanel getContentPane() {
 		return main;
 	}
 
+	@Override
 	public Component add(Component comp) {
 		return main.add(comp);
 	}
 
+	@Override
 	public void setLayout(LayoutManager manager) {
 		if (main == null) {
 			main = new JPanel();
