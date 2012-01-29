@@ -667,7 +667,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 							updateDialog.setToUpdate(ModPackListYML.currentModPackLabel);
 						}
 						if (mcUpdate || spoutUpdate || modpackUpdate) {
-							if (!GameUpdater.binDir.exists())
+							if (!GameUpdater.binDir.exists() || mcUpdate)
 								updateThread();
 							else
 								LoginForm.updateDialog.setVisible(true);

@@ -58,7 +58,6 @@ public class GameUpdater implements DownloadListener {
 
 	/* Files */
 	public static final File binDir = new File(WORKING_DIRECTORY, "bin");
-	public static final File binCacheDir = new File(binDir, "cache");
 	public static final File cacheDir = new File(WORKING_DIRECTORY, "cache");
 	public static final File tempDir = new File(WORKING_DIRECTORY, "temp");
 	public static final File backupDir = new File(WORKING_DIRECTORY, "backups");
@@ -83,7 +82,6 @@ public class GameUpdater implements DownloadListener {
 	public void updateMC() throws Exception {
 
 		binDir.mkdir();
-		binCacheDir.mkdir();
 		cacheDir.mkdirs();
 		if (tempDir.exists())
 			FileUtils.deleteDirectory(tempDir);
@@ -97,7 +95,7 @@ public class GameUpdater implements DownloadListener {
 		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
 		
 		// Processs minecraft.jar \\
-		File mcCache = new File(binCacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
+		File mcCache = new File(cacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
 		if (!mcCache.exists() || !minecraftMD5.equals(MD5Utils.getMD5(mcCache))) {
 			String minecraftURL = baseURL + "minecraft.jar?user=" + user + "&ticket=" + downloadTicket;
 			String output = tempDir + File.separator + "minecraft.jar";
@@ -109,7 +107,7 @@ public class GameUpdater implements DownloadListener {
 		nativesDir.mkdir();
 
 		// Process other Downloads
-		mcCache = new File(binCacheDir, "jinput.jar");
+		mcCache = new File(cacheDir, "jinput.jar");
 		if (!mcCache.exists() || !jinputMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar",binDir.getPath() + File.separator + "jinput.jar", "jinput.jar", jinputMD5, listener);
 		}
@@ -117,7 +115,7 @@ public class GameUpdater implements DownloadListener {
 			copy(mcCache, new File(binDir, "jinput.jar"));
 		}
 		
-		mcCache = new File(binCacheDir, "lwjgl.jar");
+		mcCache = new File(cacheDir, "lwjgl.jar");
 		if (!mcCache.exists() || !lwjglMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl.jar", binDir.getPath() + File.separator + "lwjgl.jar", "lwjgl.jar", lwjglMD5, listener);
 		}
@@ -125,7 +123,7 @@ public class GameUpdater implements DownloadListener {
 			copy(mcCache, new File(binDir, "lwjgl.jar"));
 		}
 		
-		mcCache = new File(binCacheDir, "lwjgl_util.jar");
+		mcCache = new File(cacheDir, "lwjgl_util.jar");
 		if (!mcCache.exists() || !lwjgl_utilMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl_util.jar", binDir.getPath() + File.separator + "lwjgl_util.jar", "lwjgl_util.jar", lwjgl_utilMD5, listener);
 		}
@@ -316,10 +314,9 @@ public class GameUpdater implements DownloadListener {
 		SpoutcraftBuild build = SpoutcraftBuild.getSpoutcraftBuild();
 
 		tempDir.mkdirs();
-		binCacheDir.mkdirs();
 		workDir.mkdirs();
 		
-		File mcCache = new File(binCacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
+		File mcCache = new File(cacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
 		File updateMC = new File(tempDir.getPath() + File.separator + "minecraft.jar");
 		if (mcCache.exists()) {
 			copy(mcCache, updateMC);

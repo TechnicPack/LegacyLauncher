@@ -61,6 +61,6 @@ public class MinecraftDownloadUtils {
 		if (outputFile == null) {
 			throw new IOException("Failed to download minecraft");
 		}
-		GameUpdater.copy(outputFile, new File(GameUpdater.binCacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar"));
+		GameUpdater.copy(outputFile, new File(GameUpdater.cacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar"));
 	}
 }
