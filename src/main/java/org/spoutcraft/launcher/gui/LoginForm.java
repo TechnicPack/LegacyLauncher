@@ -91,19 +91,19 @@ import org.spoutcraft.launcher.modpacks.ModPackYML;
 public class LoginForm extends JFrame implements ActionListener, DownloadListener, KeyListener, WindowListener {
 
 	private static final long									serialVersionUID	= 1L;
-	private JPanel														contentPane;
-	private JPasswordField										passwordField;
-	private JComboBox													usernameField			= new JComboBox();
-	private JButton														loginButton				= new JButton("Login");
+	private final JPanel											contentPane;
+	private final JPasswordField							passwordField;
+	private final JComboBox										usernameField			= new JComboBox();
+	private final JButton											loginButton				= new JButton("Login");
 	JButton																		optionsButton			= new JButton("Options");
 	JButton																		modsButton				= new JButton("Mods");
-	private JCheckBox													rememberCheckbox	= new JCheckBox("Remember");
+	private final JCheckBox										rememberCheckbox	= new JCheckBox("Remember");
 	final JLabel															background				= new JLabel("Loading...");
 	final JTextPane														editorPane				= new JTextPane();
-	private JButton														loginSkin1;
-	private List<JButton>											loginSkin1Image;
-	private JButton														loginSkin2;
-	private List<JButton>											loginSkin2Image;
+	private final JButton											loginSkin1;
+	private final List<JButton>								loginSkin1Image;
+	private final JButton											loginSkin2;
+	private final List<JButton>								loginSkin2Image;
 	private TumblerFeedParsingWorker					tumblerFeed;
 	public final JProgressBar									progressBar;
 	HashMap<String, UserPasswordInformation>	usernames					= new HashMap<String, UserPasswordInformation>();
@@ -120,7 +120,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	ModsDialog																mods							= new ModsDialog(ModPackYML.getModList());
 	Container																	loginPane					= new Container();
 	Container																	offlinePane				= new Container();
-	private JLabel														lblLogo;
+	private final JLabel											lblLogo;
 
 	public LoginForm() {
 		LoginForm.updateDialog = new UpdateDialog(this);
@@ -368,6 +368,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		updateThread.execute();
 	}
 
+	@Override
 	public void stateChanged(String fileName, float progress) {
 		int intProgress = Math.round(progress);
 
@@ -381,15 +382,18 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		progressBar.setString(intProgress + "% " + fileName);
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		if (loginButton.isEnabled() && e.getKeyCode() == KeyEvent.VK_ENTER) {
 			doLogin();
 		}
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 	}
 
@@ -476,6 +480,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		}
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent event) {
 		String eventId = event.getActionCommand();
 		if (event.getSource() == loginSkin1 || event.getSource() == loginSkin2) {
@@ -642,13 +647,25 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					@Override
 					protected Boolean doInBackground() throws Exception {
 						publish("Checking for Minecraft Update...\n");
-						mcUpdate = gameUpdater.checkMCUpdate();
+						try {
+							mcUpdate = gameUpdater.checkMCUpdate();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 
 						publish("Checking for Spoutcraft update...\n");
-						spoutUpdate = gameUpdater.isSpoutcraftUpdateAvailable();
+						try {
+							spoutUpdate = gameUpdater.isSpoutcraftUpdateAvailable();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 
 						publish(String.format("Checking for %s update...\n", ModPackListYML.currentModPackLabel));
-						modpackUpdate = gameUpdater.isModpackUpdateAvailable();
+						try {
+							modpackUpdate = gameUpdater.isModpackUpdateAvailable();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 						return true;
 					}
 
@@ -770,6 +787,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		// Do nothing for retrying launch
 	}
 
+	@Override
 	public void windowOpened(WindowEvent e) {
 		tumblerFeed = new TumblerFeedParsingWorker(editorPane);
 		tumblerFeed.execute();
@@ -780,9 +798,11 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		(new BackgroundImageWorker(backgroundImage, background)).execute();
 	}
 
+	@Override
 	public void windowClosing(WindowEvent e) {
 	}
 
+	@Override
 	public void windowClosed(WindowEvent e) {
 		if (success == LauncherFrame.ERROR_IN_LAUNCH) {
 			System.out.println("Exiting the Technic Launcher");
@@ -790,15 +810,19 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		}
 	}
 
+	@Override
 	public void windowIconified(WindowEvent e) {
 	}
 
+	@Override
 	public void windowDeiconified(WindowEvent e) {
 	}
 
+	@Override
 	public void windowActivated(WindowEvent e) {
 	}
 
+	@Override
 	public void windowDeactivated(WindowEvent e) {
 	}
 

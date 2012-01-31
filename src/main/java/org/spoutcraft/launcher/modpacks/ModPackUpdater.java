@@ -90,6 +90,7 @@ public class ModPackUpdater extends GameUpdater {
 		for (String modName : modsToRemove) {
 			removePreviousModVersion(modName, installedMods.get(modName));
 		}
+
 	}
 
 	public boolean downloadModPackage(String name, String filename, File downloadedFile) {
@@ -183,6 +184,8 @@ public class ModPackUpdater extends GameUpdater {
 					file.delete();
 				}
 			}
+
+			InstalledModsYML.removeMod(modName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -210,6 +213,9 @@ public class ModPackUpdater extends GameUpdater {
 
 			String md5Name = "mods\\" + modName + "\\" + fullFilename;
 			if (!MD5Utils.checksumCachePath(fullFilename, md5Name)) { return true; }
+
+			String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
+			if (installedModVersion == null || !installedModVersion.equals(version)) { return true; }
 		}
 
 		return false;
