@@ -19,11 +19,10 @@ public class UpdateDialog extends JDialog implements ActionListener {
 
 	private static final long	serialVersionUID	= -4617588853047124397L;
 	private final JPanel			contentPanel			= new JPanel();
-	private JLabel						label							= new JLabel("There is a new update for %TO_UPDATE%.");
-	private LoginForm					lf;
+	private final JLabel			label							= new JLabel("There is a new update for %TO_UPDATE%.");
+	private final LoginForm		lf;
 
 	public void setToUpdate(String str) {
-		if (str.equals("Spoutcraft")) label.setText(label.getText().replace("%TO_UPDATE%", "Madpack"));
 		label.setText(label.getText().replace("%TO_UPDATE%", str));
 	}
 
@@ -57,6 +56,7 @@ public class UpdateDialog extends JDialog implements ActionListener {
 		cancelButton.addActionListener(this);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Yes")) {
 			lf.updateThread();

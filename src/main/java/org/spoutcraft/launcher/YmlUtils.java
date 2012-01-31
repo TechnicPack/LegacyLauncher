@@ -27,6 +27,8 @@ public class YmlUtils {
 	public static boolean downloadYmlFile(String ymlUrl, String fallbackUrl, File ymlFile) {
 		boolean isRelative = !ymlUrl.contains("http");
 
+		GameUpdater.tempDir.mkdirs();
+
 		if (isRelative && ymlFile.exists() && MD5Utils.checksumPath(ymlUrl)) { return true; }
 
 		URL url = null;

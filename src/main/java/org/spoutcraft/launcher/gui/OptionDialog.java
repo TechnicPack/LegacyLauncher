@@ -89,10 +89,10 @@ public class OptionDialog extends JDialog implements ActionListener {
 		devBuilds.setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
 		recBuilds.setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
 		// clipboardCheckbox.setToolTipText("Allows server mods to see the contents of your clipboard.");
-		backupCheckbox.setToolTipText("Backs up your Single Player worlds after each Madpack update");
+		backupCheckbox.setToolTipText("Backs up your Single Player worlds after each Modpack update");
 		retryLoginCheckbox.setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
 		latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
-		clearCache.setToolTipText("Clears the cached minecraft and Madpack files, forcing a redownload on your next login");
+		clearCache.setToolTipText("Clears the cached minecraft and Modpack files, forcing a redownload on your next login");
 		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Minecraft. Assigning more memory than you have may cause crashes.");
 		packCombo.setToolTipText("Select which mod pack to use with the launcher.");
 
@@ -138,7 +138,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
 		JLabel lblPack = new JLabel("Select Mod Pack: ");
 
-		JLabel selectBuild = new JLabel("Select Madpack build: ");
+		JLabel selectBuild = new JLabel("Select Modpack build: ");
 
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addComponent(selectBuild).addPreferredGap(ComponentPlacement.RELATED).addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addComponent(devBuilds).addComponent(recBuilds).addComponent(customBuilds).addGroup(gl_contentPanel.createSequentialGroup().addComponent(lblPack).addPreferredGap(ComponentPlacement.RELATED).addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)) // .addComponent(clipboardCheckbox)
@@ -213,6 +213,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		}
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent evt) {
 		String id = evt.getActionCommand();
 		if (id.equals("OK")) {
@@ -268,7 +269,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 			if (clearCache()) {
 				JOptionPane.showMessageDialog(getParent(), "Successfully cleared the cache.");
 			} else {
-				JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Madpack files are open.\nIf all else fails, close the launcher, restart it, and try again.");
+				JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Modpack files are open.\nIf all else fails, close the launcher, restart it, and try again.");
 			}
 		} else if (id.equals(customBuilds.getText()) || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {
 			updateBuildsCombo();

@@ -171,7 +171,7 @@ public class ModPackUpdater extends GameUpdater {
 			ZipFile zf = new ZipFile(previousModZip);
 			Enumeration<? extends ZipEntry> entries = zf.entries();
 			// Go through zipfile of previous version and delete all file from
-			// Madpack that exist in the zip
+			// Modpack that exist in the zip
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
 				if (entry.isDirectory()) {
@@ -209,7 +209,7 @@ public class ModPackUpdater extends GameUpdater {
 			String fullFilename = modName + "-" + version + "." + installType;
 
 			String md5Name = "mods\\" + modName + "\\" + fullFilename;
-			if (MD5Utils.checksumCachePath(fullFilename, md5Name)) { return true; }
+			if (!MD5Utils.checksumCachePath(fullFilename, md5Name)) { return true; }
 		}
 
 		return false;

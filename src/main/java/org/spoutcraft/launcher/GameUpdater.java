@@ -83,7 +83,7 @@ public class GameUpdater implements DownloadListener {
 
 		binDir.mkdir();
 		cacheDir.mkdirs();
-		if (tempDir.exists()) FileUtils.deleteDirectory(tempDir);
+		// if (tempDir.exists()) FileUtils.deleteDirectory(tempDir);
 		tempDir.mkdirs();
 
 		String minecraftMD5 = MD5Utils.getMD5(FileType.minecraft);
@@ -248,7 +248,7 @@ public class GameUpdater implements DownloadListener {
 				}
 
 				progress += progressStep;
-				stateChanged("Extracting Files...", progress);
+				stateChanged(String.format("Extracting '%s'...", nativesJar.getName()), progress);
 
 				inputStream.close();
 				out.flush();
@@ -338,7 +338,6 @@ public class GameUpdater implements DownloadListener {
 	}
 
 	public boolean isSpoutcraftUpdateAvailable() {
-		// try {
 		if (!WORKING_DIRECTORY.exists()) return true;
 		if (!GameUpdater.workDir.exists()) return true;
 
@@ -356,9 +355,6 @@ public class GameUpdater implements DownloadListener {
 			File libraryFile = new File(libDir, lib.getKey() + ".jar");
 			if (!libraryFile.exists()) { return true; }
 		}
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
 		return false;
 	}
 
@@ -425,6 +421,7 @@ public class GameUpdater implements DownloadListener {
 	public boolean canPlayOffline() {
 		try {
 			String path = (String) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+				@Override
 				public Object run() throws Exception {
 					return WORKING_DIRECTORY + File.separator + "bin" + File.separator;
 				}
@@ -480,7 +477,7 @@ public class GameUpdater implements DownloadListener {
 
 			progress += progressStep;
 			if (progressBar) {
-				stateChanged("Merging Madpack Files Into Minecraft Jar...", progress);
+				stateChanged("Merging Modpack Files Into Minecraft Jar...", progress);
 			}
 		}
 		zin.close();
@@ -500,7 +497,7 @@ public class GameUpdater implements DownloadListener {
 
 				progress += progressStep;
 				if (progressBar) {
-					stateChanged("Merging Madpack Files Into Minecraft Jar...", progress);
+					stateChanged("Merging Modpack Files Into Minecraft Jar...", progress);
 				}
 
 				out.closeEntry();
@@ -552,6 +549,7 @@ public class GameUpdater implements DownloadListener {
 		return result;
 	}
 
+	@Override
 	public void stateChanged(String fileName, float progress) {
 		fileName = fileName.replace(WORKING_DIRECTORY.getPath(), "");
 		this.listener.stateChanged(fileName, progress);
