@@ -4,8 +4,6 @@ The goal of this laucher is to provide a one-click method to switch modpacks and
 
 -------------------
 
-Auto build of jar should be avaliable here:
+Main Technic site is here: http://technicpack.net/
 
-https://agelian.ci.cloudbees.com/job/TechnicLauncher/lastBuild/org.spoutcraft$launcher/
-
-click on 'launcher-dev-SNAPSHOT.jar'
+and the forums are here: http://technicpack.net/forums/
