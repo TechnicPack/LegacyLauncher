@@ -56,3 +56,4 @@ build.xml
 .idea
 *.jpage
 /src/main/java/Test.java
+/techniclauncher

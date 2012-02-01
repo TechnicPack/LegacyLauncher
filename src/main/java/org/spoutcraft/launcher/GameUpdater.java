@@ -86,15 +86,16 @@ public class GameUpdater implements DownloadListener {
 		// if (tempDir.exists()) FileUtils.deleteDirectory(tempDir);
 		tempDir.mkdirs();
 
-		String minecraftMD5 = MD5Utils.getMD5(FileType.minecraft);
+		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
+		String minecraftVersion = build.getMinecraftVersion();
+
+		String minecraftMD5 = MD5Utils.getMD5(FileType.minecraft, minecraftVersion);
 		String jinputMD5 = MD5Utils.getMD5(FileType.jinput);
 		String lwjglMD5 = MD5Utils.getMD5(FileType.lwjgl);
 		String lwjgl_utilMD5 = MD5Utils.getMD5(FileType.lwjgl_util);
 
-		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
-
 		// Processs minecraft.jar \\
-		File mcCache = new File(cacheDir, "minecraft_" + build.getMinecraftVersion() + ".jar");
+		File mcCache = new File(cacheDir, "minecraft_" + minecraftVersion + ".jar");
 		if (!mcCache.exists() || !minecraftMD5.equals(MD5Utils.getMD5(mcCache))) {
 			String minecraftURL = baseURL + "minecraft.jar?user=" + user + "&ticket=" + downloadTicket;
 			String output = tempDir + File.separator + "minecraft.jar";
@@ -143,7 +144,7 @@ public class GameUpdater implements DownloadListener {
 			// the files are good, since they got loaded last time...
 		}
 
-		MinecraftYML.setInstalledVersion(build.getMinecraftVersion());
+		MinecraftYML.setInstalledVersion(minecraftVersion);
 	}
 
 	public String getNativesUrl() {

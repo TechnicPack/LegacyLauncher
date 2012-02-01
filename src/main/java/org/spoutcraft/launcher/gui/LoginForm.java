@@ -671,12 +671,12 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 					@Override
 					protected void done() {
-						if (mcUpdate) {
-							updateDialog.setToUpdate("Minecraft");
+						if (modpackUpdate) {
+							updateDialog.setToUpdate(ModPackListYML.currentModPackLabel);
 						} else if (spoutUpdate) {
 							updateDialog.setToUpdate("Spoutcraft");
-						} else if (modpackUpdate) {
-							updateDialog.setToUpdate(ModPackListYML.currentModPackLabel);
+						} else if (mcUpdate) {
+							updateDialog.setToUpdate("Minecraft");
 						}
 						if (mcUpdate || spoutUpdate || modpackUpdate) {
 							if (!GameUpdater.binDir.exists() || mcUpdate) {
