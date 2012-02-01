@@ -35,8 +35,6 @@ public class Options {
 	private final boolean				portable		= false;
 	@Parameter(names = { "-safe", "-smode", "-safe_mode", "-sm" }, description = "Safe Mode - Prevents Addons from being loaded")
 	private final boolean				safe_mode		= false;
-	@Parameter(names = { "-modpack" }, description = "Select Mod Pack")
-	private final int						modpack			= 0;
 
 	public List<String> getParameters() {
 		return parameters;
@@ -68,9 +66,5 @@ public class Options {
 
 	public boolean isSafe_mode() {
 		return safe_mode;
-	}
-
-	public int getModPack() {
-		return modpack;
 	}
 }
