@@ -31,17 +31,18 @@ import javax.swing.JProgressBar;
 
 public class PlatformUtils {
 
-	private static File	workDir	= null;
+	public static final String	LAUNCHER_DIR	= "techniclauncher";
+	private static File					workDir				= null;
 
 	public static File getWorkingDirectory() {
 		if (workDir == null) {
-			workDir = getWorkingDirectory("techniclauncher");
+			workDir = getWorkingDirectory(LAUNCHER_DIR);
 		}
 		return workDir;
 	}
 
 	public static File getWorkingDirectory(String applicationName) {
-		if (MinecraftUtils.getOptions().isPortable()) { return new File("techniclauncher"); }
+		if (MinecraftUtils.getOptions().isPortable()) { return new File("." + LAUNCHER_DIR); }
 		String userHome = System.getProperty("user.home", ".");
 		File workingDirectory;
 		switch (getPlatform()) {

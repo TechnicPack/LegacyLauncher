@@ -34,7 +34,7 @@ public class MinecraftDownloadUtils {
 				}
 
 				if (!build.getLatestMinecraftVersion().equals(build.getMinecraftVersion())) {
-					File patch = new File(PlatformUtils.getWorkingDirectory(), "mc.patch");
+					File patch = new File(GameUpdater.tempDir, "mc.patch");
 					Download patchDownload = DownloadUtils.downloadFile(build.getPatchURL(), patch.getPath(), null, null, listener);
 					if (patchDownload.isSuccess()) {
 						File patchedMinecraft = new File(GameUpdater.tempDir, "patched_minecraft.jar");

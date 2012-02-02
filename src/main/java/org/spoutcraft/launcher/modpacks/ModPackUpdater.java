@@ -21,7 +21,6 @@ import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.MD5Utils;
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.ModpackBuild;
-import org.spoutcraft.launcher.PlatformUtils;
 import org.spoutcraft.launcher.async.Download;
 
 public class ModPackUpdater extends GameUpdater {
@@ -158,7 +157,7 @@ public class ModPackUpdater extends GameUpdater {
 
 		stateChanged("Extracting Files ...", 0);
 		// Extract Natives
-		extractNatives2(PlatformUtils.getWorkingDirectory(), modFile);
+		extractNatives2(GameUpdater.modpackDir, modFile);
 
 		InstalledModsYML.setInstalledModVersion(modName, modVersion);
 
@@ -178,7 +177,7 @@ public class ModPackUpdater extends GameUpdater {
 				if (entry.isDirectory()) {
 					continue;
 				}
-				File file = new File(PlatformUtils.getWorkingDirectory(), entry.getName());
+				File file = new File(GameUpdater.modpackDir, entry.getName());
 				if (file.exists()) {
 					// File from mod exists.. delete it
 					file.delete();

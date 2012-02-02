@@ -33,7 +33,7 @@ public class Launcher {
 	@SuppressWarnings("rawtypes")
 	public static Applet getMinecraftApplet() throws CorruptedMinecraftJarException, MinecraftVerifyException {
 
-		File mcBinFolder = new File(PlatformUtils.getWorkingDirectory(), "bin");
+		File mcBinFolder = GameUpdater.binDir;
 
 		File spoutcraftJar = new File(mcBinFolder, "modpack.jar");
 		File minecraftJar = new File(mcBinFolder, "minecraft.jar");

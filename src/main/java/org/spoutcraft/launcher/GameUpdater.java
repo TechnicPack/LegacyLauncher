@@ -57,17 +57,16 @@ public class GameUpdater implements DownloadListener {
 	public String								downloadTicket			= "1";
 
 	/* Files */
-	public static final File		binDir							= new File(WORKING_DIRECTORY, "bin");
+	public static File					modpackDir					= new File(WORKING_DIRECTORY, "");
+	public static File					binDir							= new File(WORKING_DIRECTORY, "bin");
 	public static final File		cacheDir						= new File(WORKING_DIRECTORY, "cache");
 	public static final File		tempDir							= new File(WORKING_DIRECTORY, "temp");
-	public static final File		backupDir						= new File(WORKING_DIRECTORY, "backups");
+	public static File					backupDir						= new File(WORKING_DIRECTORY, "backups");
 	public static final File		workDir							= new File(WORKING_DIRECTORY, LAUNCHER_DIRECTORY);
-	public static final File		savesDir						= new File(WORKING_DIRECTORY, "saves");
-	public static final File		modsDir							= new File(WORKING_DIRECTORY, "mods");
-	public static final File		modpackModsDir			= new File(WORKING_DIRECTORY, "mods-modpack");
-	public static final File		modpackSavesDir			= new File(WORKING_DIRECTORY, "saves-modpack");
-	public static final File		modconfigsDir				= new File(WORKING_DIRECTORY, "config");
-	public static final File		resourceDir					= new File(WORKING_DIRECTORY, "resources");
+	public static File					savesDir						= new File(WORKING_DIRECTORY, "saves");
+	public static File					modsDir							= new File(WORKING_DIRECTORY, "mods");
+	public static File					modconfigsDir				= new File(WORKING_DIRECTORY, "config");
+	public static File					resourceDir					= new File(WORKING_DIRECTORY, "resources");
 
 	/* Minecraft Updating Arguments */
 	public final String					baseURL							= "http://s3.amazonaws.com/MinecraftDownload/";
@@ -77,6 +76,25 @@ public class GameUpdater implements DownloadListener {
 	private DownloadListener		listener;
 
 	public GameUpdater() {
+	}
+
+	public static void setModpackDirectory(String currentModPack) {
+		modpackDir = new File(WORKING_DIRECTORY, currentModPack);
+		modpackDir.mkdirs();
+
+		binDir = new File(modpackDir, "bin");
+		backupDir = new File(modpackDir, "backups");
+		savesDir = new File(modpackDir, "saves");
+		modsDir = new File(modpackDir, "mods");
+		modconfigsDir = new File(modpackDir, "config");
+		resourceDir = new File(modpackDir, "resources");
+
+		binDir.mkdirs();
+		backupDir.mkdirs();
+		savesDir.mkdirs();
+		modsDir.mkdirs();
+		modconfigsDir.mkdirs();
+		resourceDir.mkdirs();
 	}
 
 	public void updateMC() throws Exception {
@@ -398,7 +416,6 @@ public class GameUpdater implements DownloadListener {
 			exclude.add(GameUpdater.backupDir);
 			if (!SettingsUtil.isWorldBackup()) {
 				exclude.add(GameUpdater.savesDir);
-				exclude.add(GameUpdater.modpackSavesDir);
 			}
 			exclude.add(GameUpdater.tempDir);
 			exclude.add(SystemConsoleListener.logDir);
@@ -407,8 +424,6 @@ public class GameUpdater implements DownloadListener {
 			(new BackupCleanupThread(existingBackups)).start();
 			zip.createNewFile();
 			addFilesToExistingZip(zip, getFiles(WORKING_DIRECTORY, exclude, rootDir), rootDir, false);
-
-			if (modpackModsDir.exists()) FileUtils.deleteDirectory(modpackModsDir);
 
 			if (modsDir.exists()) FileUtils.deleteDirectory(modsDir);
 

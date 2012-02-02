@@ -374,7 +374,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		progressBar.setValue(intProgress);
 
-		fileName = fileName.replace(workingDir, ".techniclauncher");
+		fileName = fileName.replace(workingDir, "");
 
 		if (fileName.length() > 60) {
 			fileName = fileName.substring(0, 60) + "...";

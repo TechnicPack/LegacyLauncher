@@ -29,6 +29,8 @@ import javax.swing.JOptionPane;
 import org.spoutcraft.launcher.Launcher;
 import org.spoutcraft.launcher.MinecraftAppletEnglober;
 import org.spoutcraft.launcher.MinecraftUtils;
+import org.spoutcraft.launcher.PlatformUtils;
+import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.exception.CorruptedMinecraftJarException;
 import org.spoutcraft.launcher.exception.MinecraftVerifyException;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
@@ -86,12 +88,16 @@ public class LauncherFrame extends Frame implements WindowListener {
 
 		minecraft = new MinecraftAppletEnglober(applet);
 
+		String launcherPath = String.format("%s/%s", PlatformUtils.LAUNCHER_DIR, ModPackListYML.currentModPack);
+
 		minecraft.addParameter("username", user);
 		minecraft.addParameter("sessionid", session);
 		minecraft.addParameter("downloadticket", downloadTicket);
 		minecraft.addParameter("mppass", mcpass);
 		minecraft.addParameter("spoutcraftlauncher", "true");
-		minecraft.addParameter("portable", String.valueOf(MinecraftUtils.getOptions().isPortable()));
+		//minecraft.addParameter("stand-alone", String.valueOf(MinecraftUtils.getOptions().isPortable()));
+		minecraft.addParameter("directory", launcherPath);
+		Util.log("Loading Launcher from '%s'", launcherPath);
 		if (MinecraftUtils.getOptions().getServer() != null) {
 			minecraft.addParameter("server", MinecraftUtils.getOptions().getServer());
 			if (MinecraftUtils.getOptions().getPort() != null) {
@@ -113,12 +119,15 @@ public class LauncherFrame extends Frame implements WindowListener {
 		return SUCCESSFUL_LAUNCH;
 	}
 
+	@Override
 	public void windowActivated(WindowEvent e) {
 	}
 
+	@Override
 	public void windowClosed(WindowEvent e) {
 	}
 
+	@Override
 	public void windowClosing(WindowEvent e) {
 		if (LauncherFrame.this.minecraft != null) {
 			LauncherFrame.this.minecraft.stop();
@@ -133,15 +142,19 @@ public class LauncherFrame extends Frame implements WindowListener {
 		System.exit(0);
 	}
 
+	@Override
 	public void windowDeactivated(WindowEvent e) {
 	}
 
+	@Override
 	public void windowDeiconified(WindowEvent e) {
 	}
 
+	@Override
 	public void windowIconified(WindowEvent e) {
 	}
 
+	@Override
 	public void windowOpened(WindowEvent e) {
 	}
 }

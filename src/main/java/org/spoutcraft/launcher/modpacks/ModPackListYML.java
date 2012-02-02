@@ -105,8 +105,10 @@ public class ModPackListYML {
 
 		currentModPack = modPack;
 		currentModPackLabel = modPackLabel;
-		currentModPackDirectory = new File(GameUpdater.workDir, currentModPack);
 
+		GameUpdater.setModpackDirectory(currentModPack);
+
+		currentModPackDirectory = new File(GameUpdater.workDir, currentModPack);
 		currentModPackDirectory.mkdirs();
 
 		// Download Branding Resources
