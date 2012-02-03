@@ -28,12 +28,12 @@ public class InstalledModsYML {
 	}
 
 	public static boolean setInstalledModVersion(String modName, String version) {
-		installedModsConfig.setProperty(getModPath(modName), version);
-		return installedModsConfig.save();
+		getInstalledModsConfig().setProperty(getModPath(modName), version);
+		return getInstalledModsConfig().save();
 	}
 
 	public static String getInstalledModVersion(String modName) {
-		return (String) installedModsConfig.getProperty(getModPath(modName));
+		return (String) getInstalledModsConfig().getProperty(getModPath(modName));
 	}
 
 	private static String getModPath(String modName) {
@@ -41,11 +41,11 @@ public class InstalledModsYML {
 	}
 
 	public static boolean removeMod(String modName) {
-		installedModsConfig.removeProperty(getModPath(modName));
-		return installedModsConfig.save();
+		getInstalledModsConfig().removeProperty(getModPath(modName));
+		return getInstalledModsConfig().save();
 	}
 
 	public static Map<String, String> getInstalledMods() {
-		return (Map<String, String>) installedModsConfig.getProperty("mods");
+		return (Map<String, String>) getInstalledModsConfig().getProperty("mods");
 	}
 }
