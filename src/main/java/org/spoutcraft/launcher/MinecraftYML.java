@@ -7,15 +7,28 @@ import org.bukkit.util.config.Configuration;
 public class MinecraftYML {
 	private static final String			MINECRAFT_YML	= "minecraft.yml";
 	private static volatile boolean	updated				= false;
-	private static File							minecraftYML	= new File(GameUpdater.workDir, MINECRAFT_YML);
 	private static String						latest				= null;
 	private static String						recommended		= null;
 	private static final Object			key						= new Object();
+	private static Configuration		config				= null;
+	private static File							configFile		= null;
 
 	public static Configuration getMinecraftYML() {
 		updateMinecraftYMLCache();
-		Configuration config = new Configuration(minecraftYML);
-		config.load();
+		return getConfig();
+	}
+
+	public static File getConfigFile() {
+		return new File(GameUpdater.modpackDir, MINECRAFT_YML);
+	}
+
+	public static Configuration getConfig() {
+		File currentConfigFile = getConfigFile();
+		if (config == null || configFile.compareTo(currentConfigFile) != 0) {
+			configFile = currentConfigFile;
+			config = new Configuration(configFile);
+			config.load();
+		}
 		return config;
 	}
 
@@ -41,22 +54,19 @@ public class MinecraftYML {
 	}
 
 	public static void updateMinecraftYMLCache() {
-		if (!updated) {
+		if (!updated || !getConfigFile().exists()) {
 			synchronized (key) {
 				String current = null;
-				if (minecraftYML.exists()) {
+				if (getConfigFile().exists()) {
 					try {
-						Configuration config = new Configuration(minecraftYML);
-						config.load();
-						current = config.getString("current");
+						current = getConfig().getString("current");
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
 				}
 
-				if (YmlUtils.downloadYmlFile(MINECRAFT_YML, "http://technic.freeworldsgaming.com/minecraft.yml", minecraftYML)) {
-					Configuration config = new Configuration(minecraftYML);
-					config.load();
+				if (YmlUtils.downloadYmlFile(MINECRAFT_YML, "http://technic.freeworldsgaming.com/minecraft.yml", getConfigFile())) {
+					Configuration config = getConfig();
 					latest = config.getString("latest");
 					recommended = config.getString("recommended");
 					if (current != null) {
