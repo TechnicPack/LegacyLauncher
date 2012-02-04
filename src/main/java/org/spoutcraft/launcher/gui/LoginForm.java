@@ -397,7 +397,37 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	public void keyReleased(KeyEvent e) {
 	}
 
+	private void tryConvertLastLogin() {
+		try {
+			File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
+			Cipher cipher = getCipher(2, "passwordfile");
+			DataInputStream dis;
+			if (cipher != null) dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
+			else dis = new DataInputStream(new FileInputStream(lastLogin));
+			String userName = dis.readUTF();
+			String password = dis.readUTF();
+
+			dis.close();
+
+			cipher = getCipher(1, "passwordfile");
+
+			DataOutputStream dos;
+			if (cipher != null) {
+				dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
+			} else {
+				dos = new DataOutputStream(new FileOutputStream(lastLogin, true));
+			}
+			dos.writeUTF(userName);
+			dos.writeBoolean(false);
+			dos.writeUTF(password);
+			dos.close();
+		} catch (Exception ignore) {
+
+		}
+	}
+
 	private void readUsedUsernames() {
+		tryConvertLastLogin();
 		int i = 0;
 		try {
 			File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
