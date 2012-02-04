@@ -39,7 +39,9 @@ public class MinecraftDownloadUtils {
 					if (patchDownload.isSuccess()) {
 						File patchedMinecraft = new File(GameUpdater.tempDir, "patched_minecraft.jar");
 						patchedMinecraft.delete();
+						listener.stateChanged(String.format("Patching Minecraft to '%s'.", build.getMinecraftVersion()), 0F);
 						JBPatch.bspatch(download.getOutFile(), patchedMinecraft, patch);
+						listener.stateChanged(String.format("Patched Minecraft to '%s'.", build.getMinecraftVersion()), 100F);
 						String currentMinecraftMD5 = MD5Utils.getMD5(FileType.minecraft, build.getMinecraftVersion());
 						resultMD5 = MD5Utils.getMD5(patchedMinecraft);
 

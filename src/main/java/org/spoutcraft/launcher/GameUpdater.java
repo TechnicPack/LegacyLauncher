@@ -44,7 +44,6 @@ import java.util.zip.ZipOutputStream;
 import org.spoutcraft.launcher.async.Download;
 import org.spoutcraft.launcher.async.DownloadListener;
 import org.spoutcraft.launcher.exception.UnsupportedOSException;
-import org.spoutcraft.launcher.logs.SystemConsoleListener;
 
 import SevenZip.LzmaAlone;
 
@@ -224,13 +223,13 @@ public class GameUpdater implements DownloadListener {
 			}
 
 			progress += progressStep;
-			stateChanged("Extracting Files...", progress);
+			stateChanged(String.format("Extracting '%s'...", nativesJar.getName()), progress);
 
 			inputStream.close();
 			out.flush();
 			out.close();
 		}
-
+		stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
 	}
 
 	// Extracts zip to the folder
@@ -273,7 +272,7 @@ public class GameUpdater implements DownloadListener {
 				out.flush();
 				out.close();
 			}
-			stateChanged("Extracted Files...", 100f);
+			stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
 		} catch (IOException e) {
 			// Zip failed to extract properly"
 			System.out.println(String.format("'%' failed to decompress properly for entry '%'", nativesJar.getName(), name));
@@ -302,7 +301,11 @@ public class GameUpdater implements DownloadListener {
 
 		DownloadUtils.downloadFile(getNativesUrl(fname), tempDir.getPath() + File.separator + (!SettingsUtil.isLatestLWJGL() ? "natives.jar.lzma" : "natives.zip"));
 
-		if (!SettingsUtil.isLatestLWJGL()) extractLZMA(GameUpdater.tempDir.getPath() + File.separator + "natives.jar.lzma", GameUpdater.tempDir.getPath() + File.separator + "natives.zip");
+		if (!SettingsUtil.isLatestLWJGL()) {
+			stateChanged("Extracting Native LWJGL files...", 0);
+			extractLZMA(GameUpdater.tempDir.getPath() + File.separator + "natives.jar.lzma", GameUpdater.tempDir.getPath() + File.separator + "natives.zip");
+			stateChanged("Extracted Native LWJGL files...", 100);
+		}
 
 		return new File(tempDir.getPath() + File.separator + "natives.jar.lzma");
 	}
@@ -411,19 +414,17 @@ public class GameUpdater implements DownloadListener {
 		File zip = new File(GameUpdater.backupDir, build.getBuild() + "-backup.zip");
 
 		if (!zip.exists()) {
-			String rootDir = WORKING_DIRECTORY + File.separator;
+			String rootDir = modpackDir + File.separator;
 			HashSet<File> exclude = new HashSet<File>();
 			exclude.add(GameUpdater.backupDir);
 			if (!SettingsUtil.isWorldBackup()) {
 				exclude.add(GameUpdater.savesDir);
 			}
-			exclude.add(GameUpdater.tempDir);
-			exclude.add(SystemConsoleListener.logDir);
 
 			File[] existingBackups = backupDir.listFiles();
 			(new BackupCleanupThread(existingBackups)).start();
 			zip.createNewFile();
-			addFilesToExistingZip(zip, getFiles(WORKING_DIRECTORY, exclude, rootDir), rootDir, false);
+			addFilesToExistingZip(zip, getFiles(modpackDir, exclude, rootDir), rootDir, false);
 
 			if (modsDir.exists()) FileUtils.deleteDirectory(modsDir);
 
