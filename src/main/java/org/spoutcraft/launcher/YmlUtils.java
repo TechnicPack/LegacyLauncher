@@ -80,8 +80,8 @@ public class YmlUtils {
 			e.printStackTrace();
 		} finally {
 			try {
-				io.close();
-				out.close();
+				if (io != null) io.close();
+				if (out != null) out.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
