@@ -424,7 +424,9 @@ public class GameUpdater implements DownloadListener {
 			File[] existingBackups = backupDir.listFiles();
 			(new BackupCleanupThread(existingBackups)).start();
 			zip.createNewFile();
+			stateChanged(String.format("Backing up previous build to '%s'...", zip.getName()), 0);
 			addFilesToExistingZip(zip, getFiles(modpackDir, exclude, rootDir), rootDir, false);
+			stateChanged(String.format("Backied up previous build to '%s'...", zip.getName()), 100);
 
 			if (modsDir.exists()) FileUtils.deleteDirectory(modsDir);
 
