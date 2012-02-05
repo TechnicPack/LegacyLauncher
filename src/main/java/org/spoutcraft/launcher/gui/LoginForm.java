@@ -77,6 +77,7 @@ import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.PlatformUtils;
 import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.SpoutFocusTraversalPolicy;
+import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.async.DownloadListener;
 import org.spoutcraft.launcher.exception.BadLoginException;
 import org.spoutcraft.launcher.exception.MCNetworkException;
@@ -427,7 +428,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	}
 
 	private void readUsedUsernames() {
-		tryConvertLastLogin();
 		int i = 0;
 		try {
 			File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
@@ -835,7 +835,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	@Override
 	public void windowClosed(WindowEvent e) {
 		if (success == LauncherFrame.ERROR_IN_LAUNCH) {
-			System.out.println("Exiting the Technic Launcher");
+			Util.log("Exiting the Technic Launcher");
 			System.exit(0);
 		}
 	}

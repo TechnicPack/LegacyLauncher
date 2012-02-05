@@ -63,10 +63,10 @@ public class MD5Utils {
 					parseChecksumFile();
 				}
 			} catch (FileNotFoundException e) {
-				Util.log("[Error] Checksum file '%s' not found.", CHECKSUM_FILE.getAbsoluteFile());
+				Util.log("Checksum file '%s' not found.", CHECKSUM_FILE.getAbsoluteFile());
 				e.printStackTrace();
 			} catch (IOException e) {
-				Util.log("[Error] Checksum file '%s' threw error.", CHECKSUM_FILE.getAbsoluteFile());
+				Util.log("Checksum file '%s' threw error.", CHECKSUM_FILE.getAbsoluteFile());
 				e.printStackTrace();
 			}
 		}

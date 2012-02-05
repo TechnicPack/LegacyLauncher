@@ -26,7 +26,7 @@ public class DownloadUtils {
 		Download download = null;
 		boolean areFilesIdentical = tempfile.getPath().equalsIgnoreCase(outputFile.getPath());
 		while (tries > 0) {
-			System.out.println("Starting download of " + url + ", with " + tries + " tries remaining");
+			Util.logi("Starting download of '%s', with %s trie(s) remaining", url, tries);
 			tries--;
 			download = new Download(url, tempfile.getPath());
 			download.setListener(listener);
@@ -35,18 +35,18 @@ public class DownloadUtils {
 				if (download.getOutFile() != null) {
 					download.getOutFile().delete();
 				}
-				System.err.println("Download of " + url + " Failed!");
+				Util.log("Download of " + url + " Failed!");
 				if (listener != null) {
 					listener.stateChanged("Download Failed, retries remaining: " + tries, 0F);
 				}
 			} else {
 				String fileMD5 = MD5Utils.getMD5(download.getOutFile());
 				if (md5 == null || fileMD5.equals(md5)) {
-					Util.log("Copying: %s to: %s", tempfile, outputFile);
+					Util.logi("Copying: %s to: %s", tempfile, outputFile);
 					if (!areFilesIdentical) {
 						GameUpdater.copy(tempfile, outputFile);
 					}
-					Util.log("File Downloaded: %s", outputFile);
+					Util.logi("File Downloaded: %s", outputFile);
 					break;
 				} else if (md5 != null && !fileMD5.equals(md5)) {
 					Util.log("Expected MD5: %s Calculated MD5: %s", md5, fileMD5);
@@ -87,6 +87,7 @@ public class DownloadUtils {
 		for (final Map.Entry<String, String> file : downloadFileList.entrySet()) {
 			es.execute(new Runnable() {
 
+				@Override
 				public void run() {
 					Download downloadFile = null;
 					try {
@@ -98,7 +99,7 @@ public class DownloadUtils {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					Util.log("[Error] file '%s' failed to download.", downloadFile.getOutFile());
+					Util.log("File '%s' failed to download.", downloadFile.getOutFile());
 				}
 			});
 		}
@@ -131,7 +132,7 @@ public class DownloadUtils {
 			OutputStream baos = new FileOutputStream(tempFile);
 			// new FileOutputStream(tempFile)
 			if (GameUpdater.copy(con.getInputStream(), baos) <= 0) {
-				System.out.printf("[Error] Download URL was empty: '%s'/n", url);
+				Util.log("Download URL was empty: '%s'", url);
 				return false;
 			}
 
@@ -141,10 +142,10 @@ public class DownloadUtils {
 
 			return true;
 		} catch (MalformedURLException e) {
-			System.out.printf("[Error] Download URL badly formed: '%s'/n", url);
+			Util.log("Download URL badly formed: '%s'", url);
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			System.out.printf("[Error] Could not write to temp file: '%s'/n", tempFile);
+			Util.log("Could not write to temp file: '%s'", tempFile);
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();

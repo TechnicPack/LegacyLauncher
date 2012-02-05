@@ -27,6 +27,8 @@ import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+import org.spoutcraft.launcher.Util;
+
 /**
  * Downloads stuff asynchronously. In fact, it's a modified version of
  * StackOverflow sample ;)
@@ -34,10 +36,10 @@ import java.nio.channels.ReadableByteChannel;
 public class Download implements Runnable {
 
 	private static final long	TIMEOUT			= 30000;
-	private URL								url;
+	private final URL					url;
 	private long							size				= -1;
 	private long							downloaded	= 0;
-	private String						outPath;
+	private final String			outPath;
 	private DownloadListener	listener;
 	private boolean						success			= false;
 	private File							outFile			= null;
@@ -51,6 +53,7 @@ public class Download implements Runnable {
 		return ((float) downloaded / size) * 100;
 	}
 
+	@Override
 	public void run() {
 		try {
 			URLConnection conn = url.openConnection();
@@ -115,7 +118,7 @@ public class Download implements Runnable {
 			success = size > 0 ? (size == outFile.length()) : true;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
-			System.out.println(String.format("[Error] Cannot open '%s' for download.", url));
+			Util.log(String.format("Cannot open '%s' for download.", url));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

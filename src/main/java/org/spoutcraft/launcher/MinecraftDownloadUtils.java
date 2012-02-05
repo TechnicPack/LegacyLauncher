@@ -13,7 +13,7 @@ public class MinecraftDownloadUtils {
 		int tries = 3;
 		File outputFile = null;
 		while (tries > 0) {
-			System.out.println("Starting download of minecraft, with " + tries + " tries remaining");
+			Util.logi("Starting download of minecraft, with %s trie(s) remaining", tries);
 			tries--;
 			Download download = new Download(build.getMinecraftURL(user), output);
 			download.setListener(listener);
@@ -27,7 +27,7 @@ public class MinecraftDownloadUtils {
 			} else {
 				String minecraftMD5 = MD5Utils.getMD5(FileType.minecraft, build.getLatestMinecraftVersion());
 				String resultMD5 = MD5Utils.getMD5(download.getOutFile());
-				System.out.println("Expected MD5: " + minecraftMD5 + " Result MD5: " + resultMD5);
+				Util.log("Expected MD5: " + minecraftMD5 + " Result MD5: " + resultMD5);
 
 				if (!resultMD5.equals(minecraftMD5)) {
 					continue;

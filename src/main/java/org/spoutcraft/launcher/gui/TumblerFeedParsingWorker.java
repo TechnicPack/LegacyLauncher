@@ -9,6 +9,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
 
 import org.spoutcraft.launcher.MirrorUtils;
+import org.spoutcraft.launcher.Util;
 
 public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> {
 	JTextPane				editorPane;
@@ -59,7 +60,7 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			editorPane.setText("Oh Noes! Our Tumblr Server is Down!");
-			System.out.println(String.format("Tumbler log @ '%' not avaliable.", url));
+			Util.log("Tumbler log @ '%' not avaliable.", url);
 		}
 
 		return null;

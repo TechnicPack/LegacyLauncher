@@ -137,14 +137,14 @@ public class Main {
 
 		listener.initialize();
 
-		System.out.println("------------------------------------------");
-		System.out.println("Launcher is starting....");
-		System.out.println("Launcher Build: " + getBuild());
+		Util.log("------------------------------------------");
+		Util.log("Launcher is starting....");
+		Util.log("Launcher Build: " + getBuild());
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
-			System.out.println("Warning: Can't get system LnF: " + e);
+			Util.log("Warning: Can't get system LnF: " + e);
 		}
 
 		loginForm = new LoginForm();

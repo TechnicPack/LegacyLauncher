@@ -275,7 +275,7 @@ public class GameUpdater implements DownloadListener {
 			stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
 		} catch (IOException e) {
 			// Zip failed to extract properly"
-			System.out.println(String.format("'%' failed to decompress properly for entry '%'", nativesJar.getName(), name));
+			Util.log("'%s' failed to decompress properly for entry '%s'", nativesJar.getName(), name);
 			e.printStackTrace();
 		}
 

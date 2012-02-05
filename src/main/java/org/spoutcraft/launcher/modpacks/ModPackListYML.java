@@ -142,7 +142,7 @@ public class ModPackListYML {
 		}
 
 		if (downloadFileList.size() > 0 && DownloadUtils.downloadFiles(downloadFileList, 30, TimeUnit.SECONDS) != downloadFileList.size()) {
-			Util.log("[Error] Could not download all resources for modpack '%s'.", currentModPackLabel);
+			Util.log("Could not download all resources for modpack '%s'.", currentModPackLabel);
 		}
 	}
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.JComboBox;
 
@@ -27,7 +28,11 @@ public class Util {
 	}
 
 	public static void log(String formatString, Object... params) {
-		System.out.println(String.format(formatString, params));
+		Logger.getGlobal().warning(String.format(formatString, params));
+	}
+
+	public static void logi(String formatString, Object... params) {
+		Logger.getGlobal().info(String.format(formatString, params));
 	}
 
 	public static void addComboItem(JComboBox combobox, String label, String value) {

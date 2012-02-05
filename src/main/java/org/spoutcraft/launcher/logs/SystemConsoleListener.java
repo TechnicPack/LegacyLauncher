@@ -19,8 +19,10 @@ package org.spoutcraft.launcher.logs;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.logging.FileHandler;
+import java.util.logging.Filter;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
@@ -55,6 +57,12 @@ public class SystemConsoleListener {
 		SystemListenerStream los;
 
 		logger = Logger.getLogger("stdout");
+		logger.setFilter(new Filter() {
+			@Override
+			public boolean isLoggable(LogRecord record) {
+				return (record.getLevel().intValue() > SystemListenerLevel.STDOUT.intValue());
+			}
+		});
 		los = new SystemListenerStream(logger, SystemListenerLevel.STDOUT);
 		System.setOut(new PrintStream(los, true));
 

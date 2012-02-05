@@ -54,7 +54,7 @@ public class YmlUtils {
 			out = new BufferedOutputStream(new FileOutputStream(tempFile));
 
 			if (GameUpdater.copy(con.getInputStream(), out) <= 0) {
-				System.out.printf("[Error] Download URL was empty: '%s'/n", url);
+				Util.log("Download URL was empty: '%s'/n", url);
 				return false;
 			}
 
@@ -71,12 +71,12 @@ public class YmlUtils {
 
 			return true;
 		} catch (MalformedURLException e) {
-			System.out.printf("[Error] Download URL badly formed: '%s'/n", url);
+			Util.log("Download URL badly formed: '%s'/n", url);
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
-			System.out.printf("[Error] Yaml File has error's badly formed: '%s'/n", url);
+			Util.log("Yaml File has error's badly formed: '%s'/n", url);
 			e.printStackTrace();
 		} finally {
 			try {
