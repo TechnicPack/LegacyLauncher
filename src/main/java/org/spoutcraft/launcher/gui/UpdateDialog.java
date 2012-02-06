@@ -51,16 +51,20 @@ public class UpdateDialog extends JDialog implements ActionListener {
 		okButton.setActionCommand("Yes");
 		buttonPane.add(okButton);
 		getRootPane().setDefaultButton(okButton);
-		JButton cancelButton = new JButton("No");
+		JButton noButton = new JButton("No");
+		buttonPane.add(noButton);
+		noButton.addActionListener(this);
+		JButton cancelButton = new JButton("Cancel");
 		buttonPane.add(cancelButton);
 		cancelButton.addActionListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Yes")) {
+		String actionCommand = e.getActionCommand();
+		if (actionCommand.equals("Yes")) {
 			lf.updateThread();
-		} else {
+		} else if (actionCommand.equals("No")) {
 			lf.runGame();
 		}
 		this.setVisible(false);

@@ -3,11 +3,26 @@ package org.spoutcraft.launcher;
 import java.io.File;
 
 public class SettingsUtil {
-	private static final File							settingsFile	= new File(PlatformUtils.getWorkingDirectory(), "launcher.properties");
-	private static final SettingsHandler	settings			= new SettingsHandler("defaults/launcher.properties", settingsFile);
+	public static final String			DEFAULT_LAUNCHER_PROPERTIES	= "defaults/launcher.properties";
+	public static File							settingsFile								= new File(PlatformUtils.getWorkingDirectory(), "launcher.properties");
+	private static SettingsHandler	settings										= new SettingsHandler(DEFAULT_LAUNCHER_PROPERTIES, settingsFile);
 
 	static {
 		settings.load();
+	}
+
+	public static void reload() {
+		settings = new SettingsHandler(DEFAULT_LAUNCHER_PROPERTIES, settingsFile);
+		settings.load();
+	}
+
+	public static void init() {
+		isLatestLWJGL();
+		isWorldBackup();
+		getLoginTries();
+		isRecommendedBuild();
+		isDevelopmentBuild();
+		getMemorySelection();
 	}
 
 	public static boolean isLatestLWJGL() {

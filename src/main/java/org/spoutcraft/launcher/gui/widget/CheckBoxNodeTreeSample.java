@@ -1,12 +1,20 @@
 package org.spoutcraft.launcher.gui.widget;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.JTree.DynamicUtilTreeNode;
@@ -14,6 +22,8 @@ import javax.swing.UIManager;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
+
+import org.spoutcraft.launcher.PlatformUtils;
 
 public class CheckBoxNodeTreeSample {
 	/**
@@ -131,9 +141,55 @@ public class CheckBoxNodeTreeSample {
 		tree.setCellEditor(new CheckBoxNodeEditor(tree));
 		tree.setEditable(true);
 
-		JScrollPane scrollPane = new JScrollPane(tree);
-		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-		frame.setSize(300, 150);
+		File workingDirectory = PlatformUtils.getWorkingDirectory();
+		Image im = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "splash_logo.png").getAbsolutePath());
+		JList<Image> list = new JList<Image>(new Image[] { im, im });
+
+		list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		Image tek = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "tekkit_unselected.png").getAbsolutePath());
+		Image tekh = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "tekkit_hover.png").getAbsolutePath());
+		Image teks = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "tekkit_selected.png").getAbsolutePath());
+		Image tec = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "technic_unselected.png").getAbsolutePath());
+		Image tech = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "technic_hover.png").getAbsolutePath());
+		Image tecs = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "technic_selected.png").getAbsolutePath());
+
+		FancyButton b1 = new FancyButton(new ImageIcon(tek), new ImageIcon(teks), new ImageIcon(tekh));
+		FancyButton b2 = new FancyButton(new ImageIcon(tec), new ImageIcon(tecs), new ImageIcon(tech));
+
+		ButtonGroup group = new ButtonGroup();
+		group.add(b1);
+		group.add(b2);
+
+		JScrollPane scrollPane = new JScrollPane(list);
+		Container contentPane = frame.getContentPane();
+		// FlowLayout mgr = new java.awt.();
+		// mgr.
+		contentPane.setLayout(new FlowLayout());
+		contentPane.add(b1, BorderLayout.CENTER);
+		contentPane.add(b2, BorderLayout.CENTER);
+		frame.setSize(500, 350);
+		frame.pack();
 		frame.setVisible(true);
+	}
+
+	public class ModpackEntry {
+		private String	_name;
+		private Image		_image;
+
+		public String getName() {
+			return _name;
+		}
+
+		public void setName(String name) {
+			this._name = name;
+		}
+
+		public Image getImage() {
+			return _image;
+		}
+
+		public void setImage(Image image) {
+			this._image = image;
+		}
 	}
 }

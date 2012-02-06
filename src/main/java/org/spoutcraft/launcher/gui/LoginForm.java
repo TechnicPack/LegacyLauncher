@@ -20,6 +20,7 @@ package org.spoutcraft.launcher.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -51,7 +52,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -68,6 +68,7 @@ import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
+import org.spoutcraft.launcher.FileUtils;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.LibrariesYML;
 import org.spoutcraft.launcher.MD5Utils;
@@ -84,6 +85,7 @@ import org.spoutcraft.launcher.exception.MCNetworkException;
 import org.spoutcraft.launcher.exception.MinecraftUserNotPremiumException;
 import org.spoutcraft.launcher.exception.NoMirrorsAvailableException;
 import org.spoutcraft.launcher.exception.OutdatedMCLauncherException;
+import org.spoutcraft.launcher.gui.widget.ComboBoxRenderer;
 import org.spoutcraft.launcher.modpacks.ModLibraryYML;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
 import org.spoutcraft.launcher.modpacks.ModPackUpdater;
@@ -97,7 +99,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	private final JComboBox										usernameField			= new JComboBox();
 	private final JButton											loginButton				= new JButton("Login");
 	JButton																		optionsButton			= new JButton("Options");
-	JButton																		modsButton				= new JButton("Mods");
+	JButton																		modsButton				= new JButton("Mod Select");
 	private final JCheckBox										rememberCheckbox	= new JCheckBox("Remember");
 	final JLabel															background				= new JLabel("Loading...");
 	final JTextPane														editorPane				= new JTextPane();
@@ -121,9 +123,12 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	ModsDialog																mods							= new ModsDialog(ModPackYML.getModList());
 	Container																	loginPane					= new Container();
 	Container																	offlinePane				= new Container();
-	private final JLabel											lblLogo;
+	// private final JLabel lblLogo;
+	private final JComboBox<String>						modpackList;
 
 	public LoginForm() {
+		loadLauncherData();
+
 		LoginForm.updateDialog = new UpdateDialog(this);
 		gameUpdater.setListener(this);
 
@@ -137,6 +142,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		optionsButton.setFont(new Font("Arial", Font.PLAIN, 11));
 		optionsButton.setOpaque(false);
 		optionsButton.addActionListener(this);
+		optionsButton.setEnabled(false);
 		modsButton.setFont(new Font("Arial", Font.PLAIN, 11));
 		modsButton.setOpaque(false);
 		modsButton.addActionListener(this);
@@ -154,8 +160,21 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 
-		lblLogo = new JLabel("");
-		lblLogo.setBounds(8, 0, 294, 99);
+		// lblLogo = new JLabel("");
+		// lblLogo.setBounds(8, 0, 294, 99);
+		String[] items = new String[ModPackListYML.modpackMap.size()];
+		int i = 0;
+		for (String item : ModPackListYML.modpackMap.keySet()) {
+			items[i++] = item;
+		}
+		modpackList = new JComboBox<String>(items);
+		modpackList.setBounds(10, 10, 320, 100);
+		ComboBoxRenderer renderer = new ComboBoxRenderer();
+		renderer.setPreferredSize(new Dimension(200, 110));
+		modpackList.setRenderer(renderer);
+		modpackList.setMaximumRowCount(3);
+		modpackList.setSelectedItem(SettingsUtil.getModPackSelection());
+		modpackList.addActionListener(this);
 
 		JLabel lblMinecraftUsername = new JLabel("Minecraft Username: ");
 		lblMinecraftUsername.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -188,7 +207,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		loginSkin2Image = new ArrayList<JButton>();
 
 		progressBar = new JProgressBar();
-		progressBar.setBounds(30, 100, 400, 23);
+		progressBar.setBounds(30, 120, 400, 23);
 		progressBar.setVisible(false);
 		progressBar.setStringPainted(true);
 		progressBar.setOpaque(true);
@@ -201,15 +220,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		purchaseAccount.setFont(new Font("Arial", Font.PLAIN, 11));
 		purchaseAccount.setForeground(new Color(0, 0, 255));
 
-		// JLabel wikiLink = new
-		// HyperlinkJLabel("<html><u>Technic Wiki</u></html>",
-		// "http://wiki.technicpack.net/index.php?title=Main_Page");
-		// wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
-		// wikiLink.setBounds(233, 85, 109, 14);
-		//
-		// wikiLink.setText("<html><u>Technic Wiki</u></html>");
-		// wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
-		// wikiLink.setForeground(new Color(0, 0, 255));
+		JLabel wikiLink = new HyperlinkJLabel("<html><u>Technic WebSite</u></html>", "http://technicpack.net/");
+		wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
+		wikiLink.setBounds(233, 85, 109, 14);
+
+		// wikiLink.setText();
+		wikiLink.setFont(new Font("Arial", Font.PLAIN, 11));
+		wikiLink.setForeground(new Color(0, 0, 255));
 
 		usernameField.setBounds(143, 14, 119, 25);
 		rememberCheckbox.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -255,7 +272,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		usernameField.setEditable(true);
 		contentPane.setLayout(null);
 		rememberCheckbox.setBounds(144, 66, 93, 23);
-		contentPane.add(lblLogo);
+		// contentPane.add(lblLogo);
+		contentPane.add(modpackList);
 		optionsButton.setBounds(272, 41, 86, 23);
 		modsButton.setBounds(15, 66, 93, 23);
 		contentPane.add(loginSkin1);
@@ -269,7 +287,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		loginPane.add(loginButton);
 		loginPane.add(rememberCheckbox);
 		loginPane.add(purchaseAccount);
-		// loginPane.add(wikiLink);
+		loginPane.add(wikiLink);
 		loginPane.add(optionsButton);
 		loginPane.add(modsButton);
 		contentPane.add(loginPane);
@@ -319,8 +337,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		setFocusTraversalPolicy(new SpoutFocusTraversalPolicy(order));
 
-		loginButton.setEnabled(true); // enable once logins are read
+		// loginButton.setEnabled(true); // enable once logins are read
 		modsButton.setEnabled(false);
+		setResizable(false);
 	}
 
 	public void loadLauncherData() {
@@ -328,45 +347,54 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		MD5Utils.updateMD5Cache();
 		ModPackListYML.updateModPacksYMLCache();
 
-		ModPackListYML.setCurrentModpack();
+		ModPackListYML.getAllModPackResources();
 
-		MinecraftYML.updateMinecraftYMLCache();
 		LibrariesYML.updateLibrariesYMLCache();
 		ModLibraryYML.updateModLibraryYML();
-		ModPackYML.updateModPackYML();
 
-		setBranding();
-		options = new OptionDialog();
-		options.updateBuildsList();
-		options.updateModPackList();
-		options.setVisible(false);
-	}
-
-	public void setBranding() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
-		setResizable(false);
-		setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
-		lblLogo.setIcon(new ImageIcon(ModPackYML.getModPackLogo()));
+		if (SettingsUtil.getModPackSelection() != null) {
+			updateBranding();
+		} else {
+			setTitle("Technic Launcher - No Modpack Selected");
+		}
 	}
 
 	public void updateBranding() {
+		loginButton.setEnabled(false);
+		optionsButton.setEnabled(false);
+		setTitle("Loading Modpack Data...");
 		SwingWorker<Object, Object> updateThread = new SwingWorker<Object, Object>() {
 
 			@Override
 			protected Object doInBackground() throws Exception {
-				String modpack = SettingsUtil.getModPackSelection();
-				ModPackListYML.setModPack(modpack, ModPackListYML.getModPacks().get(modpack));
-				ModPackYML.updateModPackYML(true);
+				ModPackListYML.setCurrentModpack();
 				return null;
 			}
 
 			@Override
 			protected void done() {
-				setBranding();
-				options.updateBuildsList();
+				if (options == null) {
+					options = new OptionDialog();
+					options.modPackList = ModPackListYML.modpackMap;
+					options.setVisible(false);
+				}
+
+				loginButton.setEnabled(true);
+				optionsButton.setEnabled(true);
+				setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
+				setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
+				options.reloadSettings();
+				MinecraftYML.updateMinecraftYMLCache();
+				setModLoaderEnabled();
 			}
 		};
 		updateThread.execute();
+	}
+
+	public void setModLoaderEnabled() {
+		File modLoaderConfig = new File(GameUpdater.modconfigsDir, "ModLoader.cfg");
+		boolean modLoaderExists = modLoaderConfig.exists();
+		modsButton.setEnabled(modLoaderExists);
 	}
 
 	@Override
@@ -513,25 +541,49 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		String eventId = event.getActionCommand();
-		if (event.getSource() == loginSkin1 || event.getSource() == loginSkin2) {
+		Object source = event.getSource();
+		if (source == loginSkin1 || source == loginSkin2) {
 			eventId = "Login";
-			this.usernameField.setSelectedItem(((JButton) event.getSource()).getText());
-		} else if (loginSkin1Image.contains(event.getSource())) {
+			this.usernameField.setSelectedItem(((JButton) source).getText());
+		} else if (loginSkin1Image.contains(source)) {
 			eventId = "Login";
 			this.usernameField.setSelectedItem(loginSkin1.getText());
-		} else if (loginSkin2Image.contains(event.getSource())) {
+		} else if (loginSkin2Image.contains(source)) {
 			eventId = "Login";
 			this.usernameField.setSelectedItem(loginSkin2.getText());
+		}
+		if ((source == modpackList)) {
+			if (ModPackListYML.currentModPack == null) {
+				SettingsUtil.init();
+				GameUpdater.copy(SettingsUtil.settingsFile, ModPackListYML.ORIGINAL_PROPERTIES);
+			} else {
+				GameUpdater.copy(SettingsUtil.settingsFile, new File(GameUpdater.modpackDir, "launcher.properties"));
+			}
+			String selectedItem = (String) ((JComboBox) source).getSelectedItem();
+			SettingsUtil.setModPack(selectedItem);
+			updateBranding();
 		}
 		if ((eventId.equals("Login") || eventId.equals(usernameField.getSelectedItem())) && loginButton.isEnabled()) {
 			doLogin();
 		} else if (eventId.equals("Options")) {
 			options.setVisible(true);
 			options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
-		} else if (eventId.equals("Mods")) {
-			mods.setVisible(true);
+		} else if (eventId.equals(modsButton.getText())) {
+			if (ModPackListYML.currentModPack != null) {
+				open(new File(GameUpdater.modconfigsDir, "ModLoader.cfg"));
+			}
 		} else if (eventId.equals("comboBoxChanged")) {
 			updatePasswordField();
+		}
+	}
+
+	public static void open(File document) {
+		if (!document.exists()) return;
+		try {
+			Desktop dt = Desktop.getDesktop();
+			dt.open(document);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -559,7 +611,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	}
 
 	public void doLogin(final String user, final String pass, final boolean cmdLine) {
-		if (user == null || pass == null) { return; }
+		if (user == null || user.isEmpty() || pass == null || pass.isEmpty()) { return; }
 		this.loginButton.setEnabled(false);
 		this.optionsButton.setEnabled(false);
 		this.modsButton.setEnabled(false);
@@ -740,6 +792,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			@Override
 			protected void done() {
 				progressBar.setVisible(false);
+				FileUtils.cleanDirectory(GameUpdater.tempDir);
 				if (!error) {
 					runGame();
 				}

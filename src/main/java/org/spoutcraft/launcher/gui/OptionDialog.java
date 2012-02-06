@@ -22,6 +22,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -39,14 +40,11 @@ import javax.swing.JRadioButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
-import org.spoutcraft.launcher.ComboItem;
 import org.spoutcraft.launcher.FileUtils;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MinecraftYML;
 import org.spoutcraft.launcher.SettingsUtil;
-import org.spoutcraft.launcher.Util;
-import org.spoutcraft.launcher.modpacks.ModPackListYML;
 import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class OptionDialog extends JDialog implements ActionListener {
@@ -63,7 +61,6 @@ public class OptionDialog extends JDialog implements ActionListener {
 	JCheckBox										retryLoginCheckbox	= new JCheckBox("Retry after connection timeout");
 	JCheckBox										latestLWJGLCheckbox	= new JCheckBox("Use latest LWJGL binaries");
 	JComboBox										memoryCombo					= new JComboBox();
-	JComboBox<ComboItem>				packCombo						= new JComboBox<ComboItem>();
 	JButton											clearCache					= new JButton("Clear Cache");
 	JLabel											buildInfo						= new JLabel();
 	JComboBox										buildsCombo					= new JComboBox();
@@ -94,32 +91,11 @@ public class OptionDialog extends JDialog implements ActionListener {
 		latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
 		clearCache.setToolTipText("Clears the cached minecraft and Modpack files, forcing a redownload on your next login");
 		memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Minecraft. Assigning more memory than you have may cause crashes.");
-		packCombo.setToolTipText("Select which mod pack to use with the launcher.");
 
-		if (SettingsUtil.isRecommendedBuild()) {
-			devBuilds.setSelected(false);
-			recBuilds.setSelected(true);
-			customBuilds.setSelected(false);
-			SettingsUtil.setDevelopmentBuild(false);
-		} else if (SettingsUtil.isDevelopmentBuild()) {
-			devBuilds.setSelected(true);
-			recBuilds.setSelected(false);
-			customBuilds.setSelected(false);
-		} else {
-			devBuilds.setSelected(false);
-			recBuilds.setSelected(false);
-			customBuilds.setSelected(true);
-		}
 		customBuilds.addActionListener(this);
 		recBuilds.addActionListener(this);
 		devBuilds.addActionListener(this);
 		buildsCombo.addActionListener(this);
-		packCombo.addActionListener(this);
-
-		// clipboardCheckbox.setSelected(SettingsUtil.isClipboardAccess());
-		backupCheckbox.setSelected(SettingsUtil.isWorldBackup());
-		retryLoginCheckbox.setSelected(SettingsUtil.getLoginTries() > 1);
-		latestLWJGLCheckbox.setSelected(SettingsUtil.isLatestLWJGL());
 
 		setResizable(false);
 		getContentPane().setLayout(new BorderLayout());
@@ -133,15 +109,13 @@ public class OptionDialog extends JDialog implements ActionListener {
 		memoryCombo.addItem("8 GB");
 		memoryCombo.addItem("16 GB");
 
-		memoryCombo.setSelectedIndex(SettingsUtil.getMemorySelection());
-
 		JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
 		JLabel lblPack = new JLabel("Select Mod Pack: ");
 
 		JLabel selectBuild = new JLabel("Select Modpack build: ");
 
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addComponent(selectBuild).addPreferredGap(ComponentPlacement.RELATED).addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addComponent(devBuilds).addComponent(recBuilds).addComponent(customBuilds).addGroup(gl_contentPanel.createSequentialGroup().addComponent(lblPack).addPreferredGap(ComponentPlacement.RELATED).addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)) // .addComponent(clipboardCheckbox)
+		gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addContainerGap().addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addComponent(selectBuild).addPreferredGap(ComponentPlacement.RELATED).addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addComponent(devBuilds).addComponent(recBuilds).addComponent(customBuilds).addGroup(gl_contentPanel.createSequentialGroup()) // .addComponent(clipboardCheckbox)
 		.addComponent(backupCheckbox).addComponent(retryLoginCheckbox).addComponent(latestLWJGLCheckbox).addComponent(clearCache).addComponent(buildInfo).addGroup(gl_contentPanel.createSequentialGroup().addComponent(lblMemoryToAllocate).addPreferredGap(ComponentPlacement.RELATED).addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap(27, Short.MAX_VALUE)));
 
 		Font font = new Font("Arial", Font.PLAIN, 11);
@@ -153,7 +127,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 		clearCache.setFont(font);
 		clearCache.setActionCommand("Clear Cache");
 		clearCache.addActionListener(this);
-		gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(selectBuild).addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addComponent(devBuilds).addComponent(recBuilds).addComponent(customBuilds).addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(packCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(lblPack)).addComponent(retryLoginCheckbox).addPreferredGap(ComponentPlacement.RELATED) // .addComponent(clipboardCheckbox)
+		gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPanel.createSequentialGroup().addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(selectBuild).addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addComponent(devBuilds).addComponent(recBuilds).addComponent(customBuilds).addComponent(retryLoginCheckbox).addPreferredGap(ComponentPlacement.RELATED) // .addComponent(clipboardCheckbox)
 		.addComponent(backupCheckbox).addComponent(latestLWJGLCheckbox).addPreferredGap(ComponentPlacement.RELATED).addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(lblMemoryToAllocate)).addPreferredGap(ComponentPlacement.RELATED).addComponent(clearCache).addPreferredGap(ComponentPlacement.RELATED).addComponent(buildInfo).addContainerGap(316, Short.MAX_VALUE)));
 
 		contentPanel.setLayout(gl_contentPanel);
@@ -177,8 +151,31 @@ public class OptionDialog extends JDialog implements ActionListener {
 				buttonPane.add(cancelButton);
 			}
 		}
+	}
 
-		modPackList = ModPackListYML.getModPacks();
+	public void reloadSettings() {
+		if (SettingsUtil.isRecommendedBuild()) {
+			devBuilds.setSelected(false);
+			recBuilds.setSelected(true);
+			customBuilds.setSelected(false);
+			SettingsUtil.setDevelopmentBuild(false);
+		} else if (SettingsUtil.isDevelopmentBuild()) {
+			devBuilds.setSelected(true);
+			recBuilds.setSelected(false);
+			customBuilds.setSelected(false);
+		} else {
+			devBuilds.setSelected(false);
+			recBuilds.setSelected(false);
+			customBuilds.setSelected(true);
+		}
+
+		updateBuildsList();
+
+		// clipboardCheckbox.setSelected(SettingsUtil.isClipboardAccess());
+		backupCheckbox.setSelected(SettingsUtil.isWorldBackup());
+		retryLoginCheckbox.setSelected(SettingsUtil.getLoginTries() > 1);
+		latestLWJGLCheckbox.setSelected(SettingsUtil.isLatestLWJGL());
+		memoryCombo.setSelectedIndex(SettingsUtil.getMemorySelection());
 	}
 
 	public void updateBuildsList() {
@@ -192,25 +189,6 @@ public class OptionDialog extends JDialog implements ActionListener {
 			buildsCombo.addItem("No builds found");
 		}
 		updateBuildsCombo();
-	}
-
-	public void updateModPackList() {
-		if (packCombo.getItemCount() != modPackList.size()) {
-			packCombo.removeAllItems();
-			for (String modPackName : modPackList.keySet()) {
-				Util.addComboItem(packCombo, modPackList.get(modPackName), modPackName);
-			}
-			updateModPacksCombo();
-		}
-	}
-
-	public void updateModPacksCombo() {
-		packCombo.setEnabled(modPackList.size() > 1);
-		if (SettingsUtil.hasModPack()) {
-			Util.setSelectedComboByValue(packCombo, SettingsUtil.getModPackSelection());
-		} else {
-			packCombo.setSelectedIndex(0);
-		}
 	}
 
 	@Override
@@ -232,12 +210,6 @@ public class OptionDialog extends JDialog implements ActionListener {
 				clearCache();
 			}
 
-			if (Util.getSelectedValue(packCombo) == null ? SettingsUtil.getModPackSelection() != null : !Util.getSelectedValue(packCombo).equals(SettingsUtil.getModPackSelection())) {
-				String modpack = Util.getSelectedValue(packCombo);
-				SettingsUtil.setModPack(modpack);
-				Main.loginForm.updateBranding();
-			}
-
 			if (buildsCombo.isEnabled()) {
 				String build = null;
 				try {
@@ -254,8 +226,12 @@ public class OptionDialog extends JDialog implements ActionListener {
 				}
 			}
 
+			File propFile = new File(GameUpdater.modpackDir, "launcher.properties");
+			GameUpdater.copy(SettingsUtil.settingsFile, propFile);
+
 			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
 				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
+				GameUpdater.copy(SettingsUtil.settingsFile, propFile);
 				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
 				Main.reboot("-Xmx" + mem + "m");
 			}

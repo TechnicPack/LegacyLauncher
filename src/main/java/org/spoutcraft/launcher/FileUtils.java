@@ -71,32 +71,28 @@ public class FileUtils {
 	 * @throws IOException
 	 *           in case cleaning is unsuccessful
 	 */
-	public static void cleanDirectory(File directory) throws IOException {
+	public static void cleanDirectory(File directory) {
 		if (!directory.exists()) {
-			String message = directory + " does not exist";
-			throw new IllegalArgumentException(message);
+			Util.log("%s does not exist", directory);
 		}
 
 		if (!directory.isDirectory()) {
-			String message = directory + " is not a directory";
-			throw new IllegalArgumentException(message);
+			Util.log("%s is not a directory", directory);
 		}
 
 		File[] files = directory.listFiles();
 		if (files == null) { // null if security restricted
-			throw new IOException("Failed to list contents of " + directory);
+			Util.log("Failed to list contents of %s", directory);
+			return;
 		}
 
-		IOException exception = null;
 		for (File file : files) {
 			try {
 				forceDelete(file);
 			} catch (IOException ioe) {
-				exception = ioe;
+				Util.log("File %s failed to delete", file);
 			}
 		}
-
-		if (null != exception) { throw exception; }
 	}
 
 	/**

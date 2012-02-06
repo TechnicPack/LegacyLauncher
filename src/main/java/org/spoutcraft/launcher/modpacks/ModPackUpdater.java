@@ -99,7 +99,9 @@ public class ModPackUpdater extends GameUpdater {
 			File modCache = new File(cacheDir, filename);
 			String md5Name = "mods\\" + name + "\\" + filename;
 			if (modCache.exists() && MD5Utils.checksumCachePath(filename, md5Name)) {
+				stateChanged("Copying " + filename + " from cache", 0);
 				copy(modCache, downloadedFile);
+				stateChanged("Copied " + filename + " from cache", 100);
 				return true;
 			} else {
 				String mirrorURL = "mods/" + name + "/" + filename;
@@ -212,7 +214,7 @@ public class ModPackUpdater extends GameUpdater {
 
 			String md5Name = "mods\\" + modName + "\\" + fullFilename;
 			if (!MD5Utils.checksumCachePath(fullFilename, md5Name)) { return true; }
-
+			int a = 1;
 			String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
 			if (installedModVersion == null || !installedModVersion.equals(version)) { return true; }
 		}

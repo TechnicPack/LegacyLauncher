@@ -118,7 +118,9 @@ public class GameUpdater implements DownloadListener {
 			String output = tempDir + File.separator + "minecraft.jar";
 			MinecraftDownloadUtils.downloadMinecraft(minecraftURL, output, build, listener);
 		}
+		stateChanged("Copying minecraft.jar from cache", 0);
 		copy(mcCache, new File(binDir, "minecraft.jar"));
+		stateChanged("Copied minecraft.jar from cache", 100);
 
 		File nativesDir = new File(binDir.getPath(), "natives");
 		nativesDir.mkdir();
@@ -128,21 +130,27 @@ public class GameUpdater implements DownloadListener {
 		if (!mcCache.exists() || !jinputMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar", binDir.getPath() + File.separator + "jinput.jar", "jinput.jar", jinputMD5, listener);
 		} else {
+			stateChanged("Copying jinput.jar from cache", 0);
 			copy(mcCache, new File(binDir, "jinput.jar"));
+			stateChanged("Copied jinput.jar from cache", 100);
 		}
 
 		mcCache = new File(cacheDir, "lwjgl.jar");
 		if (!mcCache.exists() || !lwjglMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl.jar", binDir.getPath() + File.separator + "lwjgl.jar", "lwjgl.jar", lwjglMD5, listener);
 		} else {
+			stateChanged("Copying lwjgl.jar from cache", 0);
 			copy(mcCache, new File(binDir, "lwjgl.jar"));
+			stateChanged("Copied lwjgl.jar from cache", 100);
 		}
 
 		mcCache = new File(cacheDir, "lwjgl_util.jar");
 		if (!mcCache.exists() || !lwjgl_utilMD5.equals(MD5Utils.getMD5(mcCache))) {
 			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl_util.jar", binDir.getPath() + File.separator + "lwjgl_util.jar", "lwjgl_util.jar", lwjgl_utilMD5, listener);
 		} else {
+			stateChanged("Copying lwjgl_util.jar from cache", 0);
 			copy(mcCache, new File(binDir, "lwjgl_util.jar"));
+			stateChanged("Copied lwjgl_util.jar from cache", 100);
 		}
 
 		getNatives();
@@ -272,6 +280,7 @@ public class GameUpdater implements DownloadListener {
 				out.flush();
 				out.close();
 			}
+			nativesJar.delete();
 			stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
 		} catch (IOException e) {
 			// Zip failed to extract properly"
@@ -343,6 +352,13 @@ public class GameUpdater implements DownloadListener {
 				}
 			}
 
+			File cacheFile = new File(cacheDir, name.replace("-" + version, "") + ".jar");
+			if (cacheFile.exists() && MD5.equalsIgnoreCase(MD5Utils.getMD5(cacheFile))) {
+				stateChanged("Copying " + name + " from cache", 0);
+				copy(cacheFile, libraryFile);
+				stateChanged("Copied " + name + " from cache", 100);
+			}
+
 			if (!libraryFile.exists()) {
 				String mirrorURL = "Libraries/" + lib.getKey() + "/" + name + ".jar";
 				String fallbackURL = "http://spouty.org/Libraries/" + lib.getKey() + "/" + name + ".jar";
@@ -391,16 +407,18 @@ public class GameUpdater implements DownloadListener {
 		return count;
 	}
 
-	public static void copy(File input, File output) throws IOException {
+	public static void copy(File input, File output) {
 		FileInputStream inputStream = null;
 		FileOutputStream outputStream = null;
 		try {
 			inputStream = new FileInputStream(input);
 			outputStream = new FileOutputStream(output);
 			copy(inputStream, outputStream);
-		} finally {
-			if (inputStream != null) inputStream.close();
-			if (outputStream != null) outputStream.close();
+			inputStream.close();
+			outputStream.close();
+		} catch (Exception e) {
+			Util.log("Error copying file %s to %s", input, output);
+			e.printStackTrace();
 		}
 	}
 

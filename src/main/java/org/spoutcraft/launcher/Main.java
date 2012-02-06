@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,23 +46,35 @@ public class Main {
 
 	public static void reboot(String memory) {
 		try {
-			int mem = 1 << 9 + SettingsUtil.getMemorySelection();
+			int memorySelection = SettingsUtil.getMemorySelection();
+			int mem = 1 << 9 + memorySelection;
+			if (!System.getProperty("sun.arch.data.model").contains("64") && memorySelection > 1) {
+				Util.log("32-bit Vm being used. Max memory is 1.5Gb");
+				mem = (int) (1.3 * 1024);
+			}
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
-			if (PlatformUtils.getPlatform() == PlatformUtils.OS.windows) {
-				params.add("javaw"); // Windows-specific
-			} else {
-				params.add("java"); // Linux/Mac/whatever
-			}
+			// if (PlatformUtils.getPlatform() == PlatformUtils.OS.windows) {
+			// params.add("javaw"); // Windows-specific
+			// } else {
+			params.add("java"); // Linux/Mac/whatever
+			// }
 			if (memory.equals(("-Xmx" + mem + "m"))) {
 				params.add(memory);
 			} else {
 				params.add("-Xmx" + mem + "m");
-				params.add(memory);
+				// params.add(memory);
 			}
-			params.add("-classpath");
-			params.add(pathToJar);
-			params.add("org.spoutcraft.launcher.Main");
+
+			if (PlatformUtils.getPlatform() != PlatformUtils.OS.windows) {
+				params.add("-classpath");
+				params.add(pathToJar);
+				params.add("org.spoutcraft.launcher.Main");
+			} else {
+				params.add("-jar");
+				params.add(String.format("\"%s\"", pathToJar.substring(1)));
+			}
+
 			params.addAll(Arrays.asList(args_temp));
 
 			if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
@@ -75,8 +88,14 @@ public class Main {
 				}
 			}
 			ProcessBuilder pb = new ProcessBuilder(params);
-			Process process = pb.start();
-			if (process == null) throw new Exception("!");
+			Util.logi("Rebooting with %s", Arrays.toString(pb.command().toArray()));
+			try {
+				Process process = pb.start();
+			} catch (IOException e) {
+				Util.log("Failed to load reboot Process");
+				e.printStackTrace();
+				SettingsUtil.setMemorySelection(1 << 10);
+			}
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -88,7 +107,6 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-
 		LoadingScreen ls = new LoadingScreen();
 		if (!isDebug()) ls.setVisible(true);
 		Options options = new Options();
@@ -147,9 +165,9 @@ public class Main {
 			Util.log("Warning: Can't get system LnF: " + e);
 		}
 
-		loginForm = new LoginForm();
+		if (GameUpdater.tempDir.exists()) FileUtils.cleanDirectory(GameUpdater.tempDir);
 
-		loginForm.loadLauncherData();
+		loginForm = new LoginForm();
 		ls.close();
 		loginForm.setVisible(true);
 	}

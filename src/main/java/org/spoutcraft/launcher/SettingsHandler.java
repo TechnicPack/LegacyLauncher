@@ -130,8 +130,13 @@ public class SettingsHandler {
 	 * @param String
 	 *          name
 	 */
-	private void create(String resource) {
-		InputStream is = getClass().getResourceAsStream(resource);
+	public void create(String resource) {
+		create(resource, out);
+	}
+
+	public static void create(String resource, File out) {
+		Class a = new Util().getClass();
+		InputStream is = a.getResourceAsStream(resource);
 		if (is != null) {
 			FileOutputStream output = null;
 			try {
@@ -482,6 +487,7 @@ public class SettingsHandler {
 	 *          obj
 	 */
 	public void put(String property, Object obj) {
+		if (obj == null) return;
 		HashMap<Integer, String> contents = this.getAllFileContents();
 		contents.put(contents.size() + 1, property + ": " + obj.toString());
 		this.flush(contents);

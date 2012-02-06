@@ -98,6 +98,7 @@ public class MinecraftAppletEnglober extends Applet implements AppletStub {
 		return active;
 	}
 
+	@Override
 	public void appletResize(int width, int height) {
 		minecraftApplet.resize(width, height);
 	}
@@ -113,6 +114,7 @@ public class MinecraftAppletEnglober extends Applet implements AppletStub {
 	public void start() {
 		if (minecraftApplet != null) {
 			minecraftApplet.start();
+			FileUtils.cleanDirectory(GameUpdater.tempDir);
 			active = true;
 		}
 	}

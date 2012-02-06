@@ -28,11 +28,11 @@ public class Util {
 	}
 
 	public static void log(String formatString, Object... params) {
-		Logger.getGlobal().warning(String.format(formatString, params));
+		Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning(String.format(formatString, params));
 	}
 
 	public static void logi(String formatString, Object... params) {
-		Logger.getGlobal().info(String.format(formatString, params));
+		Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info(String.format(formatString, params));
 	}
 
 	public static void addComboItem(JComboBox combobox, String label, String value) {

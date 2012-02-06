@@ -43,10 +43,12 @@ public class Download implements Runnable {
 	private DownloadListener	listener;
 	private boolean						success			= false;
 	private File							outFile			= null;
+	private final String			name;
 
 	public Download(String url, String outPath) throws MalformedURLException {
 		this.url = new URL(url);
 		this.outPath = outPath;
+		this.name = url.substring(url.lastIndexOf('/') + 1, url.length());
 	}
 
 	public float getProgress() {
@@ -162,7 +164,7 @@ public class Download implements Runnable {
 
 	private void stateChanged() {
 		if (listener != null) {
-			listener.stateChanged(outPath, getProgress());
+			listener.stateChanged(name, getProgress());
 		}
 	}
 

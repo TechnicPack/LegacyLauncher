@@ -21,7 +21,7 @@ public class DownloadUtils {
 	public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
 		int tries = SettingsUtil.getLoginTries();
 		File outputFile = new File(output);
-		File tempfile = new File(GameUpdater.tempDir, outputFile.getName());
+		File tempfile = File.createTempFile("file", null, GameUpdater.tempDir);
 		tempfile.mkdirs();
 		Download download = null;
 		boolean areFilesIdentical = tempfile.getPath().equalsIgnoreCase(outputFile.getPath());

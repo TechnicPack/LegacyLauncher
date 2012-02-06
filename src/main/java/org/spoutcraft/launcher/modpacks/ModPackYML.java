@@ -34,7 +34,7 @@ public class ModPackYML {
 	public static void updateModPackYML(boolean doUpdate) {
 		if (doUpdate || !updated) {
 			synchronized (key) {
-				String selected = doUpdate ? null : getSelectedBuild();
+				String selected = getSelectedBuild();
 
 				YmlUtils.downloadYmlFile(ModPackListYML.currentModPack + "/" + MODPACK_YML, FALLBACK_URL, getModPackYMLFile());
 

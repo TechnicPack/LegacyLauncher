@@ -19,6 +19,8 @@ package org.spoutcraft.launcher.logs;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+import org.spoutcraft.launcher.GameUpdater;
+
 public class ClientLoggerFormatter extends Formatter {
 
 	@Override
@@ -39,7 +41,7 @@ public class ClientLoggerFormatter extends Formatter {
 
 		// Get the formatted message (includes localization
 		// and substitution of paramters) and add it to the buffer
-		sb.append(formatMessage(record));
+		sb.append(formatMessage(record).replace(GameUpdater.WORKING_DIRECTORY.getPath(), ""));
 		sb.append('\n');
 
 		return sb.toString();

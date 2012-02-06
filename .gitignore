@@ -57,3 +57,6 @@ build.xml
 *.jpage
 /src/main/java/Test.java
 /techniclauncher
+/launcher.properties
+/modpack.yml
+/src/main/java/org/spoutcraft/launcher/gui/widget/CustomComboBoxDemo.java

@@ -42,7 +42,7 @@ public class PlatformUtils {
 	}
 
 	public static File getWorkingDirectory(String applicationName) {
-		if (MinecraftUtils.getOptions().isPortable()) { return new File("." + LAUNCHER_DIR); }
+		//if (MinecraftUtils.getOptions().isPortable()) { return new File("." + LAUNCHER_DIR); }
 		String userHome = System.getProperty("user.home", ".");
 		File workingDirectory;
 		switch (getPlatform()) {
