@@ -1,5 +1,7 @@
 package org.spoutcraft.launcher.gui;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,13 +9,17 @@ import java.util.Calendar;
 
 import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
+import javax.swing.ToolTipManager;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.Util;
 
-public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> {
+public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> implements PropertyChangeListener {
 	JTextPane				editorPane;
-	private String	username	= null;
+	private String	username		= null;
+	boolean					isUpdating	= false;
 
 	public TumblerFeedParsingWorker(JTextPane editorPane) {
 		this.editorPane = editorPane;
@@ -31,28 +37,25 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> {
 
 			if (MirrorUtils.isAddressReachable(url.toString())) {
 				editorPane.setVisible(false);
+				editorPane.setContentType("text/html");
+				// editorPane.setEditable(false);
+				ToolTipManager.sharedInstance().registerComponent(editorPane);
+
+				editorPane.addHyperlinkListener(new HyperlinkListener() {
+					@Override
+					public void hyperlinkUpdate(HyperlinkEvent e) {
+						if (HyperlinkEvent.EventType.ACTIVATED == e.getEventType()) {
+							try {
+								editorPane.setPage(e.getURL());
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+				});
+
+				editorPane.addPropertyChangeListener(this);
 				editorPane.setPage(url);
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-				}
-
-				String text = editorPane.getText();
-
-				int index = text.indexOf("<!-- BEGIN TUMBLR CODE -->");
-				int endIndex = text.indexOf("<!-- END TUMBLR CODE -->") + "<!-- END TUMBLR CODE -->".length();
-				if (index > -1 && endIndex > -1) {
-					text = text.substring(0, index) + text.substring(endIndex);
-				}
-				text = text.replaceAll("<li>", "- ");
-				text = text.replaceAll("</li>", "<br/>");
-				text = text.replaceAll("<p>", "");
-				text = text.replace("</p>", "<br/>");
-				text = text.replaceAll("</p>", "<br/><br/>");
-				text = text.replaceAll("@time_of_day", getTimeOfDay());
-				text = text.replaceAll("@username", getUsername());
-				editorPane.setText(text);
-				editorPane.setVisible(true);
 			} else {
 				editorPane.setText("Oh Noes! Our Tumblr Feed is Down!");
 			}
@@ -80,4 +83,17 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> {
 		return "Night";
 	}
 
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (!isUpdating && evt.getPropertyName().equals("page")) {
+			isUpdating = true;
+			// HTMLDocument htmlDocument = (HTMLDocument) evt.getNewValue();
+			String text = editorPane.getText();
+			text = text.replaceAll("@time_of_day", getTimeOfDay());
+			text = text.replaceAll("@username", getUsername());
+			editorPane.setText(text);
+			editorPane.setVisible(true);
+			isUpdating = false;
+		}
+	}
 }
