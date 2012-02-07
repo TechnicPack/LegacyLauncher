@@ -207,6 +207,7 @@ public class GameUpdater implements DownloadListener {
 
 		if (!nativesDir.exists()) nativesDir.mkdir();
 
+		stateChanged(String.format("Extracting '%s'...", nativesJar.getName()), -1);
 		JarFile jar = new JarFile(nativesJar);
 		Enumeration<JarEntry> entries = jar.entries();
 
@@ -231,7 +232,6 @@ public class GameUpdater implements DownloadListener {
 			}
 
 			progress += progressStep;
-			stateChanged(String.format("Extracting '%s'...", nativesJar.getName()), progress);
 
 			inputStream.close();
 			out.flush();
@@ -308,10 +308,12 @@ public class GameUpdater implements DownloadListener {
 
 		if (!tempDir.exists()) tempDir.mkdir();
 
+		stateChanged("Downloading Native LWJGL files...", -1);
 		DownloadUtils.downloadFile(getNativesUrl(fname), tempDir.getPath() + File.separator + (!SettingsUtil.isLatestLWJGL() ? "natives.jar.lzma" : "natives.zip"));
+		stateChanged("Downloaded Native LWJGL files...", 100);
 
 		if (!SettingsUtil.isLatestLWJGL()) {
-			stateChanged("Extracting Native LWJGL files...", 0);
+			stateChanged("Extracting Native LWJGL files...", -1);
 			extractLZMA(GameUpdater.tempDir.getPath() + File.separator + "natives.jar.lzma", GameUpdater.tempDir.getPath() + File.separator + "natives.zip");
 			stateChanged("Extracted Native LWJGL files...", 100);
 		}

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import org.spoutcraft.launcher.gui.LoadingScreen;
@@ -160,14 +161,17 @@ public class Main {
 		Util.log("Launcher Build: " + getBuild());
 
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
 			Util.log("Warning: Can't get system LnF: " + e);
 		}
 
 		if (GameUpdater.tempDir.exists()) FileUtils.cleanDirectory(GameUpdater.tempDir);
 
+		JFrame.setDefaultLookAndFeelDecorated(true);
 		loginForm = new LoginForm();
+		loginForm.setLocationByPlatform(true);
+		// loginForm.setDefaultLookAndFeelDecorated(true);
 		ls.close();
 		loginForm.setVisible(true);
 	}

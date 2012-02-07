@@ -168,7 +168,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			items[i++] = item;
 		}
 		modpackList = new JComboBox<String>(items);
-		modpackList.setBounds(10, 10, 320, 100);
+		modpackList.setBounds(10, 10, 328, 100);
 		ComboBoxRenderer renderer = new ComboBoxRenderer();
 		renderer.setPreferredSize(new Dimension(200, 110));
 		modpackList.setRenderer(renderer);
@@ -401,14 +401,21 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	public void stateChanged(String fileName, float progress) {
 		int intProgress = Math.round(progress);
 
-		progressBar.setValue(intProgress);
+		if (intProgress >= 0) {
+			progressBar.setValue(intProgress);
+			progressBar.setIndeterminate(false);
+		} else {
+			progressBar.setIndeterminate(true);
+		}
 
 		fileName = fileName.replace(workingDir, "");
 
 		if (fileName.length() > 60) {
 			fileName = fileName.substring(0, 60) + "...";
 		}
-		progressBar.setString(intProgress + "% " + fileName);
+		String progressText = intProgress + "% " + fileName;
+		if (intProgress < 0) progressText = fileName;
+		progressBar.setString(progressText);
 	}
 
 	@Override
