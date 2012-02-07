@@ -86,7 +86,8 @@ public class ModPackUpdater extends GameUpdater {
 		Set<String> modsToRemove = installedMods.keySet();
 		modsToRemove.removeAll(modsToInstall);
 
-		String[] array = (String[]) modsToRemove.toArray();
+		String[] array = new String[modsToRemove.size()];
+		modsToRemove.toArray(array);
 		for (String modName : array) {
 			removePreviousModVersion(modName, installedMods.get(modName));
 		}
