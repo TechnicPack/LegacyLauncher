@@ -16,6 +16,7 @@
  */
 package org.spoutcraft.launcher;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.JFrame;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 
 import org.spoutcraft.launcher.gui.LoadingScreen;
@@ -162,6 +164,11 @@ public class Main {
 
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+
+			UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+			defaults.put("nimbusOrange", defaults.get("nimbusBase"));
+			UIManager.put("ProgressBar.selectionForeground", Color.white);
+			UIManager.put("ProgressBar.selectionBackground", Color.black);
 		} catch (Exception e) {
 			Util.log("Warning: Can't get system LnF: " + e);
 		}
