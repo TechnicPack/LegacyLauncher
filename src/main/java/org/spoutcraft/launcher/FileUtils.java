@@ -90,7 +90,7 @@ public class FileUtils {
 			try {
 				forceDelete(file);
 			} catch (IOException ioe) {
-				Util.log("File %s failed to delete", file);
+				Util.logi("File %s failed to delete", file);
 			}
 		}
 	}

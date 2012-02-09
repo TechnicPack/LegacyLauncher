@@ -57,16 +57,11 @@ public class Main {
 			}
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
-			// if (PlatformUtils.getPlatform() == PlatformUtils.OS.windows) {
-			// params.add("javaw"); // Windows-specific
-			// } else {
 			params.add("java"); // Linux/Mac/whatever
-			// }
 			if (memory.equals(("-Xmx" + mem + "m"))) {
 				params.add(memory);
 			} else {
 				params.add("-Xmx" + mem + "m");
-				// params.add(memory);
 			}
 
 			if (PlatformUtils.getPlatform() != PlatformUtils.OS.windows) {
@@ -178,7 +173,6 @@ public class Main {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		loginForm = new LoginForm();
 		loginForm.setLocationByPlatform(true);
-		// loginForm.setDefaultLookAndFeelDecorated(true);
 		ls.close();
 		loginForm.setVisible(true);
 	}
