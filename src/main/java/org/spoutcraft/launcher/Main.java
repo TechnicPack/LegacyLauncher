@@ -50,15 +50,16 @@ public class Main {
 	public static void reboot(String memory) {
 		try {
 			int memorySelection = SettingsUtil.getMemorySelection();
-			int mem = 1 << 9 + memorySelection;
+			int mem = (1024) * memorySelection;
 			if (!System.getProperty("sun.arch.data.model").contains("64") && memorySelection > 1) {
 				Util.log("32-bit Vm being used. Max memory is 1.5Gb");
-				mem = (int) (1.3 * 1024);
+				mem = 1280;
 			}
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
 			params.add("java"); // Linux/Mac/whatever
-			if (memory.equals(("-Xmx" + mem + "m"))) {
+			if (memorySelection > 1) params.add("-Xincgc");
+			if (memory.contains("-Xmx")) {
 				params.add(memory);
 			} else {
 				params.add("-Xmx" + mem + "m");
@@ -86,13 +87,14 @@ public class Main {
 				}
 			}
 			ProcessBuilder pb = new ProcessBuilder(params);
-			Util.logi("Rebooting with %s", Arrays.toString(pb.command().toArray()));
+
+			Util.log("Rebooting with %s", Arrays.toString(pb.command().toArray()));
 			try {
 				Process process = pb.start();
 			} catch (IOException e) {
 				Util.log("Failed to load reboot Process");
 				e.printStackTrace();
-				SettingsUtil.setMemorySelection(1 << 10);
+				SettingsUtil.setMemorySelection(1024);
 			}
 			System.exit(0);
 		} catch (Exception e) {
@@ -131,7 +133,7 @@ public class Main {
 		if (relaunch) {
 			ls.close();
 			if (SettingsUtil.getMemorySelection() < 6) {
-				int mem = 1 << (9 + SettingsUtil.getMemorySelection());
+				int mem = 1024 * SettingsUtil.getMemorySelection();
 				recursion.createNewFile();
 				if (isDebug()) System.exit(0);
 				else reboot("-Xmx" + mem + "m");
