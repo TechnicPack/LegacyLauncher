@@ -158,7 +158,7 @@ public class Main {
 		Util.log("------------------------------------------");
 		Util.log("Launcher is starting....");
 		Util.log("Launcher Build: " + getBuild());
-		Util.log("Allocated %s Mb of RAM", Runtime.getRuntime().totalMemory() / (1024.0 * 1024));
+		Util.log("Allocated %s Mb of RAM", Runtime.getRuntime().maxMemory() / (1024.0 * 1024));
 
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
