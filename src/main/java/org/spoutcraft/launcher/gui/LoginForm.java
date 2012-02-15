@@ -168,12 +168,16 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		// lblLogo = new JLabel("");
 		// lblLogo.setBounds(8, 0, 294, 99);
-		String[] items = new String[ModPackListYML.modpackMap.size()];
+		List<String> items = new ArrayList<String>();
 		int i = 0;
 		for (String item : ModPackListYML.modpackMap.keySet()) {
-			items[i++] = item;
+			if (!Main.isOffline || GameUpdater.canPlayOffline(item)) {
+				items.add(item);
+				i += 1;
+			}
 		}
-		modpackList = new JComboBox<String>(items);
+		String[] itemArray = new String[i];
+		modpackList = new JComboBox<String>(items.toArray(itemArray));
 		modpackList.setBounds(10, 10, 328, 100);
 		ComboBoxRenderer renderer = new ComboBoxRenderer();
 		renderer.setPreferredSize(new Dimension(200, 110));

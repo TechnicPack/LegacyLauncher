@@ -192,7 +192,7 @@ public class ModPackListYML {
 			File modPackDir = new File(GameUpdater.workDir, modPack);
 			File resourcesPath = new File(modPackDir, RESOURCES_PATH);
 			File modPackLogo = new File(resourcesPath, LOGO_PNG);
-			if (!modPackLogo.exists() || !GameUpdater.canPlayOffline(modPack)) continue;
+			if (!modPackLogo.exists()) continue;
 			modpackLogoList.put(modPack, new ImageIcon(Toolkit.getDefaultToolkit().getImage(modPackLogo.getAbsolutePath())));
 		}
 	}
