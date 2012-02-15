@@ -25,6 +25,7 @@ public class YmlUtils {
 	}
 
 	public static boolean downloadYmlFile(String ymlUrl, String fallbackUrl, File ymlFile) {
+		if (Main.isOffline) return false;
 		boolean isRelative = !ymlUrl.contains("http");
 
 		GameUpdater.tempDir.mkdirs();
@@ -36,9 +37,18 @@ public class YmlUtils {
 		OutputStream out = null;
 		try {
 			if (!isRelative && !MirrorUtils.isAddressReachable(ymlUrl)) {
+				if (GameUpdater.canPlayOffline()) {
+					Main.isOffline = true;
+				}
 				return false;
 			} else if (isRelative) {
 				ymlUrl = MirrorUtils.getMirrorUrl(ymlUrl, fallbackUrl);
+				if (ymlUrl == null) {
+					if (GameUpdater.canPlayOffline()) {
+						Main.isOffline = true;
+					}
+					return false;
+				}
 			}
 
 			Util.log("[Info] Downloading '%s' from '%s'.", ymlFile.getName(), ymlUrl);

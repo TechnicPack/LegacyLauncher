@@ -72,6 +72,7 @@ import org.spoutcraft.launcher.FileUtils;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.LibrariesYML;
 import org.spoutcraft.launcher.MD5Utils;
+import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MinecraftUtils;
 import org.spoutcraft.launcher.MinecraftYML;
 import org.spoutcraft.launcher.MirrorUtils;
@@ -102,6 +103,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	JButton																		modsButton				= new JButton("Mod Select");
 	private final JCheckBox										rememberCheckbox	= new JCheckBox("Remember");
 	final JLabel															background				= new JLabel("Loading...");
+	private final JButton											offlineMode				= new JButton("Offline Mode");
+	private final JButton											tryAgain					= new JButton("Try Again");
 	final JTextPane														editorPane				= new JTextPane();
 	private final JButton											loginSkin1;
 	private final List<JButton>								loginSkin1Image;
@@ -149,6 +152,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		usernameField.setFont(new Font("Arial", Font.PLAIN, 11));
 		usernameField.addActionListener(this);
 		usernameField.setOpaque(false);
+		offlineMode.setFont(new Font("Arial", Font.PLAIN, 11));
+		offlineMode.setOpaque(false);
+		offlineMode.addActionListener(this);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -296,18 +302,16 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		offlineMessage.setFont(new Font("Arial", Font.PLAIN, 14));
 		offlineMessage.setBounds(25, 40, 217, 17);
 
-		JButton tryAgain = new JButton("Try Again");
 		tryAgain.setOpaque(false);
 		tryAgain.setFont(new Font("Arial", Font.PLAIN, 12));
 		tryAgain.setBounds(257, 20, 100, 25);
 
-		JButton offlineMode = new JButton("Offline Mode");
 		offlineMode.setOpaque(false);
 		offlineMode.setFont(new Font("Arial", Font.PLAIN, 12));
 		offlineMode.setBounds(257, 52, 100, 25);
 
 		offlinePane.setBounds(473, 362, 372, 99);
-		offlinePane.add(tryAgain);
+		// offlinePane.add(tryAgain);
 		offlinePane.add(offlineMode);
 		offlinePane.add(offlineMessage);
 		offlinePane.setVisible(false);
@@ -340,6 +344,11 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		// loginButton.setEnabled(true); // enable once logins are read
 		modsButton.setEnabled(false);
 		setResizable(false);
+
+		if (Main.isOffline) {
+			offlinePane.setVisible(true);
+			loginPane.setVisible(false);
+		}
 	}
 
 	public void loadLauncherData() {
@@ -348,6 +357,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		ModPackListYML.updateModPacksYMLCache();
 
 		ModPackListYML.getAllModPackResources();
+		ModPackListYML.loadModpackLogos();
 
 		LibrariesYML.updateLibrariesYMLCache();
 		ModLibraryYML.updateModLibraryYML();
@@ -494,13 +504,17 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 								if (tumblerFeed != null) {
 									tumblerFeed.setUser(user);
 								}
-								loginSkin1.setText(user);
-								loginSkin1.setVisible(true);
-								ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 103, 170, loginSkin1Image);
+								if (!Main.isOffline) {
+									loginSkin1.setText(user);
+									loginSkin1.setVisible(true);
+									ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 103, 170, loginSkin1Image);
+								}
 							} else if (i == 2) {
-								loginSkin2.setText(user);
-								loginSkin2.setVisible(true);
-								ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 293, 170, loginSkin2Image);
+								if (!Main.isOffline) {
+									loginSkin2.setText(user);
+									loginSkin2.setVisible(true);
+									ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + user + ".png", 293, 170, loginSkin2Image);
+								}
 							}
 						}
 						usernames.put(user, new UserPasswordInformation(password));
@@ -581,6 +595,14 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			}
 		} else if (eventId.equals("comboBoxChanged")) {
 			updatePasswordField();
+		}
+
+		if (source == offlineMode) {
+			gameUpdater.user = "user";
+			gameUpdater.downloadTicket = "0";
+			offlineMode.setEnabled(false);
+			tryAgain.setEnabled(false);
+			runGame();
 		}
 	}
 
@@ -674,8 +696,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					}
 
 					if (authFailed) {
-						JOptionPane.showMessageDialog(getParent(), "Unable to authenticate account with minecraft.net");
-					} else {
+						// JOptionPane.showMessageDialog(getParent(),
+						// "Unable to authenticate account with minecraft.net");
+						// } else {
 						int result = JOptionPane.showConfirmDialog(getParent(), "Would you like to run in offline mode?", "Unable to Connect to Minecraft.net", JOptionPane.YES_NO_OPTION);
 						if (result == JOptionPane.YES_OPTION) {
 							values = new String[] { "0", "0", user, "0" };
@@ -858,7 +881,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	public void runGame() {
 		LauncherFrame launcher = new LauncherFrame();
 		launcher.setLoginForm(this);
-		int result = launcher.runGame(values[2].trim(), values[3].trim(), values[1].trim(), pass);
+		int result = (Main.isOffline) ? launcher.runGame(null, null, null, null) : launcher.runGame(values[2].trim(), values[3].trim(), values[1].trim(), pass);
 		if (result == LauncherFrame.SUCCESSFUL_LAUNCH) {
 			LoginForm.updateDialog.dispose();
 			LoginForm.updateDialog = null;

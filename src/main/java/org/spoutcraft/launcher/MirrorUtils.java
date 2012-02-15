@@ -24,6 +24,8 @@ public class MirrorUtils {
 
 	public static String getMirrorUrl(String mirrorURI, String fallbackUrl, DownloadListener listener) {
 		try {
+			if (Main.isOffline) return null;
+
 			Map<String, Integer> mirrors = getMirrors();
 			Set<Entry<String, Integer>> set = mirrors.entrySet();
 

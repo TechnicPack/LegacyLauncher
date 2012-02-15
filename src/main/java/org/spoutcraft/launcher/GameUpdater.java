@@ -69,7 +69,7 @@ public class GameUpdater implements DownloadListener {
 
 	/* Minecraft Updating Arguments */
 	public final String					baseURL							= "http://s3.amazonaws.com/MinecraftDownload/";
-	public final String					latestLWJGLURL			= "http://www.minedev.net/spout/lwjgl/";
+	public final String					latestLWJGLURL			= "http://git.technicpack.net/Technic/Libraries/lwjgl/";
 	public final String					spoutcraftMirrors		= "http://cdn.getspout.org/mirrors.html";
 
 	private DownloadListener		listener;
@@ -457,22 +457,46 @@ public class GameUpdater implements DownloadListener {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public boolean canPlayOffline() {
+	public static boolean canPlayOffline() {
 		try {
-			String path = (String) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+			File path = (File) AccessController.doPrivileged(new PrivilegedExceptionAction() {
 				@Override
 				public Object run() throws Exception {
-					return WORKING_DIRECTORY + File.separator + "bin" + File.separator;
+					return WORKING_DIRECTORY;
 				}
 			});
-			File dir = new File(path);
-			if (!dir.exists()) { return false; }
+			if (!path.exists()) { return false; }
+			if (!new File(path, "lastlogin").exists()) { return false; }
 
-			dir = new File(dir, "minecraft.jar");
-			if (!dir.exists()) { return false; }
+			path = new File(path, SettingsUtil.getModPackSelection() + File.separator + "bin");
+			if (!path.exists()) { return false; }
+			if (!new File(path, "minecraft.jar").exists()) { return false; }
+			if (!new File(path, "modpack.jar").exists()) { return false; }
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+		}
+		return false;
+	}
+
+	public static boolean canPlayOffline(String modPackName) {
+		try {
+			File path = (File) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+				@Override
+				public Object run() throws Exception {
+					return WORKING_DIRECTORY;
+				}
+			});
+			if (!path.exists()) { return false; }
+			if (!new File(path, "lastlogin").exists()) { return false; }
+
+			path = new File(path, modPackName + File.separator + "bin");
+			if (!path.exists()) { return false; }
+			if (!new File(path, "minecraft.jar").exists()) { return false; }
+			if (!new File(path, "modpack.jar").exists()) { return false; }
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

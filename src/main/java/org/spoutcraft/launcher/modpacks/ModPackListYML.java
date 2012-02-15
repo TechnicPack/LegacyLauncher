@@ -15,6 +15,7 @@ import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.DownloadUtils;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.MD5Utils;
+import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.PlatformUtils;
 import org.spoutcraft.launcher.SettingsUtil;
@@ -176,6 +177,7 @@ public class ModPackListYML {
 	}
 
 	public static void getAllModPackResources() {
+		if (Main.isOffline) return;
 		Map<String, String> fileMap = new HashMap<String, String>();
 		for (String modPack : modpackMap.keySet()) {
 			File modPackDir = new File(GameUpdater.workDir, modPack);
@@ -183,15 +185,14 @@ public class ModPackListYML {
 			fileMap.putAll(getModPackResources(modPack, modPackDir));
 		}
 		downloadAllFiles(fileMap);
-		loadModpackLogos();
 	}
 
-	private static void loadModpackLogos() {
+	public static void loadModpackLogos() {
 		for (String modPack : modpackMap.keySet()) {
 			File modPackDir = new File(GameUpdater.workDir, modPack);
 			File resourcesPath = new File(modPackDir, RESOURCES_PATH);
 			File modPackLogo = new File(resourcesPath, LOGO_PNG);
-			if (!modPackLogo.exists()) continue;
+			if (!modPackLogo.exists() || !GameUpdater.canPlayOffline(modPack)) continue;
 			modpackLogoList.put(modPack, new ImageIcon(Toolkit.getDefaultToolkit().getImage(modPackLogo.getAbsolutePath())));
 		}
 	}

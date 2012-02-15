@@ -55,10 +55,19 @@ public class MD5Utils {
 	}
 
 	public static void updateMD5Cache() {
-		if (!updated) {
+		if (!updated && !Main.isOffline) {
 			updated = true;
 			try {
 				String url = MirrorUtils.getMirrorUrl(CHECKSUM_MD5, null);
+
+				if (url == null) {
+					if (GameUpdater.canPlayOffline()) {
+						Main.isOffline = true;
+						parseChecksumFile();
+					}
+					return;
+				}
+
 				if (DownloadUtils.downloadFile(url, CHECKSUM_FILE.getPath()).isSuccess()) {
 					parseChecksumFile();
 				}

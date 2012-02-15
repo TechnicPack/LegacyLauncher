@@ -19,6 +19,7 @@ import org.spoutcraft.launcher.async.DownloadListener;
 public class DownloadUtils {
 
 	public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
+		if (Main.isOffline) return null;
 		int tries = SettingsUtil.getLoginTries();
 		File outputFile = new File(output);
 		File tempfile = File.createTempFile("file", null, GameUpdater.tempDir);
@@ -80,6 +81,7 @@ public class DownloadUtils {
 	private static int	filesDownloaded	= 0;
 
 	public static int downloadFiles(Map<String, String> downloadFileList, long timeout, TimeUnit unit) {
+		if (Main.isOffline) return 0;
 		filesToDownload = downloadFileList.size();
 		filesDownloaded = 0;
 
@@ -114,6 +116,7 @@ public class DownloadUtils {
 	}
 
 	public static boolean downloadFile(String relativePath) {
+		if (Main.isOffline) return false;
 		if (MD5Utils.checksumPath(relativePath)) { return true; }
 
 		URL url = null;
