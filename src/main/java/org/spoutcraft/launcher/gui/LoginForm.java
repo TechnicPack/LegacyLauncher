@@ -883,6 +883,11 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 	}
 
 	public void runGame() {
+		if (ModPackListYML.currentModPack.equals("technicssp")) {
+			File temp = new File(GameUpdater.modsDir, "industrialcraft-2-client_1.64.jar");
+			if (temp.exists()) temp.delete();
+		}
+
 		LauncherFrame launcher = new LauncherFrame();
 		launcher.setLoginForm(this);
 		int result = (Main.isOffline) ? launcher.runGame(null, null, null, null) : launcher.runGame(values[2].trim(), values[3].trim(), values[1].trim(), pass);

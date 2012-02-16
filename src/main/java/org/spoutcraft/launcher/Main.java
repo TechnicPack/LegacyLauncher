@@ -38,7 +38,7 @@ import com.beust.jcommander.JCommander;
 public class Main {
 
 	static String[]					args_temp;
-	public static String		build			= "0.5.0";
+	public static String		build			= "0.5.3.5";
 	public static String		currentPack;
 	static File							recursion;
 	public static LoginForm	loginForm;
@@ -158,7 +158,7 @@ public class Main {
 
 		Util.log("------------------------------------------");
 		Util.log("Launcher is starting....");
-		Util.log("Launcher Build: 0.5.3.3");
+		Util.log("Launcher Build: '%s'", getBuild());
 		Util.log("Allocated %s Mb of RAM", Runtime.getRuntime().maxMemory() / (1024.0 * 1024));
 
 		try {
