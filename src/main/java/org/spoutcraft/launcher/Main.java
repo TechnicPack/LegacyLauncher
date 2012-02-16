@@ -158,7 +158,7 @@ public class Main {
 
 		Util.log("------------------------------------------");
 		Util.log("Launcher is starting....");
-		Util.log("Launcher Build: 0.5.3.2");
+		Util.log("Launcher Build: 0.5.3.3");
 		Util.log("Allocated %s Mb of RAM", Runtime.getRuntime().maxMemory() / (1024.0 * 1024));
 
 		try {

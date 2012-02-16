@@ -890,6 +890,8 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			LoginForm.updateDialog.dispose();
 			LoginForm.updateDialog = null;
 			setVisible(false);
+			Main.loginForm = null;
+
 			dispose();
 		} else if (result == LauncherFrame.ERROR_IN_LAUNCH) {
 			loginButton.setEnabled(true);

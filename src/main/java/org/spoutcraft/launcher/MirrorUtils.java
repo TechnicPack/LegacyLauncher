@@ -3,7 +3,7 @@ package org.spoutcraft.launcher;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,13 +29,47 @@ public class MirrorUtils {
 			Map<String, Integer> mirrors = getMirrors();
 			Set<Entry<String, Integer>> set = mirrors.entrySet();
 
-			ArrayList<String> goodMirrors = new ArrayList<String>(mirrors.size());
+			int total = 0;
 			Iterator<Entry<String, Integer>> iterator = set.iterator();
 			while (iterator.hasNext()) {
-				Entry<String, Integer> e = iterator.next();
-				String url = e.getKey();
-				String mirror = (!url.contains("github.com")) ? "http://" + e.getKey() + "/" + mirrorURI : "https://" + e.getKey() + "/" + mirrorURI;
-				if (isAddressReachable(mirror)) { return mirror; }
+				total += iterator.next().getValue();
+			}
+
+			Util.logi("Randoming between '1' and '%s'.", total);
+			int random = rand.nextInt(total);
+			Util.logi("Picked '%s'.", random);
+
+			int count = 0;
+			boolean isFinished = false;
+			iterator = set.iterator();
+			Entry<String, Integer> current = null;
+			while (!isFinished) {
+				while (iterator.hasNext()) {
+					current = iterator.next();
+					count += current.getValue();
+					String url = current.getKey();
+					Util.logi("Url '%s' brings Count to '%s' of '%s'", url, count, total);
+					if (count > random) {
+						Util.logi("Count is > Random '%s'", random);
+						String mirror = (!url.contains("github.com")) ? "http://" + url + "/" + mirrorURI : "https://" + url + "/" + mirrorURI;
+						if (isAddressReachable(mirror)) {
+							Util.logi("Url is addressible");
+							return mirror;
+						} else {
+							Util.logi("Url is NOT addressible.");
+							break;
+						}
+					}
+				}
+
+				if (set.size() == 1) {
+					return null;
+				} else {
+					total -= current.getValue();
+					random = rand.nextInt(total);
+					set.remove(current);
+					iterator = set.iterator();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -55,21 +89,31 @@ public class MirrorUtils {
 	}
 
 	public static boolean isAddressReachable(String url) {
+		URLConnection urlConnection = null;
 		try {
+			urlConnection = new URL(url).openConnection();
 			if (url.contains("https")) {
-				HttpsURLConnection urlConnect = (HttpsURLConnection) (new URL(url).openConnection());
+				HttpsURLConnection urlConnect = (HttpsURLConnection) urlConnection;
 				urlConnect.setInstanceFollowRedirects(false);
 				urlConnect.setRequestMethod("HEAD");
 				int responseCode = urlConnect.getResponseCode();
+				urlConnect.disconnect();
+				urlConnect = null;
 				return (responseCode == HttpURLConnection.HTTP_OK);
 			} else {
-				HttpURLConnection urlConnect = (HttpURLConnection) (new URL(url).openConnection());
+				HttpURLConnection urlConnect = (HttpURLConnection) urlConnection;
 				urlConnect.setInstanceFollowRedirects(false);
 				urlConnect.setRequestMethod("HEAD");
 				int responseCode = urlConnect.getResponseCode();
+				urlConnect.disconnect();
+				urlConnect = null;
 				return (responseCode == HttpURLConnection.HTTP_OK);
 			}
 		} catch (Exception e) {
+		} finally {
+			if (urlConnection != null) {
+				urlConnection = null;
+			}
 		}
 		return false;
 	}

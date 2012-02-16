@@ -21,6 +21,7 @@ import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.MD5Utils;
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.ModpackBuild;
+import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.async.Download;
 
 public class ModPackUpdater extends GameUpdater {
@@ -182,6 +183,7 @@ public class ModPackUpdater extends GameUpdater {
 					continue;
 				}
 				File file = new File(GameUpdater.modpackDir, entry.getName());
+				Util.log("Deleting '%s'", entry.getName());
 				if (file.exists()) {
 					// File from mod exists.. delete it
 					file.delete();
