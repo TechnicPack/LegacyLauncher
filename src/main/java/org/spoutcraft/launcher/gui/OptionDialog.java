@@ -45,6 +45,7 @@ import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.MinecraftYML;
 import org.spoutcraft.launcher.SettingsUtil;
+import org.spoutcraft.launcher.modpacks.InstalledModsYML;
 import org.spoutcraft.launcher.modpacks.ModPackYML;
 
 public class OptionDialog extends JDialog implements ActionListener {
@@ -195,6 +196,10 @@ public class OptionDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent evt) {
 		String id = evt.getActionCommand();
 		if (id.equals("OK")) {
+			if ((devBuilds.isSelected() && !SettingsUtil.isDevelopmentBuild()) || (recBuilds.isSelected() && !SettingsUtil.isRecommendedBuild())) {
+				cleanMods();
+			}
+
 			SettingsUtil.setDevelopmentBuild(devBuilds.isSelected());
 			SettingsUtil.setRecommendedBuild(recBuilds.isSelected());
 			// SettingsUtil.setClipboardAccess(clipboardCheckbox.isSelected());
@@ -211,17 +216,9 @@ public class OptionDialog extends JDialog implements ActionListener {
 			}
 
 			if (buildsCombo.isEnabled()) {
-				String build = null;
-				try {
-					String item = ((String) buildsCombo.getSelectedItem());
-					if (item.contains("|")) {
-						item = item.split("\\|")[0];
-					}
-					build = item.trim();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				String build = getSelectedBuildFromCombo();
 				if (build != null) {
+					cleanMods();
 					SettingsUtil.setSelectedBuild(build);
 				}
 			}
@@ -250,6 +247,26 @@ public class OptionDialog extends JDialog implements ActionListener {
 		} else if (id.equals(customBuilds.getText()) || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {
 			updateBuildsCombo();
 		}
+	}
+
+	private String getSelectedBuildFromCombo() {
+		String build = null;
+		try {
+			String item = ((String) buildsCombo.getSelectedItem());
+			if (item.contains("|")) {
+				item = item.split("\\|")[0];
+			}
+			build = item.trim();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return build;
+	}
+
+	private void cleanMods() {
+		File modsConfig = InstalledModsYML.getInstalledModsYmlFile();
+		if (modsConfig.exists()) modsConfig.delete();
+		FileUtils.cleanDirectory(GameUpdater.modsDir);
 	}
 
 	public void updateBuildsCombo() {

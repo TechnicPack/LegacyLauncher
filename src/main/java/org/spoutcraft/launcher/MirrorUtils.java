@@ -35,9 +35,9 @@ public class MirrorUtils {
 				total += iterator.next().getValue();
 			}
 
-			Util.logi("Randoming between '1' and '%s'.", total);
+			// Util.logi("Randoming between '1' and '%s'.", total);
 			int random = rand.nextInt(total);
-			Util.logi("Picked '%s'.", random);
+			// Util.logi("Picked '%s'.", random);
 
 			int count = 0;
 			boolean isFinished = false;
@@ -48,15 +48,16 @@ public class MirrorUtils {
 					current = iterator.next();
 					count += current.getValue();
 					String url = current.getKey();
-					Util.logi("Url '%s' brings Count to '%s' of '%s'", url, count, total);
+					// Util.logi("Url '%s' brings Count to '%s' of '%s'", url, count,
+					// total);
 					if (count > random) {
-						Util.logi("Count is > Random '%s'", random);
+						// Util.logi("Count is > Random '%s'", random);
 						String mirror = (!url.contains("github.com")) ? "http://" + url + "/" + mirrorURI : "https://" + url + "/" + mirrorURI;
 						if (isAddressReachable(mirror)) {
-							Util.logi("Url is addressible");
+							// Util.logi("Url is addressible");
 							return mirror;
 						} else {
-							Util.logi("Url is NOT addressible.");
+							// Util.logi("Url is NOT addressible.");
 							break;
 						}
 					}
