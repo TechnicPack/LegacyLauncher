@@ -17,7 +17,7 @@ import org.spoutcraft.launcher.async.DownloadListener;
 
 public class MirrorUtils {
 
-	public static final String[]	MIRRORS_URL	= { "https://raw.github.com/TechnicPack/Technic/master/mirrors.yml", "https://raw.github.com/icew01f/Technic/master/mirrors.yml", "http://technic.freeworldsgaming.com/mirrors.yml" };
+	public static final String[]	MIRRORS_URL	= { "http://git.technicpack.net/Technic/mirrors.yml", "https://raw.github.com/TechnicPack/Technic/master/mirrors.yml" };
 	public static File						mirrorsYML	= new File(GameUpdater.workDir, "mirrors.yml");
 	private static boolean				updated			= false;
 	private static final Random		rand				= new Random();
