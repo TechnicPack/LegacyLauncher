@@ -218,7 +218,9 @@ public class OptionDialog extends JDialog implements ActionListener {
 			if (buildsCombo.isEnabled()) {
 				String build = getSelectedBuildFromCombo();
 				if (build != null) {
-					cleanMods();
+					if (!build.equalsIgnoreCase(SettingsUtil.getSelectedBuild())) {
+						cleanMods();
+					}
 					SettingsUtil.setSelectedBuild(build);
 				}
 			}

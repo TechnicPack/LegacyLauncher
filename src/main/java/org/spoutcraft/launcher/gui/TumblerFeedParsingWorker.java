@@ -1,9 +1,11 @@
 package org.spoutcraft.launcher.gui;
 
+import java.awt.Desktop;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 
@@ -17,23 +19,24 @@ import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.Util;
 
 public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> implements PropertyChangeListener {
-	JTextPane				editorPane;
-	private String	username		= null;
-	boolean					isUpdating	= false;
+	JTextPane							editorPane;
+	private static String	username		= null;
+	boolean								isUpdating	= false;
 
 	public TumblerFeedParsingWorker(JTextPane editorPane) {
 		this.editorPane = editorPane;
 	}
 
-	public void setUser(String name) {
+	public static void setUser(String name) {
 		username = name;
+		// updatePage();
 	}
 
 	@Override
 	protected Object doInBackground() {
 		URL url = null;
 		try {
-			url = new URL("http://urcraft.com/technic/changelog/");
+			url = new URL("http://git.technicpack.net/Technic/");
 
 			if (MirrorUtils.isAddressReachable(url.toString())) {
 				editorPane.setVisible(false);
@@ -46,8 +49,12 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> implem
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						if (HyperlinkEvent.EventType.ACTIVATED == e.getEventType()) {
 							try {
-								editorPane.setPage(e.getURL());
+								if (Desktop.isDesktopSupported()) {
+									Desktop.getDesktop().browse(e.getURL().toURI());
+								}
 							} catch (IOException e1) {
+								e1.printStackTrace();
+							} catch (URISyntaxException e1) {
 								e1.printStackTrace();
 							}
 						}
@@ -86,14 +93,18 @@ public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> implem
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (!isUpdating && evt.getPropertyName().equals("page")) {
-			isUpdating = true;
-			// HTMLDocument htmlDocument = (HTMLDocument) evt.getNewValue();
-			String text = editorPane.getText();
-			text = text.replaceAll("@time_of_day", getTimeOfDay());
-			text = text.replaceAll("@username", getUsername());
-			editorPane.setText(text);
-			editorPane.setVisible(true);
-			isUpdating = false;
+			updatePage();
 		}
+	}
+
+	private void updatePage() {
+		isUpdating = true;
+		// HTMLDocument htmlDocument = (HTMLDocument) evt.getNewValue();
+		String text = editorPane.getText();
+		text = text.replaceAll("@time_of_day", getTimeOfDay());
+		text = text.replaceAll("@username", getUsername());
+		editorPane.setText(text);
+		editorPane.setVisible(true);
+		isUpdating = false;
 	}
 }

@@ -505,9 +505,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 						if (!password.isEmpty()) {
 							i++;
 							if (i == 1) {
-								if (tumblerFeed != null) {
-									tumblerFeed.setUser(user);
-								}
+								// if (tumblerFeed != null) {
+								TumblerFeedParsingWorker.setUser(user);
+								// }
 								if (!Main.isOffline) {
 									loginSkin1.setText(user);
 									loginSkin1.setVisible(true);
