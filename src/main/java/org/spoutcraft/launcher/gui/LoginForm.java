@@ -657,6 +657,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			protected Boolean doInBackground() {
 				progressBar.setVisible(true);
 				progressBar.setString("Connecting to www.minecraft.net...");
+				String password = pass.toString();
 				try {
 					values = MinecraftUtils.doLogin(user, pass, progressBar);
 					return true;
@@ -695,14 +696,13 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 								authFailed = true;
 							}
 						} else {
-							authFailed = !(pass.equals(info.password));
+							authFailed = !(password.equals(info.password));
 						}
 					}
 
 					if (authFailed) {
-						// JOptionPane.showMessageDialog(getParent(),
-						// "Unable to authenticate account with minecraft.net");
-						// } else {
+						JOptionPane.showMessageDialog(getParent(), "Unable to authenticate account with minecraft.net");
+					} else {
 						int result = JOptionPane.showConfirmDialog(getParent(), "Would you like to run in offline mode?", "Unable to Connect to Minecraft.net", JOptionPane.YES_NO_OPTION);
 						if (result == JOptionPane.YES_OPTION) {
 							values = new String[] { "0", "0", user, "0" };
