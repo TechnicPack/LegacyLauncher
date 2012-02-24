@@ -68,7 +68,8 @@ public class UpdateDialog extends JDialog implements ActionListener {
 		} else if (actionCommand.equals("No")) {
 			lf.runGame();
 		}
-		Main.loginForm.enableUI();
+		if (Main.loginForm != null)
+			Main.loginForm.enableUI();
 		this.setVisible(false);
 	}
 
