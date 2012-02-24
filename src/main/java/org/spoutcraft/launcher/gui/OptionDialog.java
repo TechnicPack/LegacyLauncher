@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
@@ -65,6 +66,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 	JButton											clearCache					= new JButton("Clear Cache");
 	JLabel											buildInfo						= new JLabel();
 	JComboBox										buildsCombo					= new JComboBox();
+	int[]												memValues						= new int[] { 1, 2, 3, 4, 6, 8, 10 };
 
 	/**
 	 * Create the dialog.
@@ -105,10 +107,15 @@ public class OptionDialog extends JDialog implements ActionListener {
 
 		memoryCombo.addItem("512 MB");
 		memoryCombo.addItem("1 GB");
-		memoryCombo.addItem("2 GB");
-		memoryCombo.addItem("4 GB");
-		memoryCombo.addItem("8 GB");
-		memoryCombo.addItem("16 GB");
+		memoryCombo.addItem("1536 MB");
+
+		String vmType = System.getProperty("sun.arch.data.model");
+		if (vmType != null && vmType.equals("64")) {
+			memoryCombo.addItem("2 GB");
+			memoryCombo.addItem("4 GB");
+			memoryCombo.addItem("8 GB");
+			memoryCombo.addItem("16 GB");
+		}
 
 		JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
 		JLabel lblPack = new JLabel("Select Mod Pack: ");
@@ -152,6 +159,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 				buttonPane.add(cancelButton);
 			}
 		}
+		latestLWJGLCheckbox.setEnabled(false);
 	}
 
 	public void reloadSettings() {
@@ -176,7 +184,13 @@ public class OptionDialog extends JDialog implements ActionListener {
 		backupCheckbox.setSelected(SettingsUtil.isWorldBackup());
 		retryLoginCheckbox.setSelected(SettingsUtil.getLoginTries() > 1);
 		latestLWJGLCheckbox.setSelected(SettingsUtil.isLatestLWJGL());
-		memoryCombo.setSelectedIndex(SettingsUtil.getMemorySelection());
+		latestLWJGLCheckbox.setSelected(false);
+
+		int memIndex = Arrays.binarySearch(memValues, SettingsUtil.getMemorySelection() / 512);
+		if (memIndex < 0 || memIndex > memoryCombo.getItemCount()) {
+			memIndex = 1;
+		}
+		memoryCombo.setSelectedIndex(memIndex);
 	}
 
 	public void updateBuildsList() {
@@ -206,8 +220,8 @@ public class OptionDialog extends JDialog implements ActionListener {
 			SettingsUtil.setWorldBackup(backupCheckbox.isSelected());
 			SettingsUtil.setLoginTries(retryLoginCheckbox.isSelected());
 
-			if (SettingsUtil.getMemorySelection() > 5) {
-				SettingsUtil.setMemorySelection(0);
+			if (SettingsUtil.getMemorySelection() > 6) {
+				SettingsUtil.setMemorySelection(1024);
 			}
 
 			if (latestLWJGLCheckbox.isSelected() != SettingsUtil.isLatestLWJGL()) {
@@ -229,10 +243,11 @@ public class OptionDialog extends JDialog implements ActionListener {
 			GameUpdater.copy(SettingsUtil.settingsFile, propFile);
 
 			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
-				SettingsUtil.setMemorySelection(memoryCombo.getSelectedIndex());
+				int memAllocated = memValues[memoryCombo.getSelectedIndex()] * 512;
+				SettingsUtil.setMemorySelection(memAllocated);
 				GameUpdater.copy(SettingsUtil.settingsFile, propFile);
-				int mem = 1 << 9 + memoryCombo.getSelectedIndex();
-				Main.reboot("-Xmx" + mem + "m");
+				// int mem = 1 << 9 + memoryCombo.getSelectedIndex();
+				Main.reboot("-Xmx" + memAllocated + "m");
 			}
 
 			this.setVisible(false);

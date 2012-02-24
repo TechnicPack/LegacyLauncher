@@ -38,7 +38,7 @@ import com.beust.jcommander.JCommander;
 public class Main {
 
 	static String[]					args_temp;
-	public static String		build			= "0.5.3.8";
+	public static String		build			= "0.5.3.9";
 	public static String		currentPack;
 	static File							recursion;
 	public static LoginForm	loginForm;
@@ -50,20 +50,21 @@ public class Main {
 
 	public static void reboot(String memory) {
 		try {
-			int memorySelection = SettingsUtil.getMemorySelection();
-			int mem = (1024) * memorySelection;
-			if (!System.getProperty("sun.arch.data.model").contains("64") && memorySelection > 1) {
+			int memoryAllocation = SettingsUtil.getMemorySelection();
+			// int mem = (512) * memorySelection;
+			String osType = System.getProperty("sun.arch.data.model");
+			if (osType != null && !osType.contains("64") && memoryAllocation > 1536) {
 				Util.log("32-bit Vm being used. Max memory is 1.5Gb");
-				mem = 1280;
+				memoryAllocation = 1536;
 			}
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
 			params.add("java"); // Linux/Mac/whatever
-			if (memorySelection > 1) params.add("-Xincgc");
+			if (memoryAllocation > 512) params.add("-Xincgc");
 			if (memory.contains("-Xmx")) {
 				params.add(memory);
 			} else {
-				params.add("-Xmx" + mem + "m");
+				params.add("-Xmx" + memoryAllocation + "m");
 			}
 
 			if (PlatformUtils.getPlatform() != PlatformUtils.OS.windows) {
@@ -133,12 +134,16 @@ public class Main {
 
 		if (relaunch) {
 			ls.close();
-			if (SettingsUtil.getMemorySelection() < 6) {
-				int mem = 1024 * SettingsUtil.getMemorySelection();
-				recursion.createNewFile();
-				if (isDebug()) System.exit(0);
-				else reboot("-Xmx" + mem + "m");
+			// if (SettingsUtil.getMemorySelection() < 6) {
+			int mem = SettingsUtil.getMemorySelection();
+			if (SettingsUtil.getMemorySelection() < 512) {
+				SettingsUtil.setMemorySelection(1024);
+				mem = 1024;
 			}
+			recursion.createNewFile();
+			if (isDebug()) System.exit(0);
+			else reboot("-Xmx" + mem + "m");
+			// }
 		}
 
 		if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
@@ -161,6 +166,13 @@ public class Main {
 		Util.log("Launcher Build: '%s'", getBuild());
 		Util.log("Allocated %s Mb of RAM", Runtime.getRuntime().maxMemory() / (1024.0 * 1024));
 
+		String javaVM = System.getProperty("java.runtime.version");
+		if (javaVM != null) Util.log("Java VM: '%s'", javaVM);
+		String osVersion = System.getProperty("os.version");
+		if (osVersion != null) Util.log("OS Version: '%s'", osVersion);
+		String osType = System.getProperty("sun.arch.data.model");
+		if (osType != null) Util.log("Is 64-bit: '%s'", osType.contains("64"));
+
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
@@ -175,10 +187,12 @@ public class Main {
 		if (GameUpdater.tempDir.exists()) FileUtils.cleanDirectory(GameUpdater.tempDir);
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
+		SettingsUtil.setLatestLWJGL(false);
 		loginForm = new LoginForm();
 		loginForm.setLocationByPlatform(true);
-		ls.close();
 		loginForm.setVisible(true);
+		ls.close();
+
 	}
 
 	private static String getBuild() {

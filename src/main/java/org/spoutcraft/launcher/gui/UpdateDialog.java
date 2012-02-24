@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
 
 public class UpdateDialog extends JDialog implements ActionListener {
@@ -67,6 +68,7 @@ public class UpdateDialog extends JDialog implements ActionListener {
 		} else if (actionCommand.equals("No")) {
 			lf.runGame();
 		}
+		Main.loginForm.enableUI();
 		this.setVisible(false);
 	}
 

@@ -396,7 +396,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				loginButton.setEnabled(true);
 				optionsButton.setEnabled(true);
 				setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
-				setTitle(String.format("Technic Launcher - (%s)", ModPackListYML.currentModPackLabel));
+				setTitle(String.format("Technic Launcher - %s - (%s)", Main.build, ModPackListYML.currentModPackLabel));
 				options.reloadSettings();
 				MinecraftYML.updateMinecraftYMLCache();
 				setModLoaderEnabled();
@@ -721,11 +721,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				loginButton.setEnabled(true);
-				optionsButton.setEnabled(true);
-				modsButton.setEnabled(true);
-				loginSkin1.setEnabled(true);
-				loginSkin2.setEnabled(true);
+				enableUI();
 				this.cancel(true);
 				return false;
 			}
@@ -851,11 +847,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(getParent(), "Update Failed!");
 					error = true;
-					loginButton.setEnabled(true);
-					optionsButton.setEnabled(true);
-					modsButton.setEnabled(true);
-					loginSkin1.setEnabled(true);
-					loginSkin2.setEnabled(true);
+					enableUI();
 					this.cancel(true);
 					return false;
 				}
@@ -868,6 +860,14 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			}
 		};
 		updateThread.execute();
+	}
+
+	public void enableUI() {
+		loginButton.setEnabled(true);
+		optionsButton.setEnabled(true);
+		modsButton.setEnabled(true);
+		loginSkin1.setEnabled(true);
+		loginSkin2.setEnabled(true);
 	}
 
 	private Cipher getCipher(int mode, String password) throws Exception {

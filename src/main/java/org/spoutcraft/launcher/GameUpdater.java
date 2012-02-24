@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -127,8 +129,9 @@ public class GameUpdater implements DownloadListener {
 
 		// Process other Downloads
 		mcCache = new File(cacheDir, "jinput.jar");
+		String md5 = (SettingsUtil.isLatestLWJGL()) ? MD5Utils.getMD5FromList("Libraries\\lwjgl\\jinput.jar") : jinputMD5;
 		if (!mcCache.exists() || !jinputMD5.equals(MD5Utils.getMD5(mcCache))) {
-			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar", binDir.getPath() + File.separator + "jinput.jar", "jinput.jar", jinputMD5, listener);
+			DownloadUtils.downloadFile(getNativesUrl() + "jinput.jar", binDir.getPath() + File.separator + "jinput.jar", "jinput.jar", md5, listener);
 		} else {
 			stateChanged("Copying jinput.jar from cache", 0);
 			copy(mcCache, new File(binDir, "jinput.jar"));
@@ -136,8 +139,9 @@ public class GameUpdater implements DownloadListener {
 		}
 
 		mcCache = new File(cacheDir, "lwjgl.jar");
+		md5 = (SettingsUtil.isLatestLWJGL()) ? MD5Utils.getMD5FromList("Libraries\\lwjgl\\lwjgl.jar") : lwjglMD5;
 		if (!mcCache.exists() || !lwjglMD5.equals(MD5Utils.getMD5(mcCache))) {
-			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl.jar", binDir.getPath() + File.separator + "lwjgl.jar", "lwjgl.jar", lwjglMD5, listener);
+			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl.jar", binDir.getPath() + File.separator + "lwjgl.jar", "lwjgl.jar", md5, listener);
 		} else {
 			stateChanged("Copying lwjgl.jar from cache", 0);
 			copy(mcCache, new File(binDir, "lwjgl.jar"));
@@ -145,8 +149,9 @@ public class GameUpdater implements DownloadListener {
 		}
 
 		mcCache = new File(cacheDir, "lwjgl_util.jar");
+		md5 = (SettingsUtil.isLatestLWJGL()) ? MD5Utils.getMD5FromList("Libraries\\lwjgl\\lwjgl_util.jar") : lwjgl_utilMD5;
 		if (!mcCache.exists() || !lwjgl_utilMD5.equals(MD5Utils.getMD5(mcCache))) {
-			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl_util.jar", binDir.getPath() + File.separator + "lwjgl_util.jar", "lwjgl_util.jar", lwjgl_utilMD5, listener);
+			DownloadUtils.downloadFile(getNativesUrl() + "lwjgl_util.jar", binDir.getPath() + File.separator + "lwjgl_util.jar", "lwjgl_util.jar", md5, listener);
 		} else {
 			stateChanged("Copying lwjgl_util.jar from cache", 0);
 			copy(mcCache, new File(binDir, "lwjgl_util.jar"));
@@ -430,8 +435,9 @@ public class GameUpdater implements DownloadListener {
 		}
 
 		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
+		String date = new StringBuilder(new SimpleDateFormat("yyyy-MM-dd-kk:mm.ss").format(new Date())).toString();
 
-		File zip = new File(GameUpdater.backupDir, build.getBuild() + "-backup.zip");
+		File zip = new File(GameUpdater.backupDir, date + "-backup.zip");
 
 		if (!zip.exists()) {
 			String rootDir = modpackDir + File.separator;

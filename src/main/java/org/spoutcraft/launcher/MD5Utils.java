@@ -86,7 +86,7 @@ public class MD5Utils {
 		Scanner scanner = new Scanner(CHECKSUM_FILE).useDelimiter("\\||\n");
 		while (scanner.hasNext()) {
 			String md5 = scanner.next().toLowerCase();
-			String path = scanner.next().replace("\r", "");
+			String path = scanner.next().replace("\r", "").replace('/', '\\');
 			md5Map.put(path, md5);
 			scanner.nextLine();
 		}
@@ -108,7 +108,10 @@ public class MD5Utils {
 		if (!file.exists()) { return false; }
 		String fileMD5 = getMD5(file);
 		String storedMD5 = getMD5FromList(md5Path);
-		boolean doesMD5Match = storedMD5.equalsIgnoreCase(fileMD5);
+		if (storedMD5 == null) {
+			Util.log("MD5 hash not found for '%s'", md5Path);
+		}
+		boolean doesMD5Match = (storedMD5 == null) ? false : storedMD5.equalsIgnoreCase(fileMD5);
 		if (!doesMD5Match) {
 			Util.log("[MD5 Mismatch] File '%s' has md5 of '%s' instead of '%s'", file, fileMD5, storedMD5);
 		}
