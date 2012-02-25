@@ -110,7 +110,10 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		LoadingScreen ls = new LoadingScreen();
-		if (!isDebug()) ls.setVisible(true);
+		if (!isDebug()) {
+			ls.setVisible(true);
+			build = Util.getBuild();
+		}
 		Options options = new Options();
 		try {
 			new JCommander(options, args);

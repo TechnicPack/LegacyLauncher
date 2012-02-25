@@ -26,15 +26,15 @@ public class Options {
 	@Parameter
 	private final List<String>	parameters	= Lists.newArrayList();
 	@Parameter(names = { "-username", "-user", "-u" }, description = "Minecraft Username")
-	private final String				user				= null;
+	private String							user				= null;
 	@Parameter(names = { "-password", "-pass", "-p" }, description = "Minecraft Password")
-	private final String				pass				= null;
+	private String							pass				= null;
 	@Parameter(names = { "-server", "-host", "-join", "-j", "-h", "-s" }, description = "Minecraft Server to join")
-	private final String				server			= null;
+	private String							server			= null;
 	@Parameter(names = { "-portable", "--portable", "-pmode", "-portable_mode", "-pm" }, description = "Portable Mode")
-	private final boolean				portable		= false;
+	private boolean							portable		= false;
 	@Parameter(names = { "-safe", "-smode", "-safe_mode", "-sm" }, description = "Safe Mode - Prevents Addons from being loaded")
-	private final boolean				safe_mode		= false;
+	private boolean							safe_mode		= false;
 
 	public List<String> getParameters() {
 		return parameters;

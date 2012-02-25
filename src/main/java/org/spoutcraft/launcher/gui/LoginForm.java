@@ -68,7 +68,6 @@ import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.spoutcraft.launcher.FileUtils;
 import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.LibrariesYML;
 import org.spoutcraft.launcher.MD5Utils;
@@ -822,7 +821,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 			@Override
 			protected void done() {
 				progressBar.setVisible(false);
-				FileUtils.cleanDirectory(GameUpdater.tempDir);
+				// FileUtils.cleanDirectory(GameUpdater.tempDir);
 				if (!error) {
 					runGame();
 				}

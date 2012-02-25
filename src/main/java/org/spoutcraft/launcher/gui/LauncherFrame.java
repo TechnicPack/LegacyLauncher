@@ -95,7 +95,8 @@ public class LauncherFrame extends Frame implements WindowListener {
 		minecraft.addParameter("downloadticket", downloadTicket);
 		minecraft.addParameter("mppass", mcpass);
 		minecraft.addParameter("spoutcraftlauncher", "true");
-		//minecraft.addParameter("stand-alone", String.valueOf(MinecraftUtils.getOptions().isPortable()));
+		minecraft.addParameter("stand-alone", String.valueOf(MinecraftUtils.getOptions().isPortable()));
+		minecraft.addParameter("portable", String.valueOf(MinecraftUtils.getOptions().isPortable()));
 		minecraft.addParameter("directory", launcherPath);
 		Util.log("Loading Launcher from '%s'", launcherPath);
 		if (MinecraftUtils.getOptions().getServer() != null) {

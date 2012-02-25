@@ -242,8 +242,14 @@ public class OptionDialog extends JDialog implements ActionListener {
 			File propFile = new File(GameUpdater.modpackDir, "launcher.properties");
 			GameUpdater.copy(SettingsUtil.settingsFile, propFile);
 
-			if (memoryCombo.getSelectedIndex() != SettingsUtil.getMemorySelection()) {
-				int memAllocated = memValues[memoryCombo.getSelectedIndex()] * 512;
+			if (SettingsUtil.getMemorySelection() < 128) {
+				SettingsUtil.setMemorySelection(1024);
+			}
+
+			int selectedIndex = memoryCombo.getSelectedIndex();
+			int selectedMemory = memValues[selectedIndex] * 512;
+			if (selectedMemory != SettingsUtil.getMemorySelection()) {
+				int memAllocated = selectedMemory * 512;
 				SettingsUtil.setMemorySelection(memAllocated);
 				GameUpdater.copy(SettingsUtil.settingsFile, propFile);
 				// int mem = 1 << 9 + memoryCombo.getSelectedIndex();

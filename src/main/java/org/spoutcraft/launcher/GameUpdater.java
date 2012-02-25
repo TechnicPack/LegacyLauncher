@@ -343,43 +343,43 @@ public class GameUpdater implements DownloadListener {
 		libDir.mkdir();
 
 		Map<String, Object> libraries = build.getLibraries();
-		Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-		while (i.hasNext()) {
-			Entry<String, Object> lib = i.next();
-			String version = String.valueOf(lib.getValue());
-			String name = lib.getKey() + "-" + version;
+		if (libraries != null) {
+			Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<String, Object> lib = i.next();
+				String version = String.valueOf(lib.getValue());
+				String name = lib.getKey() + "-" + version;
 
-			File libraryFile = new File(libDir, lib.getKey() + ".jar");
-			String MD5 = LibrariesYML.getMD5(lib.getKey(), version);
+				File libraryFile = new File(libDir, lib.getKey() + ".jar");
+				String MD5 = LibrariesYML.getMD5(lib.getKey(), version);
 
-			if (libraryFile.exists()) {
-				String computedMD5 = MD5Utils.getMD5(libraryFile);
-				if (!computedMD5.equals(MD5)) {
-					libraryFile.delete();
+				if (libraryFile.exists()) {
+					String computedMD5 = MD5Utils.getMD5(libraryFile);
+					if (!computedMD5.equals(MD5)) {
+						libraryFile.delete();
+					}
+				}
+
+				File cacheFile = new File(cacheDir, name.replace("-" + version, "") + ".jar");
+				if (cacheFile.exists() && MD5.equalsIgnoreCase(MD5Utils.getMD5(cacheFile))) {
+					stateChanged("Copying " + name + " from cache", 0);
+					copy(cacheFile, libraryFile);
+					stateChanged("Copied " + name + " from cache", 100);
+				}
+
+				if (!libraryFile.exists()) {
+					String mirrorURL = "Libraries/" + lib.getKey() + "/" + name + ".jar";
+					String fallbackURL = "http://spouty.org/Libraries/" + lib.getKey() + "/" + name + ".jar";
+					String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
+					Download download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
 				}
 			}
-
-			File cacheFile = new File(cacheDir, name.replace("-" + version, "") + ".jar");
-			if (cacheFile.exists() && MD5.equalsIgnoreCase(MD5Utils.getMD5(cacheFile))) {
-				stateChanged("Copying " + name + " from cache", 0);
-				copy(cacheFile, libraryFile);
-				stateChanged("Copied " + name + " from cache", 100);
-			}
-
-			if (!libraryFile.exists()) {
-				String mirrorURL = "Libraries/" + lib.getKey() + "/" + name + ".jar";
-				String fallbackURL = "http://spouty.org/Libraries/" + lib.getKey() + "/" + name + ".jar";
-				String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
-				Download download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
-			}
 		}
-
 		build.install();
 
 		// TODO: remove this once this build has been out for a few weeks
 		File spoutcraftVersion = new File(GameUpdater.workDir, "versionLauncher");
 		spoutcraftVersion.delete();
-
 	}
 
 	public boolean isSpoutcraftUpdateAvailable() {
@@ -394,11 +394,13 @@ public class GameUpdater implements DownloadListener {
 		libDir.mkdir();
 
 		Map<String, Object> libraries = build.getLibraries();
-		Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-		while (i.hasNext()) {
-			Entry<String, Object> lib = i.next();
-			File libraryFile = new File(libDir, lib.getKey() + ".jar");
-			if (!libraryFile.exists()) { return true; }
+		if (libraries != null) {
+			Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<String, Object> lib = i.next();
+				File libraryFile = new File(libDir, lib.getKey() + ".jar");
+				if (!libraryFile.exists()) { return true; }
+			}
 		}
 		return false;
 	}

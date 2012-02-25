@@ -44,15 +44,21 @@ public class Launcher {
 		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
 		Map<String, Object> libraries = build.getLibraries();
 
-		File[] files = new File[4 + libraries.size()];
+		int librarycount = 4;
+		if (libraries != null) {
+			librarycount += libraries.size();
+		}
+		File[] files = new File[librarycount];
 
 		int index = 0;
-		Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-		while (i.hasNext()) {
-			Entry<String, Object> lib = i.next();
-			File libraryFile = new File(mcBinFolder, "lib" + File.separator + lib.getKey() + ".jar");
-			files[index] = libraryFile;
-			index++;
+		if (libraries != null) {
+			Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<String, Object> lib = i.next();
+				File libraryFile = new File(mcBinFolder, "lib" + File.separator + lib.getKey() + ".jar");
+				files[index] = libraryFile;
+				index++;
+			}
 		}
 
 		URL urls[] = new URL[5];
