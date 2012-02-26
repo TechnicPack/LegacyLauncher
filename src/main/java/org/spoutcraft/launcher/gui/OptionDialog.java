@@ -249,11 +249,10 @@ public class OptionDialog extends JDialog implements ActionListener {
 			int selectedIndex = memoryCombo.getSelectedIndex();
 			int selectedMemory = memValues[selectedIndex] * 512;
 			if (selectedMemory != SettingsUtil.getMemorySelection()) {
-				int memAllocated = selectedMemory * 512;
-				SettingsUtil.setMemorySelection(memAllocated);
+				SettingsUtil.setMemorySelection(selectedMemory);
 				GameUpdater.copy(SettingsUtil.settingsFile, propFile);
 				// int mem = 1 << 9 + memoryCombo.getSelectedIndex();
-				Main.reboot("-Xmx" + memAllocated + "m");
+				Main.reboot("-Xmx" + selectedMemory + "m");
 			}
 
 			this.setVisible(false);

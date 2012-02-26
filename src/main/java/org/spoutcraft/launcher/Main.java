@@ -60,7 +60,7 @@ public class Main {
 			String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			ArrayList<String> params = new ArrayList<String>();
 			params.add("java"); // Linux/Mac/whatever
-			if (memoryAllocation > 512) params.add("-Xincgc");
+			// if (memoryAllocation > 512) params.add("-Xincgc");
 			if (memory.contains("-Xmx")) {
 				params.add(memory);
 			} else {
