@@ -89,6 +89,10 @@ public class ModPackListYML {
 		Map<String, String> modPackMap = getModPacks();
 		setModPack(SettingsUtil.getModPackSelection(), modPackMap.get(SettingsUtil.getModPackSelection()), false);
 		File propFile = new File(GameUpdater.modpackDir, "launcher.properties");
+		if (!ORIGINAL_PROPERTIES.exists()) {
+			GameUpdater.copy(SettingsUtil.settingsFile, ORIGINAL_PROPERTIES);
+		}
+
 		if (!propFile.exists()) {
 			GameUpdater.copy(ORIGINAL_PROPERTIES, SettingsUtil.settingsFile);
 			SettingsUtil.reload();

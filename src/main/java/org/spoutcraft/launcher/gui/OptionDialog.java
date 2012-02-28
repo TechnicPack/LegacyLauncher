@@ -220,7 +220,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 			SettingsUtil.setWorldBackup(backupCheckbox.isSelected());
 			SettingsUtil.setLoginTries(retryLoginCheckbox.isSelected());
 
-			if (SettingsUtil.getMemorySelection() > 6) {
+			if (SettingsUtil.getMemorySelection() > (memValues[memValues.length - 1] * 512)) {
 				SettingsUtil.setMemorySelection(1024);
 			}
 

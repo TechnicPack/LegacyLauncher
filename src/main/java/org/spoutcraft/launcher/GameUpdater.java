@@ -437,7 +437,7 @@ public class GameUpdater implements DownloadListener {
 		}
 
 		ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
-		String date = new StringBuilder(new SimpleDateFormat("yyyy-MM-dd-kk:mm.ss").format(new Date())).toString();
+		String date = new StringBuilder(new SimpleDateFormat("yyyy-MM-dd-kk.mm.ss").format(new Date())).toString();
 
 		File zip = new File(GameUpdater.backupDir, date + "-backup.zip");
 
