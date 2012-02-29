@@ -55,12 +55,24 @@ public class ModpackBuild {
 	}
 
 	public String getPatchURL() {
+		// String mirrorURL = "Patches/Minecraft/minecraft_";
+		// mirrorURL += getLatestMinecraftVersion();
+		// mirrorURL += "-" + getMinecraftVersion() + ".patch";
+		// String fallbackURL =
+		// "http://spout.thomasc.co.uk/Patches/Minecraft/minecraft_";
+		// fallbackURL += getLatestMinecraftVersion();
+		// fallbackURL += "-" + getMinecraftVersion() + ".patch";
+		// return MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, listener);
+		return getPatchURL(getLatestMinecraftVersion(), getMinecraftVersion());
+	}
+
+	public String getPatchURL(String oldVersion, String newVersion) {
 		String mirrorURL = "Patches/Minecraft/minecraft_";
-		mirrorURL += getLatestMinecraftVersion();
-		mirrorURL += "-" + getMinecraftVersion() + ".patch";
+		mirrorURL += oldVersion;
+		mirrorURL += "-" + newVersion + ".patch";
 		String fallbackURL = "http://spout.thomasc.co.uk/Patches/Minecraft/minecraft_";
-		fallbackURL += getLatestMinecraftVersion();
-		fallbackURL += "-" + getMinecraftVersion() + ".patch";
+		fallbackURL += oldVersion;
+		fallbackURL += "-" + newVersion + ".patch";
 		return MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, listener);
 	}
 

@@ -54,6 +54,16 @@ public class MD5Utils {
 		return null;
 	}
 
+	public static String getMinecraftMD5(String md5Hash) {
+		Configuration config = MinecraftYML.getMinecraftYML();
+		Map<String, Map<String, String>> builds = (Map<String, Map<String, String>>) config.getProperty("versions");
+		for (String version : builds.keySet()) {
+			String minecraftMD5 = builds.get(version).get("minecraft");
+			if (minecraftMD5.equalsIgnoreCase(md5Hash)) { return version; }
+		}
+		return null;
+	}
+
 	public static void updateMD5Cache() {
 		if (!updated && !Main.isOffline) {
 			updated = true;
