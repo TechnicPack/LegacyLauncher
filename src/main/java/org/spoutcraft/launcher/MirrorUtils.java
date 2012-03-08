@@ -88,8 +88,8 @@ public class MirrorUtils {
 			urlConnection = new URL(url).openConnection();
 			if (url.contains("https")) {
 				HttpsURLConnection urlConnect = (HttpsURLConnection) urlConnection;
-				urlConnect.setConnectTimeout(5);
-				urlConnect.setReadTimeout(30);
+				urlConnect.setConnectTimeout(5000);
+				urlConnect.setReadTimeout(30000);
 				urlConnect.setInstanceFollowRedirects(false);
 				urlConnect.setRequestMethod("HEAD");
 				int responseCode = urlConnect.getResponseCode();
@@ -98,8 +98,8 @@ public class MirrorUtils {
 				return (responseCode == HttpURLConnection.HTTP_OK);
 			} else {
 				HttpURLConnection urlConnect = (HttpURLConnection) urlConnection;
-				urlConnect.setConnectTimeout(5);
-				urlConnect.setReadTimeout(30);
+				urlConnect.setConnectTimeout(5000);
+				urlConnect.setReadTimeout(30000);
 				urlConnect.setInstanceFollowRedirects(false);
 				urlConnect.setRequestMethod("HEAD");
 				int responseCode = urlConnect.getResponseCode();
