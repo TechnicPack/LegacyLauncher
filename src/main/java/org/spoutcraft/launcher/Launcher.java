@@ -32,6 +32,9 @@ import org.spoutcraft.launcher.exception.UnknownMinecraftException;
 
 public class Launcher {
 
+	public static Class<?>	mcClass	= null, appletClass = null;
+	public static Field			mcField	= null;
+
 	@SuppressWarnings("rawtypes")
 	public static Applet getMinecraftApplet() throws CorruptedMinecraftJarException, MinecraftVerifyException {
 
@@ -84,8 +87,11 @@ public class Launcher {
 			System.setProperty("org.lwjgl.librarypath", nativesPath);
 			System.setProperty("net.java.games.input.librarypath", nativesPath);
 
-			Class minecraftClass = classLoader.loadClass("net.minecraft.client.MinecraftApplet");
-			return (Applet) minecraftClass.newInstance();
+			appletClass = classLoader.loadClass("net.minecraft.client.MinecraftApplet");
+			mcClass = classLoader.loadClass("net.minecraft.client.Minecraft");
+			mcField = appletClass.getDeclaredFields()[1];
+
+			return (Applet) appletClass.newInstance();
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 			return null;

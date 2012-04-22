@@ -21,6 +21,7 @@ import java.applet.AppletStub;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -107,12 +108,22 @@ public class MinecraftAppletEnglober extends Applet implements AppletStub {
 	public void init() {
 		if (minecraftApplet != null) {
 			minecraftApplet.init();
+
 		}
 	}
 
 	@Override
 	public void start() {
 		if (minecraftApplet != null) {
+			try {
+				Launcher.mcField.setAccessible(true);
+				Object mcInstance = Launcher.mcField.get(minecraftApplet);
+				Field quitField = Launcher.mcClass.getDeclaredField("n");
+				Object quitInstance = quitField.get(mcInstance);
+				quitField.setBoolean(mcInstance, Boolean.FALSE);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			minecraftApplet.start();
 			FileUtils.cleanDirectory(GameUpdater.tempDir);
 			active = true;
