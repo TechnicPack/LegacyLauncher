@@ -422,6 +422,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 		}
 
 		fileName = fileName.replace(workingDir, "");
+		if (fileName.contains("?")) {
+			fileName = fileName.substring(0, fileName.indexOf("?"));
+		}
 
 		if (fileName.length() > 60) {
 			fileName = fileName.substring(0, 60) + "...";

@@ -50,7 +50,7 @@ public class LauncherFrame extends Frame implements WindowListener {
 		super.setVisible(true);
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation((dim.width - 870) / 2, (dim.height - 518) / 2);
-		this.setSize(new Dimension(870, 518));
+		this.setSize(new Dimension(871, 519));
 		this.setResizable(true);
 		this.addWindowListener(this);
 
