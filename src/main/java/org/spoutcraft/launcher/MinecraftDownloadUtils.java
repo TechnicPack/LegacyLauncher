@@ -57,6 +57,7 @@ public class MinecraftDownloadUtils {
 						listener.stateChanged(String.format("Patched Minecraft to '%s'.", requiredMinecraftVersion), 100F);
 						String currentMinecraftMD5 = MD5Utils.getMD5(FileType.minecraft, requiredMinecraftVersion);
 						resultMD5 = MD5Utils.getMD5(patchedMinecraft);
+						Util.log("Comapring new jar md5 '%s' to stored md5 '%s'.", resultMD5, currentMinecraftMD5);
 
 						if (currentMinecraftMD5.equals(resultMD5)) {
 							outputFile = download.getOutFile();
