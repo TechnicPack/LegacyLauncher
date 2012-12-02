@@ -55,7 +55,7 @@ public class MinecraftDownloadUtils {
 
 	public static boolean downloadMinecraftVersion(String requiredMinecraftVersion, DownloadListener listener) {
 		String latestCached = MinecraftYML.getLatestCachedMinecraft();
-		if (MinecraftYML.compareVersions(requiredMinecraftVersion, latestCached) > 0)
+		if (latestCached == null || MinecraftYML.compareVersions(requiredMinecraftVersion, latestCached) > 0)
 			return false;
 
 		for (String cachedVersion : MinecraftYML.getCachedMinecraftVersions()) {
