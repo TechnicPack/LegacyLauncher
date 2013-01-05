@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -38,7 +39,7 @@ import com.beust.jcommander.JCommander;
 public class Main {
 
 	static String[]					args_temp;
-	public static String		build			= "1.0.3.4";
+	public static String		build			= "1.0.4.0";
 	public static String		currentPack;
 	static File							recursion;
 	public static LoginForm	loginForm;

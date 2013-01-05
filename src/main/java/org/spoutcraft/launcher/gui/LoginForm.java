@@ -23,6 +23,7 @@ import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,7 +52,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -65,6 +65,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -249,14 +251,19 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
 
 		editorPane.setEditable(false);
 		editorPane.setOpaque(false);
+		editorPane.setBackground(new Color(255, 255, 255, 0));
+		//editorPane.setBorder(null);
+		//editorPane.setMargin(new Insets(0,0,0,0));
+		editorPane.setFocusable(false);
 
 		JLabel trans2;
 
 		JScrollPane scrollPane = new JScrollPane(editorPane);
 		scrollPane.setBounds(473, 11, 372, 340);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		scrollPane.setBorder(null);
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
+		scrollPane.getViewport().setBorder(null);
 
 		editorPane.setCaretPosition(0);
 		trans2 = new JLabel();

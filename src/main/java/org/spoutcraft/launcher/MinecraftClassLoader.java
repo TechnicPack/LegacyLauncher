@@ -66,6 +66,9 @@ public class MinecraftClassLoader extends URLClassLoader {
 
 	private Class<?> findClassInjar(String name, File file) throws ClassNotFoundException {
 		try {
+			if (!file.canRead()) {
+				Util.log("Not allowed to open '%s'!.", file.getName());
+			}
 			JarFile jar = new JarFile(file);
 			JarEntry entry = jar.getJarEntry(name.replace(".", "/") + ".class");
 			if (entry != null) {
@@ -83,6 +86,7 @@ public class MinecraftClassLoader extends URLClassLoader {
 				return result;
 			}
 		} catch (Exception e) {
+			Util.log("Errpr opening '%s'.", file.getName());
 			e.printStackTrace();
 		}
 		return null;
