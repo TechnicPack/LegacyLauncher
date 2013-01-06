@@ -1,6 +1,6 @@
 /*
  * This file is part of Spoutcraft Launcher (http://wiki.getspout.org/).
- * 
+ *
  * Spoutcraft Launcher is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,18 +31,26 @@ import java.util.jar.JarFile;
 public class MinecraftClassLoader extends URLClassLoader {
   private final HashMap<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>(1000);
   private File                            spoutcraft    = null;
+  private File                            custom    	= null;
   private final File[]                    libraries;
 
-  public MinecraftClassLoader(URL[] urls, ClassLoader parent, File spoutcraft, File[] libraries) {
+  public MinecraftClassLoader(URL[] urls, ClassLoader parent, File spoutcraft, File custom, File[] libraries) {
     super(urls, parent);
     this.spoutcraft = spoutcraft;
     this.libraries = libraries;
+    this.custom = custom;
     for (File f : libraries) {
       try {
         this.addURL(f.toURI().toURL());
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
+    }
+    try {
+    	this.addURL(custom.toURI().toURL());
+    }
+    catch(MalformedURLException e) {
+    	e.printStackTrace();
     }
   }
 
@@ -59,6 +67,11 @@ public class MinecraftClassLoader extends URLClassLoader {
     result = findClassInjar(name, spoutcraft);
     if (result != null) {
       return result;
+    }
+
+    result = findClassInjar(name, custom);
+    if (result != null) {
+    	return result;
     }
 
     for (File file : libraries) {

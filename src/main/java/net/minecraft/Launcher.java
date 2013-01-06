@@ -1,6 +1,6 @@
 /*
  * This file is part of Spoutcraft Launcher (http://wiki.getspout.org/).
- * 
+ *
  * Spoutcraft Launcher is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +33,7 @@ import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.LauncherController;
 
 /**
- * 
+ *
  * @author creadri
  */
 public class Launcher extends Applet implements AppletStub {
@@ -122,15 +122,6 @@ public class Launcher extends Applet implements AppletStub {
   @Override
   public void start() {
     if (minecraftApplet != null) {
-      try {
-        LauncherController.mcField.setAccessible(true);
-        Object mcInstance = LauncherController.mcField.get(minecraftApplet);
-        Field quitField = LauncherController.mcClass.getDeclaredField("n");
-        Object quitInstance = quitField.get(mcInstance);
-        quitField.setBoolean(mcInstance, Boolean.FALSE);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
       minecraftApplet.start();
       FileUtils.cleanDirectory(GameUpdater.tempDir);
       active = true;
