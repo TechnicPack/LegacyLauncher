@@ -12,44 +12,49 @@ import java.io.InputStream;
  */
 public class Util {
 
-	/**
-	 * Equiv of C library memcmp().
-	 * 
-	 * @param s1
-	 * @param s1offset
-	 * @param s2
-	 * @param n
-	 * @return
-	 */
-	public final static int memcmp(byte[] s1, int s1offset, byte[] s2, int s2offset) {
+  /**
+   * Equiv of C library memcmp().
+   * 
+   * @param s1
+   * @param s1offset
+   * @param s2
+   * @param n
+   * @return
+   */
+  public final static int memcmp(byte[] s1, int s1offset, byte[] s2,
+      int s2offset) {
 
-		int n = s1.length - s1offset;
+    int n = s1.length - s1offset;
 
-		if (n > (s2.length - s2offset)) {
-			n = s2.length - s2offset;
-		}
-		for (int i = 0; i < n; i++) {
-			if (s1[i + s1offset] != s2[i + s2offset]) { return s1[i + s1offset] < s2[i + s2offset] ? -1 : 1; }
-		}
+    if (n > (s2.length - s2offset)) {
+      n = s2.length - s2offset;
+    }
+    for (int i = 0; i < n; i++) {
+      if (s1[i + s1offset] != s2[i + s2offset]) {
+        return s1[i + s1offset] < s2[i + s2offset] ? -1 : 1;
+      }
+    }
 
-		return 0;
-	}
+    return 0;
+  }
 
-	public static final boolean readFromStream(InputStream in, byte[] buf, int offset, int len) throws IOException {
+  public static final boolean readFromStream(InputStream in, byte[] buf,
+      int offset, int len) throws IOException {
 
-		int totalBytesRead = 0;
-		int nbytes;
+    int totalBytesRead = 0;
+    int nbytes;
 
-		while (totalBytesRead < len) {
-			nbytes = in.read(buf, offset + totalBytesRead, len - totalBytesRead);
-			if (nbytes < 0) {
-				System.err.println("readFromStream(): returning prematurely. Read " + totalBytesRead + " bytes");
-				return false;
-			}
-			totalBytesRead += nbytes;
-		}
+    while (totalBytesRead < len) {
+      nbytes = in.read(buf, offset + totalBytesRead, len - totalBytesRead);
+      if (nbytes < 0) {
+        System.err.println("readFromStream(): returning prematurely. Read "
+            + totalBytesRead + " bytes");
+        return false;
+      }
+      totalBytesRead += nbytes;
+    }
 
-		return true;
-	}
+    return true;
+  }
 
 }

@@ -14,95 +14,97 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class LoadingScreen extends JDialog {
-	public JPanel			contentPane;
-	public JPanel			closePanel;
-	public JPanel			main;
-	private ImageIcon	closeNormal;
-	private JLabel		closeLabel;
+  public JPanel     contentPane;
+  public JPanel     closePanel;
+  public JPanel     main;
+  private ImageIcon closeNormal;
+  private JLabel    closeLabel;
 
-	public LoadingScreen() {
-		initialize();
-		showWindow();
-	}
+  public LoadingScreen() {
+    initialize();
+    showWindow();
+  }
 
-	private void initialize() {
-		// don't show a frame or title bar
-		setUndecorated(true);
-		setBounds(0, 0, 732, 224);
+  private void initialize() {
+    // don't show a frame or title bar
+    setUndecorated(true);
+    setBounds(0, 0, 732, 224);
 
-		// Create JPanel and set it as the content pane
-		contentPane = new JPanel();
-		setContentPane(contentPane);
+    // Create JPanel and set it as the content pane
+    contentPane = new JPanel();
+    setContentPane(contentPane);
 
-		// If main has not already been created, create it.
-		// Explained later
-		if (main == null) {
-			main = new JPanel();
-		}
+    // If main has not already been created, create it.
+    // Explained later
+    if (main == null) {
+      main = new JPanel();
+    }
 
-		// Create panel for close button
-		closePanel = new JPanel(new BorderLayout());
-	}
+    // Create panel for close button
+    closePanel = new JPanel(new BorderLayout());
+  }
 
-	@Override
-	public JPanel getContentPane() {
-		return main;
-	}
+  @Override
+  public JPanel getContentPane() {
+    return main;
+  }
 
-	@Override
-	public Component add(Component comp) {
-		return main.add(comp);
-	}
+  @Override
+  public Component add(Component comp) {
+    return main.add(comp);
+  }
 
-	@Override
-	public void setLayout(LayoutManager manager) {
-		if (main == null) {
-			main = new JPanel();
-			main.setLayout(new FlowLayout());
-		} else {
-			main.setLayout(manager);
-		}
+  @Override
+  public void setLayout(LayoutManager manager) {
+    if (main == null) {
+      main = new JPanel();
+      main.setLayout(new FlowLayout());
+    } else {
+      main.setLayout(manager);
+    }
 
-		if (!(getLayout() instanceof BorderLayout)) {
-			super.setRootPaneCheckingEnabled(false);
-			super.setLayout(new BorderLayout());
-			super.setRootPane(super.getRootPane());
-			super.setRootPaneCheckingEnabled(true);
-		}
-	}
+    if (!(getLayout() instanceof BorderLayout)) {
+      super.setRootPaneCheckingEnabled(false);
+      super.setLayout(new BorderLayout());
+      super.setRootPane(super.getRootPane());
+      super.setRootPaneCheckingEnabled(true);
+    }
+  }
 
-	private void showWindow() {
-		// If not set, default to FlowLayout
-		if (main.getLayout() == null) {
-			setLayout(new FlowLayout());
-		}
+  private void showWindow() {
+    // If not set, default to FlowLayout
+    if (main.getLayout() == null) {
+      setLayout(new FlowLayout());
+    }
 
-		// close "button" - show this image by default
-		closeNormal = new ImageIcon(getClass().getResource("/org/spoutcraft/launcher/splash_logo.png"));
-		closeLabel = new JLabel(closeNormal);
+    // close "button" - show this image by default
+    closeNormal = new ImageIcon(getClass().getResource(
+        "/org/spoutcraft/launcher/splash_logo.png"));
+    closeLabel = new JLabel(closeNormal);
 
-		// Put the label with the image on the far right
-		closePanel.add(closeLabel, BorderLayout.WEST);
+    // Put the label with the image on the far right
+    closePanel.add(closeLabel, BorderLayout.WEST);
 
-		// Add the two panels to the content pane
-		contentPane.setLayout(new BorderLayout());
-		contentPane.add(closePanel, BorderLayout.NORTH);
-		contentPane.add(main, BorderLayout.CENTER);
+    // Add the two panels to the content pane
+    contentPane.setLayout(new BorderLayout());
+    contentPane.add(closePanel, BorderLayout.NORTH);
+    contentPane.add(main, BorderLayout.CENTER);
 
-		// set raised beveled border for window
-		contentPane.setBorder(BorderFactory.createRaisedBevelBorder());
+    // set raised beveled border for window
+    contentPane.setBorder(BorderFactory.createRaisedBevelBorder());
 
-		// Set position somewhere near the middle of the screen
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation(screenSize.width / 2 - (getWidth() / 2), screenSize.height / 2 - (getHeight() / 2));
+    // Set position somewhere near the middle of the screen
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    setLocation(screenSize.width / 2 - (getWidth() / 2), screenSize.height / 2
+        - (getHeight() / 2));
 
-		// don't keep window on top of others
-		setAlwaysOnTop(false);
-	}
+    // don't keep window on top of others
+    setAlwaysOnTop(false);
+  }
 
-	public void close() {
-		setVisible(false);
+  public void close() {
+    setVisible(false);
 
-		dispose();
-	}
+    dispose();
+  }
 }

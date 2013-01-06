@@ -30,47 +30,52 @@ import org.spoutcraft.launcher.PlatformUtils;
 
 public class SystemConsoleListener {
 
-	public static File				logDir	= new File(PlatformUtils.getWorkingDirectory() + File.separator + "logs");
+  public static File        logDir = new File(
+                                       PlatformUtils.getWorkingDirectory()
+                                           + File.separator + "logs");
 
-	public static PrintStream	out			= null;
+  public static PrintStream out    = null;
 
-	public void initialize() throws Exception {
-		LogManager logManager = LogManager.getLogManager();
-		logManager.reset();
+  public void initialize() throws Exception {
+    LogManager logManager = LogManager.getLogManager();
+    logManager.reset();
 
-		logDir.mkdirs();
+    logDir.mkdirs();
 
-		Handler fileHandler = new FileHandler(new File(logDir, "launcher_%g.log").getPath(), 100000, 5, true);
-		fileHandler.setFormatter(new ClientLoggerFormatter());
-		Logger.getLogger("").addHandler(fileHandler);
+    Handler fileHandler = new FileHandler(
+        new File(logDir, "launcher_%g.log").getPath(), 100000, 5, true);
+    fileHandler.setFormatter(new ClientLoggerFormatter());
+    Logger.getLogger("").addHandler(fileHandler);
 
-		PrintStream stdout = System.out;
-		PrintStream stderr = System.err;
+    PrintStream stdout = System.out;
+    PrintStream stderr = System.err;
 
-		Handler ConsoleHandle = new StreamHandler(stdout, new ClientLoggerFormatter());
-		Logger.getLogger("").addHandler(ConsoleHandle);
+    Handler ConsoleHandle = new StreamHandler(stdout,
+        new ClientLoggerFormatter());
+    Logger.getLogger("").addHandler(ConsoleHandle);
 
-		Handler ErrHandle = new StreamHandler(stderr, new ClientLoggerFormatter());
-		Logger.getLogger("").addHandler(ErrHandle);
+    Handler ErrHandle = new StreamHandler(stderr, new ClientLoggerFormatter());
+    Logger.getLogger("").addHandler(ErrHandle);
 
-		Logger logger;
-		SystemListenerStream los;
+    Logger logger;
+    SystemListenerStream los;
 
-		logger = Logger.getLogger("stdout");
-		logger.setFilter(new Filter() {
-			@Override
-			public boolean isLoggable(LogRecord record) {
-				return (record.getLevel().intValue() > SystemListenerLevel.STDOUT.intValue());
-			}
-		});
-		los = new SystemListenerStream(logger, SystemListenerLevel.STDOUT);
-		System.setOut(new PrintStream(los, true));
+    logger = Logger.getLogger("stdout");
+    logger.setFilter(new Filter() {
+      @Override
+      public boolean isLoggable(LogRecord record) {
+        return (record.getLevel().intValue() > SystemListenerLevel.STDOUT
+            .intValue());
+      }
+    });
+    los = new SystemListenerStream(logger, SystemListenerLevel.STDOUT);
+    System.setOut(new PrintStream(los, true));
 
-		logger = Logger.getLogger("stderr");
-		los = new SystemListenerStream(logger, SystemListenerLevel.STDERR);
-		System.setErr(new PrintStream(los, true));
+    logger = Logger.getLogger("stderr");
+    los = new SystemListenerStream(logger, SystemListenerLevel.STDERR);
+    System.setErr(new PrintStream(los, true));
 
-		SystemConsoleListener.out = stdout;
+    SystemConsoleListener.out = stdout;
 
-	}
+  }
 }

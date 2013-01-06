@@ -25,40 +25,42 @@ import javax.swing.JLabel;
 
 public class HyperlinkJLabel extends JLabel implements MouseListener {
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long	serialVersionUID	= -3801443131566852907L;
-	private String						url;
+  private static final long serialVersionUID = -3801443131566852907L;
+  private String            url;
 
-	public void mouseClicked(MouseEvent arg0) {
-		if (!Desktop.isDesktopSupported()) return;
-		Desktop desktop = Desktop.getDesktop();
-		if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) return;
-		try {
-			URI uri = new java.net.URI(url);
-			desktop.browse(uri);
-		} catch (Exception e) {
-			System.err.println("Unable to open browser to " + url);
-		}
-	}
+  public void mouseClicked(MouseEvent arg0) {
+    if (!Desktop.isDesktopSupported())
+      return;
+    Desktop desktop = Desktop.getDesktop();
+    if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE))
+      return;
+    try {
+      URI uri = new java.net.URI(url);
+      desktop.browse(uri);
+    } catch (Exception e) {
+      System.err.println("Unable to open browser to " + url);
+    }
+  }
 
-	public HyperlinkJLabel(String text, String url) {
-		super(text);
-		this.url = url;
-		super.addMouseListener(this);
-	}
+  public HyperlinkJLabel(String text, String url) {
+    super(text);
+    this.url = url;
+    super.addMouseListener(this);
+  }
 
-	public void mouseEntered(MouseEvent arg0) {
-	}
+  public void mouseEntered(MouseEvent arg0) {
+  }
 
-	public void mouseExited(MouseEvent arg0) {
-	}
+  public void mouseExited(MouseEvent arg0) {
+  }
 
-	public void mousePressed(MouseEvent arg0) {
-	}
+  public void mousePressed(MouseEvent arg0) {
+  }
 
-	public void mouseReleased(MouseEvent arg0) {
-	}
+  public void mouseReleased(MouseEvent arg0) {
+  }
 
 }
