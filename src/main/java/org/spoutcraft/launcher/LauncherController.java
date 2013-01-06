@@ -36,8 +36,7 @@ public class LauncherController {
   public static Field    mcField = null;
 
   @SuppressWarnings("rawtypes")
-  public static Applet getMinecraftApplet()
-      throws CorruptedMinecraftJarException, MinecraftVerifyException {
+  public static Applet getMinecraftApplet() throws CorruptedMinecraftJarException, MinecraftVerifyException {
 
     File mcBinFolder = GameUpdater.binDir;
 
@@ -61,8 +60,7 @@ public class LauncherController {
       Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
       while (i.hasNext()) {
         Entry<String, Object> lib = i.next();
-        File libraryFile = new File(mcBinFolder, "lib" + File.separator
-            + lib.getKey() + ".jar");
+        File libraryFile = new File(mcBinFolder, "lib" + File.separator + lib.getKey() + ".jar");
         files[index] = libraryFile;
         index++;
       }
@@ -83,8 +81,7 @@ public class LauncherController {
       urls[4] = lwjgl_utilJar.toURI().toURL();
       files[index + 4] = lwjgl_utilJar;
 
-      ClassLoader classLoader = new MinecraftClassLoader(urls,
-          ClassLoader.getSystemClassLoader(), spoutcraftJar, files);
+      ClassLoader classLoader = new MinecraftClassLoader(urls, ClassLoader.getSystemClassLoader(), spoutcraftJar, files);
 
       setMinecraftDirectory(classLoader, GameUpdater.modpackDir);
       int a = 1;
@@ -92,8 +89,7 @@ public class LauncherController {
       System.setProperty("org.lwjgl.librarypath", nativesPath);
       System.setProperty("net.java.games.input.librarypath", nativesPath);
 
-      appletClass = classLoader
-          .loadClass("net.minecraft.client.MinecraftApplet");
+      appletClass = classLoader.loadClass("net.minecraft.client.MinecraftApplet");
       mcClass = classLoader.loadClass("net.minecraft.client.Minecraft");
       mcField = appletClass.getDeclaredFields()[1];
 
@@ -119,8 +115,7 @@ public class LauncherController {
    * Minecraft.class that is a private static File, this may change in the
    * future and so should be tested with new minecraft versions.
    */
-  private static void setMinecraftDirectory(ClassLoader loader, File directory)
-      throws MinecraftVerifyException {
+  private static void setMinecraftDirectory(ClassLoader loader, File directory) throws MinecraftVerifyException {
     try {
       Class<?> clazz = loader.loadClass("net.minecraft.client.Minecraft");
       Field[] fields = clazz.getDeclaredFields();
@@ -137,16 +132,14 @@ public class LauncherController {
         }
       }
       if (fieldCount != 1) {
-        throw new MinecraftVerifyException(
-            "Cannot find directory field in minecraft");
+        throw new MinecraftVerifyException("Cannot find directory field in minecraft");
       }
 
       mineDirField.setAccessible(true);
       mineDirField.set(null, directory);
 
     } catch (Exception e) {
-      throw new MinecraftVerifyException(e,
-          "Cannot set directory in Minecraft class");
+      throw new MinecraftVerifyException(e, "Cannot set directory in Minecraft class");
     }
 
   }

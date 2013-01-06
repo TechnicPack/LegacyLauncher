@@ -30,11 +30,9 @@ class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
     JToggleButton checkbox = renderer.getLeafRenderer();
     int groupdId = -1;
     if (checkbox instanceof JRadioButton) {
-      groupdId = (Integer) ((JRadioButton) checkbox)
-          .getClientProperty("groupId");
+      groupdId = (Integer) ((JRadioButton) checkbox).getClientProperty("groupId");
     }
-    CheckBoxNode checkBoxNode = new CheckBoxNode(checkbox.getText(),
-        checkbox.isSelected(), groupdId);
+    CheckBoxNode checkBoxNode = new CheckBoxNode(checkbox.getText(), checkbox.isSelected(), groupdId);
     return checkBoxNode;
   }
 
@@ -43,8 +41,7 @@ class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
     boolean returnValue = false;
     if (event instanceof MouseEvent) {
       MouseEvent mouseEvent = (MouseEvent) event;
-      TreePath path = tree.getPathForLocation(mouseEvent.getX(),
-          mouseEvent.getY());
+      TreePath path = tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
       if (path != null) {
         Object node = path.getLastPathComponent();
         if ((node != null) && (node instanceof DefaultMutableTreeNode)) {
@@ -58,11 +55,9 @@ class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
   }
 
   @Override
-  public Component getTreeCellEditorComponent(JTree tree, Object value,
-      boolean selected, boolean expanded, boolean leaf, int row) {
+  public Component getTreeCellEditorComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row) {
 
-    final Component editor = renderer.getTreeCellRendererComponent(tree, value,
-        true, expanded, leaf, row, true);
+    final Component editor = renderer.getTreeCellRendererComponent(tree, value, true, expanded, leaf, row, true);
 
     // editor always selected / focused
     final ItemListener itemListener = new ItemListener() {

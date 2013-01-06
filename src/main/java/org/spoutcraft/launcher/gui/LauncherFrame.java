@@ -51,13 +51,9 @@ public class LauncherFrame extends JFrame implements WindowListener {
     super(ModPackListYML.currentModPackLabel);
     if (System.getProperty("os.name").contains("OS X")) {
       try {
-        Class<?> fullScreenUtilityClass = Class
-            .forName("com.apple.eawt.FullScreenUtilities");
-        java.lang.reflect.Method setWindowCanFullScreenMethod = fullScreenUtilityClass
-            .getDeclaredMethod("setWindowCanFullScreen", new Class[] {
-                Window.class, Boolean.TYPE });
-        setWindowCanFullScreenMethod.invoke(null,
-            new Object[] { this, Boolean.valueOf(true) });
+        Class<?> fullScreenUtilityClass = Class.forName("com.apple.eawt.FullScreenUtilities");
+        java.lang.reflect.Method setWindowCanFullScreenMethod = fullScreenUtilityClass.getDeclaredMethod("setWindowCanFullScreen", new Class[] { Window.class, Boolean.TYPE });
+        setWindowCanFullScreenMethod.invoke(null, new Object[] { this, Boolean.valueOf(true) });
       } catch (Exception e) {
         // This is not a fatal exception, so just log it for brevity.
         e.printStackTrace();
@@ -70,8 +66,7 @@ public class LauncherFrame extends JFrame implements WindowListener {
     this.setResizable(true);
     this.addWindowListener(this);
 
-    setIconImage(Toolkit.getDefaultToolkit().getImage(
-        ModPackYML.getModPackIcon()));
+    setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
   }
 
   public void setLoginForm(LoginForm form) {
@@ -82,8 +77,7 @@ public class LauncherFrame extends JFrame implements WindowListener {
     return loginForm;
   }
 
-  public int runGame(String user, String session, String downloadTicket,
-      String mcpass) {
+  public int runGame(String user, String session, String downloadTicket, String mcpass) {
     Applet applet = null;
     try {
       applet = LauncherController.getMinecraftApplet();
@@ -93,10 +87,8 @@ public class LauncherFrame extends JFrame implements WindowListener {
       System.err.println("Exception thrown while initializing MineCraft.");
       verify.printStackTrace();
       OptionDialog.clearCache();
-      JOptionPane
-          .showMessageDialog(
-              getParent(),
-              "The minecraft installation was corrupted. \nThe minecraft installation has been cleaned. \nTry to login again. If that fails, close and \nrestart the appplication.");
+      JOptionPane.showMessageDialog(getParent(),
+          "The minecraft installation was corrupted. \nThe minecraft installation has been cleaned. \nTry to login again. If that fails, close and \nrestart the appplication.");
       this.setVisible(false);
       this.dispose();
       return ERROR_IN_LAUNCH;
@@ -115,18 +107,15 @@ public class LauncherFrame extends JFrame implements WindowListener {
 
     minecraft = new Launcher(applet);
 
-    String launcherPath = String.format("%s/%s", PlatformUtils.LAUNCHER_DIR,
-        ModPackListYML.currentModPack);
+    String launcherPath = String.format("%s/%s", PlatformUtils.LAUNCHER_DIR, ModPackListYML.currentModPack);
 
     minecraft.addParameter("username", user);
     minecraft.addParameter("sessionid", session);
     minecraft.addParameter("downloadticket", downloadTicket);
     minecraft.addParameter("mppass", mcpass);
     minecraft.addParameter("spoutcraftlauncher", "true");
-    minecraft.addParameter("stand-alone",
-        String.valueOf(MinecraftUtils.getOptions().isPortable()));
-    minecraft.addParameter("portable",
-        String.valueOf(MinecraftUtils.getOptions().isPortable()));
+    minecraft.addParameter("stand-alone", String.valueOf(MinecraftUtils.getOptions().isPortable()));
+    minecraft.addParameter("portable", String.valueOf(MinecraftUtils.getOptions().isPortable()));
     minecraft.addParameter("directory", launcherPath);
     Util.log("Loading Launcher from '%s'", launcherPath);
     if (MinecraftUtils.getOptions().getServer() != null) {
@@ -148,8 +137,7 @@ public class LauncherFrame extends JFrame implements WindowListener {
     } catch (Throwable t) {
       System.err.println("Exception thrown while initializing MineCraft.");
       t.printStackTrace();
-      JOptionPane.showMessageDialog(getParent(),
-          "Minecraft failed to start, errors reported in the log.");
+      JOptionPane.showMessageDialog(getParent(), "Minecraft failed to start, errors reported in the log.");
       this.setVisible(false);
       this.dispose();
       return ERROR_IN_LAUNCH;

@@ -217,8 +217,7 @@ public class SettingsHandler {
       String line;
 
       while ((line = br.readLine()) != null) {
-        if ((line.isEmpty()) || (line.length() > 0 && line.charAt(0) == '#')
-            || (!line.contains(": "))) {
+        if ((line.isEmpty()) || (line.length() > 0 && line.charAt(0) == '#') || (!line.contains(": "))) {
           continue;
         }
         String[] args = line.split(": ");

@@ -30,9 +30,7 @@ import org.spoutcraft.launcher.PlatformUtils;
 
 public class SystemConsoleListener {
 
-  public static File        logDir = new File(
-                                       PlatformUtils.getWorkingDirectory()
-                                           + File.separator + "logs");
+  public static File        logDir = new File(PlatformUtils.getWorkingDirectory() + File.separator + "logs");
 
   public static PrintStream out    = null;
 
@@ -42,16 +40,14 @@ public class SystemConsoleListener {
 
     logDir.mkdirs();
 
-    Handler fileHandler = new FileHandler(
-        new File(logDir, "launcher_%g.log").getPath(), 100000, 5, true);
+    Handler fileHandler = new FileHandler(new File(logDir, "launcher_%g.log").getPath(), 100000, 5, true);
     fileHandler.setFormatter(new ClientLoggerFormatter());
     Logger.getLogger("").addHandler(fileHandler);
 
     PrintStream stdout = System.out;
     PrintStream stderr = System.err;
 
-    Handler ConsoleHandle = new StreamHandler(stdout,
-        new ClientLoggerFormatter());
+    Handler ConsoleHandle = new StreamHandler(stdout, new ClientLoggerFormatter());
     Logger.getLogger("").addHandler(ConsoleHandle);
 
     Handler ErrHandle = new StreamHandler(stderr, new ClientLoggerFormatter());
@@ -64,8 +60,7 @@ public class SystemConsoleListener {
     logger.setFilter(new Filter() {
       @Override
       public boolean isLoggable(LogRecord record) {
-        return (record.getLevel().intValue() > SystemListenerLevel.STDOUT
-            .intValue());
+        return (record.getLevel().intValue() > SystemListenerLevel.STDOUT.intValue());
       }
     });
     los = new SystemListenerStream(logger, SystemListenerLevel.STDOUT);

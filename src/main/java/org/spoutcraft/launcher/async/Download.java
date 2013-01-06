@@ -59,9 +59,7 @@ public class Download implements Runnable {
   public void run() {
     try {
       URLConnection conn = url.openConnection();
-      conn.setRequestProperty(
-          "User-Agent",
-          "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
+      conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
       InputStream in = getConnectionInputStream(conn);
 
       size = conn.getContentLength();
@@ -116,8 +114,7 @@ public class Download implements Runnable {
       };
       progress.start();
 
-      fos.getChannel()
-          .transferFrom(rbc, 0, size > 0 ? size : Integer.MAX_VALUE);
+      fos.getChannel().transferFrom(rbc, 0, size > 0 ? size : Integer.MAX_VALUE);
       in.close();
       rbc.close();
       progress.interrupt();
@@ -130,8 +127,7 @@ public class Download implements Runnable {
     }
   }
 
-  protected InputStream getConnectionInputStream(
-      final URLConnection urlconnection) throws Exception {
+  protected InputStream getConnectionInputStream(final URLConnection urlconnection) throws Exception {
     final InputStream[] is = new InputStream[1];
 
     for (int j = 0; (j < 3) && (is[0] == null); j++) {

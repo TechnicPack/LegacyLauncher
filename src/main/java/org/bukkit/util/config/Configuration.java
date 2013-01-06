@@ -179,8 +179,7 @@ public class Configuration extends ConfigurationNode {
         root = (Map<String, Object>) input;
       }
     } catch (ClassCastException e) {
-      throw new ConfigurationException(
-          "Root document must be an key-value structure");
+      throw new ConfigurationException("Root document must be an key-value structure");
     }
   }
 
@@ -212,10 +211,8 @@ class EmptyNullRepresenter extends Representer {
   // Code borrowed from snakeyaml
   // (http://code.google.com/p/snakeyaml/source/browse/src/test/java/org/yaml/snakeyaml/issues/issue60/SkipBeanTest.java)
   @Override
-  protected NodeTuple representJavaBeanProperty(Object javaBean,
-      Property property, Object propertyValue, Tag customTag) {
-    NodeTuple tuple = super.representJavaBeanProperty(javaBean, property,
-        propertyValue, customTag);
+  protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue, Tag customTag) {
+    NodeTuple tuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
     Node valueNode = tuple.getValueNode();
     if (valueNode instanceof CollectionNode) {
       // Removed null check

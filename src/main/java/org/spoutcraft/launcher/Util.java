@@ -24,21 +24,18 @@ public class Util {
     }
   }
 
-  public static <T extends Comparable<? super T>> List<T> asSortedList(
-      Collection<T> c) {
+  public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
     List<T> list = new ArrayList<T>(c);
     java.util.Collections.sort(list);
     return list;
   }
 
   public static void log(String formatString, Object... params) {
-    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning(
-        String.format(formatString, params));
+    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).warning(String.format(formatString, params));
   }
 
   public static void logi(String formatString, Object... params) {
-    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info(
-        String.format(formatString, params));
+    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info(String.format(formatString, params));
   }
 
   public static void addComboItem(JComboBox combobox, String label, String value) {
@@ -47,8 +44,7 @@ public class Util {
 
   public static void setSelectedComboByLabel(JComboBox combobox, String label) {
     for (int i = 0; i < combobox.getItemCount(); i++) {
-      if (((ComboItem) combobox.getItemAt(i)).getLabel()
-          .equalsIgnoreCase(label)) {
+      if (((ComboItem) combobox.getItemAt(i)).getLabel().equalsIgnoreCase(label)) {
         combobox.setSelectedIndex(i);
       }
     }
@@ -56,8 +52,7 @@ public class Util {
 
   public static void setSelectedComboByValue(JComboBox combobox, String value) {
     for (int i = 0; i < combobox.getItemCount(); i++) {
-      if (((ComboItem) combobox.getItemAt(i)).getValue()
-          .equalsIgnoreCase(value)) {
+      if (((ComboItem) combobox.getItemAt(i)).getValue().equalsIgnoreCase(value)) {
         combobox.setSelectedIndex(i);
       }
     }
@@ -95,7 +90,10 @@ public class Util {
   }
 
   public static String getBuild() {
-    List<String> lines = readTextFromJar("/META-INF/maven/org.spoutcraft/technic-launcher/pom.properties");
+    List<String> lines = null;
+    try {
+      lines = readTextFromJar("/META-INF/maven/org.spoutcraft/technic-launcher/pom.properties");
+    } catch (NullPointerException e) {}
     for (String line : lines) {
       if (line.contains("version")) {
         return line.replace("version=", "");

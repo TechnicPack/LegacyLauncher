@@ -452,8 +452,7 @@ public class ConfigurationNode {
    * @return list of integers
    */
   @SuppressWarnings("unchecked")
-  public List<ConfigurationNode> getNodeList(String path,
-      List<ConfigurationNode> def) {
+  public List<ConfigurationNode> getNodeList(String path, List<ConfigurationNode> def) {
     List<Object> raw = getList(path);
 
     if (raw == null) {
@@ -508,11 +507,9 @@ public class ConfigurationNode {
     } else if (o instanceof Map) {
       Map<String, ConfigurationNode> nodes = new HashMap<String, ConfigurationNode>();
 
-      for (Map.Entry<String, Object> entry : ((Map<String, Object>) o)
-          .entrySet()) {
+      for (Map.Entry<String, Object> entry : ((Map<String, Object>) o).entrySet()) {
         if (entry.getValue() instanceof Map) {
-          nodes.put(entry.getKey(), new ConfigurationNode(
-              (Map<String, Object>) entry.getValue()));
+          nodes.put(entry.getKey(), new ConfigurationNode((Map<String, Object>) entry.getValue()));
         }
       }
 

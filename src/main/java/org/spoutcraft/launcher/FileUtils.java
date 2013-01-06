@@ -159,7 +159,6 @@ public class FileUtils {
       fileInCanonicalDir = new File(canonicalDir, file.getName());
     }
 
-    return (!fileInCanonicalDir.getCanonicalFile().equals(
-        fileInCanonicalDir.getAbsoluteFile()));
+    return (!fileInCanonicalDir.getCanonicalFile().equals(fileInCanonicalDir.getAbsoluteFile()));
   }
 }

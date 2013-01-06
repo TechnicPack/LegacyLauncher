@@ -14,9 +14,7 @@ import org.bukkit.util.config.Configuration;
 public class MD5Utils {
 
   private static final String              CHECKSUM_MD5  = "CHECKSUM.md5";
-  private static final File                CHECKSUM_FILE = new File(
-                                                             GameUpdater.workDir,
-                                                             CHECKSUM_MD5);
+  private static final File                CHECKSUM_FILE = new File(GameUpdater.workDir, CHECKSUM_MD5);
   private static boolean                   updated;
   private static final Map<String, String> md5Map        = new HashMap<String, String>();
 
@@ -48,8 +46,7 @@ public class MD5Utils {
   @SuppressWarnings("unchecked")
   public static String getMD5(FileType type, String version) {
     Configuration config = MinecraftYML.getMinecraftYML();
-    Map<String, Map<String, String>> builds = (Map<String, Map<String, String>>) config
-        .getProperty("versions");
+    Map<String, Map<String, String>> builds = (Map<String, Map<String, String>>) config.getProperty("versions");
     if (builds.containsKey(version)) {
       Map<String, String> files = builds.get(version);
       return files.get(type.name());
@@ -59,8 +56,7 @@ public class MD5Utils {
 
   public static String getMinecraftMD5(String md5Hash) {
     Configuration config = MinecraftYML.getMinecraftYML();
-    Map<String, Map<String, String>> builds = (Map<String, Map<String, String>>) config
-        .getProperty("versions");
+    Map<String, Map<String, String>> builds = (Map<String, Map<String, String>>) config.getProperty("versions");
     for (String version : builds.keySet()) {
       String minecraftMD5 = builds.get(version).get("minecraft");
       if (minecraftMD5.equalsIgnoreCase(md5Hash)) {
@@ -84,17 +80,14 @@ public class MD5Utils {
           return;
         }
 
-        if (DownloadUtils.downloadFile(url, CHECKSUM_FILE.getPath())
-            .isSuccess()) {
+        if (DownloadUtils.downloadFile(url, CHECKSUM_FILE.getPath()).isSuccess()) {
           parseChecksumFile();
         }
       } catch (FileNotFoundException e) {
-        Util.log("Checksum file '%s' not found.",
-            CHECKSUM_FILE.getAbsoluteFile());
+        Util.log("Checksum file '%s' not found.", CHECKSUM_FILE.getAbsoluteFile());
         e.printStackTrace();
       } catch (IOException e) {
-        Util.log("Checksum file '%s' threw error.",
-            CHECKSUM_FILE.getAbsoluteFile());
+        Util.log("Checksum file '%s' threw error.", CHECKSUM_FILE.getAbsoluteFile());
         e.printStackTrace();
       }
     }
@@ -132,11 +125,9 @@ public class MD5Utils {
     if (storedMD5 == null) {
       Util.log("MD5 hash not found for '%s'", md5Path);
     }
-    boolean doesMD5Match = (storedMD5 == null) ? false : storedMD5
-        .equalsIgnoreCase(fileMD5);
+    boolean doesMD5Match = (storedMD5 == null) ? false : storedMD5.equalsIgnoreCase(fileMD5);
     if (!doesMD5Match) {
-      Util.log("[MD5 Mismatch] File '%s' has md5 of '%s' instead of '%s'",
-          file, fileMD5, storedMD5);
+      Util.log("[MD5 Mismatch] File '%s' has md5 of '%s' instead of '%s'", file, fileMD5, storedMD5);
     }
     return doesMD5Match;
   }

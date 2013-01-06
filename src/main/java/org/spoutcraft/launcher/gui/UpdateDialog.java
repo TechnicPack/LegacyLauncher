@@ -20,8 +20,7 @@ public class UpdateDialog extends JDialog implements ActionListener {
 
   private static final long serialVersionUID = -4617588853047124397L;
   private final JPanel      contentPanel     = new JPanel();
-  private final JLabel      label            = new JLabel(
-                                                 "There is a new update for %TO_UPDATE%.");
+  private final JLabel      label            = new JLabel("There is a new update for %TO_UPDATE%.");
   private final LoginForm   lf;
 
   public void setToUpdate(String str) {
@@ -30,9 +29,7 @@ public class UpdateDialog extends JDialog implements ActionListener {
 
   public UpdateDialog(LoginForm lf) {
     this.lf = lf;
-    setBounds((Toolkit.getDefaultToolkit().getScreenSize().width - 450) / 2,
-        (Toolkit.getDefaultToolkit().getScreenSize().height - 136) / 2, 450,
-        136);
+    setBounds((Toolkit.getDefaultToolkit().getScreenSize().width - 450) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - 136) / 2, 450, 136);
     this.toFront();
     this.setAlwaysOnTop(true);
     getContentPane().setLayout(new BorderLayout());

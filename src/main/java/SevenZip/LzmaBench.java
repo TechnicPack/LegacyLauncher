@@ -21,8 +21,7 @@ public class LzmaBench {
     }
 
     public int GetRnd() {
-      return ((A1 = 36969 * (A1 & 0xffff) + (A1 >>> 16)) << 16)
-          ^ ((A2 = 18000 * (A2 & 0xffff) + (A2 >>> 16)));
+      return ((A1 = 36969 * (A1 & 0xffff) + (A1 >>> 16)) << 16) ^ ((A2 = 18000 * (A2 & 0xffff) + (A2 >>> 16)));
     }
   };
 
@@ -245,10 +244,8 @@ public class LzmaBench {
     return MyMultDiv64(numCommands, elapsedTime);
   }
 
-  static long GetTotalRating(int dictionarySize, long elapsedTimeEn,
-      long sizeEn, long elapsedTimeDe, long inSizeDe, long outSizeDe) {
-    return (GetCompressRating(dictionarySize, elapsedTimeEn, sizeEn) + GetDecompressRating(
-        elapsedTimeDe, inSizeDe, outSizeDe)) / 2;
+  static long GetTotalRating(int dictionarySize, long elapsedTimeEn, long sizeEn, long elapsedTimeDe, long inSizeDe, long outSizeDe) {
+    return (GetCompressRating(dictionarySize, elapsedTimeEn, sizeEn) + GetDecompressRating(elapsedTimeDe, inSizeDe, outSizeDe)) / 2;
   }
 
   static void PrintValue(long v) {
@@ -264,8 +261,7 @@ public class LzmaBench {
     System.out.print(" MIPS");
   }
 
-  static void PrintResults(int dictionarySize, long elapsedTime, long size,
-      boolean decompressMode, long secondSize) {
+  static void PrintResults(int dictionarySize, long elapsedTime, long size, boolean decompressMode, long secondSize) {
     long speed = MyMultDiv64(size, elapsedTime);
     PrintValue(speed / 1024);
     System.out.print(" KB/s  ");
@@ -277,13 +273,11 @@ public class LzmaBench {
     PrintRating(rating);
   }
 
-  static public int LzmaBenchmark(int numIterations, int dictionarySize)
-      throws Exception {
+  static public int LzmaBenchmark(int numIterations, int dictionarySize) throws Exception {
     if (numIterations <= 0)
       return 0;
     if (dictionarySize < (1 << 18)) {
-      System.out
-          .println("\nError: dictionary size for benchmark must be >= 18 (256 KB)");
+      System.out.println("\nError: dictionary size for benchmark must be >= 18 (256 KB)");
       return 1;
     }
     System.out.print("\n	   Compressing				Decompressing\n\n");
@@ -334,8 +328,7 @@ public class LzmaBench {
 
       if (i == 0) {
         compressedSize = compressedStream.size();
-        inputCompressedStream = new MyInputStream(compressedBuffer,
-            compressedSize);
+        inputCompressedStream = new MyInputStream(compressedBuffer, compressedSize);
       } else if (compressedSize != compressedStream.size())
         throw (new Exception("Encoding error"));
 
@@ -358,8 +351,7 @@ public class LzmaBench {
       long benchSize = kBufferSize - progressInfo.InSize;
       PrintResults(dictionarySize, encodeTime, benchSize, false, 0);
       System.out.print("	 ");
-      PrintResults(dictionarySize, decodeTime, kBufferSize, true,
-          compressedSize);
+      PrintResults(dictionarySize, decodeTime, kBufferSize, true, compressedSize);
       System.out.println();
 
       totalBenchSize += benchSize;
@@ -370,8 +362,7 @@ public class LzmaBench {
     System.out.println("---------------------------------------------------");
     PrintResults(dictionarySize, totalEncodeTime, totalBenchSize, false, 0);
     System.out.print("	 ");
-    PrintResults(dictionarySize, totalDecodeTime, kBufferSize
-        * (long) numIterations, true, totalCompressedSize);
+    PrintResults(dictionarySize, totalDecodeTime, kBufferSize * (long) numIterations, true, totalCompressedSize);
     System.out.println("	Average");
     return 0;
   }

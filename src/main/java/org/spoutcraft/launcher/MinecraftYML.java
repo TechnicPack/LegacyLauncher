@@ -57,8 +57,7 @@ public class MinecraftYML {
   }
 
   public static Set<String> getMinecraftVersions() {
-    return ((Map<String, Map<String, String>>) config.getProperty("versions"))
-        .keySet();
+    return ((Map<String, Map<String, String>>) config.getProperty("versions")).keySet();
   }
 
   public static Set<String> getCachedMinecraftVersions() {
@@ -93,8 +92,7 @@ public class MinecraftYML {
       return diff < 0 ? -1 : diff == 0 ? 0 : 1;
     }
 
-    return vals1.length < vals2.length ? -1 : vals1.length == vals2.length ? 0
-        : 1;
+    return vals1.length < vals2.length ? -1 : vals1.length == vals2.length ? 0 : 1;
   }
 
   public static void updateMinecraftYMLCache() {
@@ -109,9 +107,7 @@ public class MinecraftYML {
           }
         }
 
-        if (YmlUtils.downloadYmlFile(MINECRAFT_YML,
-            "http://technic.freeworldsgaming.com/minecraft.yml",
-            getConfigFile())) {
+        if (YmlUtils.downloadYmlFile(MINECRAFT_YML, "http://technic.freeworldsgaming.com/minecraft.yml", getConfigFile())) {
           // GameUpdater.copy(getConfigFile(), output)
           config = null;
           Configuration config = getConfig();

@@ -21,8 +21,7 @@ public class Util {
    * @param n
    * @return
    */
-  public final static int memcmp(byte[] s1, int s1offset, byte[] s2,
-      int s2offset) {
+  public final static int memcmp(byte[] s1, int s1offset, byte[] s2, int s2offset) {
 
     int n = s1.length - s1offset;
 
@@ -38,8 +37,7 @@ public class Util {
     return 0;
   }
 
-  public static final boolean readFromStream(InputStream in, byte[] buf,
-      int offset, int len) throws IOException {
+  public static final boolean readFromStream(InputStream in, byte[] buf, int offset, int len) throws IOException {
 
     int totalBytesRead = 0;
     int nbytes;
@@ -47,8 +45,7 @@ public class Util {
     while (totalBytesRead < len) {
       nbytes = in.read(buf, offset + totalBytesRead, len - totalBytesRead);
       if (nbytes < 0) {
-        System.err.println("readFromStream(): returning prematurely. Read "
-            + totalBytesRead + " bytes");
+        System.err.println("readFromStream(): returning prematurely. Read " + totalBytesRead + " bytes");
         return false;
       }
       totalBytesRead += nbytes;

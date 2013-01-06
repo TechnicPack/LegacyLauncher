@@ -39,7 +39,7 @@ import com.beust.jcommander.JCommander;
 public class Main {
 
   static String[]         args_temp;
-  public static String    build     = "1.0.4.0";
+  public static String    build     = "1.0.4.1";
   public static String    currentPack;
   static File             recursion;
   public static LoginForm loginForm;
@@ -58,8 +58,7 @@ public class Main {
         Util.log("32-bit Vm being used. Max memory is 1.5Gb");
         memoryAllocation = 1536;
       }
-      String pathToJar = Main.class.getProtectionDomain().getCodeSource()
-          .getLocation().toURI().getPath();
+      String pathToJar = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
       ArrayList<String> params = new ArrayList<String>();
       params.add("java"); // Linux/Mac/whatever
       // if (memoryAllocation > 512) params.add("-Xincgc");
@@ -84,13 +83,8 @@ public class Main {
         params.add("-Xdock:name=\"Technic Launcher\"");
 
         try {
-          File icon = new File(PlatformUtils.getWorkingDirectory(),
-              "launcher_icon.icns");
-          GameUpdater
-              .copy(
-                  Main.class
-                      .getResourceAsStream("/org/spoutcraft/launcher/launcher_icon.icns"),
-                  new FileOutputStream(icon));
+          File icon = new File(PlatformUtils.getWorkingDirectory(), "launcher_icon.icns");
+          GameUpdater.copy(Main.class.getResourceAsStream("/org/spoutcraft/launcher/launcher_icon.icns"), new FileOutputStream(icon));
           params.add("-Xdock:icon=" + icon.getCanonicalPath());
         } catch (Exception ignore) {
         }
@@ -112,8 +106,7 @@ public class Main {
   }
 
   public static boolean isDebug() {
-    return java.lang.management.ManagementFactory.getRuntimeMXBean()
-        .getInputArguments().toString().contains("-agentlib:jdwp");
+    return java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");
   }
 
   public static void main(String[] args) throws Exception {
@@ -162,8 +155,7 @@ public class Main {
     if (PlatformUtils.getPlatform() == PlatformUtils.OS.macos) {
       try {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-            "Technic Launcher");
+        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Technic Launcher");
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       } catch (Exception ignore) {
       }
@@ -181,8 +173,7 @@ public class Main {
     Util.log("------------------------------------------");
     Util.log("Launcher is starting....");
     Util.log("Launcher Build: '%s'", getBuild());
-    Util.log("Allocated %s Mb of RAM", Runtime.getRuntime().maxMemory()
-        / (1024.0 * 1024));
+    Util.log("Allocated %s Mb of RAM", Runtime.getRuntime().maxMemory() / (1024.0 * 1024));
 
     String javaVM = System.getProperty("java.runtime.version");
     if (javaVM != null)
@@ -195,8 +186,7 @@ public class Main {
       Util.log("Is 64-bit: '%s'", osType.contains("64"));
 
     try {
-      UIManager
-          .setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+      UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 
       UIDefaults defaults = UIManager.getLookAndFeelDefaults();
       defaults.put("nimbusOrange", defaults.get("nimbusBase"));
@@ -220,8 +210,7 @@ public class Main {
 
   private static String getBuild() {
     if (build == null) {
-      File buildInfo = new File(PlatformUtils.getWorkingDirectory(),
-          "launcherVersion");
+      File buildInfo = new File(PlatformUtils.getWorkingDirectory(), "launcherVersion");
       if (buildInfo.exists()) {
         try {
           BufferedReader bf = new BufferedReader(new FileReader(buildInfo));

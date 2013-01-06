@@ -54,26 +54,19 @@ public class OptionDialog extends JDialog implements ActionListener {
   private static final long  serialVersionUID    = 1L;
   private final JPanel       contentPanel        = new JPanel();
   public Map<String, String> modPackList         = null;
-  JRadioButton               devBuilds           = new JRadioButton(
-                                                     "Always use development builds");
-  JRadioButton               recBuilds           = new JRadioButton(
-                                                     "Always use recommended builds");
-  JRadioButton               customBuilds        = new JRadioButton(
-                                                     "Manual build selection");
+  JRadioButton               devBuilds           = new JRadioButton("Always use development builds");
+  JRadioButton               recBuilds           = new JRadioButton("Always use recommended builds");
+  JRadioButton               customBuilds        = new JRadioButton("Manual build selection");
   // JCheckBox clipboardCheckbox = new
   // JCheckBox("Allow access to your clipboard");
-  JCheckBox                  backupCheckbox      = new JCheckBox(
-                                                     "Include worlds when doing automated backup");
-  JCheckBox                  retryLoginCheckbox  = new JCheckBox(
-                                                     "Retry after connection timeout");
-  JCheckBox                  latestLWJGLCheckbox = new JCheckBox(
-                                                     "Use latest LWJGL binaries");
+  JCheckBox                  backupCheckbox      = new JCheckBox("Include worlds when doing automated backup");
+  JCheckBox                  retryLoginCheckbox  = new JCheckBox("Retry after connection timeout");
+  JCheckBox                  latestLWJGLCheckbox = new JCheckBox("Use latest LWJGL binaries");
   JComboBox                  memoryCombo         = new JComboBox();
   JButton                    clearCache          = new JButton("Clear Cache");
   JLabel                     buildInfo           = new JLabel();
   JComboBox                  buildsCombo         = new JComboBox();
-  int[]                      memValues           = new int[] { 1, 2, 3, 4, 6,
-      8, 10                                     };
+  int[]                      memValues           = new int[] { 1, 2, 3, 4, 6, 8, 10 };
 
   /**
    * Create the dialog.
@@ -94,21 +87,14 @@ public class OptionDialog extends JDialog implements ActionListener {
         .setToolTipText("Created by the Spout Development Team and Modified by the Technic Team. Licensed under the LGPL. Source code is available at www.github.com/SpoutDev");
 
     customBuilds.setToolTipText("Only use if you know what you are doing!");
-    devBuilds
-        .setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
-    recBuilds
-        .setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
+    devBuilds.setToolTipText("Development builds are often unstable and buggy. Use at your own risk!");
+    recBuilds.setToolTipText("Recommended builds are (nearly) bug-free and well-tested.");
     // clipboardCheckbox.setToolTipText("Allows server mods to see the contents of your clipboard.");
-    backupCheckbox
-        .setToolTipText("Backs up your Single Player worlds after each Modpack update");
-    retryLoginCheckbox
-        .setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
-    latestLWJGLCheckbox
-        .setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
-    clearCache
-        .setToolTipText("Clears the cached minecraft and Modpack files, forcing a redownload on your next login");
-    memoryCombo
-        .setToolTipText("Allows you to adjust the memory assigned to Minecraft. Assigning more memory than you have may cause crashes.");
+    backupCheckbox.setToolTipText("Backs up your Single Player worlds after each Modpack update");
+    retryLoginCheckbox.setToolTipText("Retries logging into minecraft.net up to 3 times after a failure");
+    latestLWJGLCheckbox.setToolTipText("Minecraft normally uses older, more compatible versions of LWJGL, but the latest may improve performance or fix audio issues");
+    clearCache.setToolTipText("Clears the cached minecraft and Modpack files, forcing a redownload on your next login");
+    memoryCombo.setToolTipText("Allows you to adjust the memory assigned to Minecraft. Assigning more memory than you have may cause crashes.");
 
     customBuilds.addActionListener(this);
     recBuilds.addActionListener(this);
@@ -138,8 +124,7 @@ public class OptionDialog extends JDialog implements ActionListener {
     JLabel selectBuild = new JLabel("Select Modpack build: ");
 
     GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-    gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(
-        Alignment.LEADING).addGroup(
+    gl_contentPanel.setHorizontalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
         gl_contentPanel
             .createSequentialGroup()
             .addContainerGap()
@@ -147,14 +132,8 @@ public class OptionDialog extends JDialog implements ActionListener {
                 gl_contentPanel
                     .createParallelGroup(Alignment.LEADING)
                     .addGroup(
-                        gl_contentPanel
-                            .createSequentialGroup()
-                            .addComponent(selectBuild)
-                            .addPreferredGap(ComponentPlacement.RELATED)
-                            .addComponent(buildsCombo,
-                                GroupLayout.PREFERRED_SIZE,
-                                GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.PREFERRED_SIZE))
+                        gl_contentPanel.createSequentialGroup().addComponent(selectBuild).addPreferredGap(ComponentPlacement.RELATED)
+                            .addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                     .addComponent(devBuilds)
                     .addComponent(recBuilds)
                     .addComponent(customBuilds)
@@ -166,15 +145,8 @@ public class OptionDialog extends JDialog implements ActionListener {
                     .addComponent(clearCache)
                     .addComponent(buildInfo)
                     .addGroup(
-                        gl_contentPanel
-                            .createSequentialGroup()
-                            .addComponent(lblMemoryToAllocate)
-                            .addPreferredGap(ComponentPlacement.RELATED)
-                            .addComponent(memoryCombo,
-                                GroupLayout.PREFERRED_SIZE,
-                                GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.PREFERRED_SIZE)))
-            .addContainerGap(27, Short.MAX_VALUE)));
+                        gl_contentPanel.createSequentialGroup().addComponent(lblMemoryToAllocate).addPreferredGap(ComponentPlacement.RELATED)
+                            .addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))).addContainerGap(27, Short.MAX_VALUE)));
 
     Font font = new Font("Arial", Font.PLAIN, 11);
     backupCheckbox.setFont(font);
@@ -185,16 +157,12 @@ public class OptionDialog extends JDialog implements ActionListener {
     clearCache.setFont(font);
     clearCache.setActionCommand("Clear Cache");
     clearCache.addActionListener(this);
-    gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(
-        Alignment.LEADING).addGroup(
+    gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
         gl_contentPanel
             .createSequentialGroup()
             .addGroup(
-                gl_contentPanel
-                    .createParallelGroup(Alignment.BASELINE)
-                    .addComponent(selectBuild)
-                    .addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE,
-                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(selectBuild)
+                    .addComponent(buildsCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
             .addComponent(devBuilds)
             .addComponent(recBuilds)
             .addComponent(customBuilds)
@@ -205,14 +173,8 @@ public class OptionDialog extends JDialog implements ActionListener {
             .addComponent(latestLWJGLCheckbox)
             .addPreferredGap(ComponentPlacement.RELATED)
             .addGroup(
-                gl_contentPanel
-                    .createParallelGroup(Alignment.BASELINE)
-                    .addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE,
-                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblMemoryToAllocate))
-            .addPreferredGap(ComponentPlacement.RELATED)
-            .addComponent(clearCache)
-            .addPreferredGap(ComponentPlacement.RELATED)
+                gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(memoryCombo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblMemoryToAllocate)).addPreferredGap(ComponentPlacement.RELATED).addComponent(clearCache).addPreferredGap(ComponentPlacement.RELATED)
             .addComponent(buildInfo).addContainerGap(316, Short.MAX_VALUE)));
 
     contentPanel.setLayout(gl_contentPanel);
@@ -263,8 +225,7 @@ public class OptionDialog extends JDialog implements ActionListener {
     latestLWJGLCheckbox.setSelected(SettingsUtil.isLatestLWJGL());
     latestLWJGLCheckbox.setSelected(false);
 
-    int memIndex = Arrays.binarySearch(memValues,
-        SettingsUtil.getMemorySelection() / 512);
+    int memIndex = Arrays.binarySearch(memValues, SettingsUtil.getMemorySelection() / 512);
     if (memIndex < 0 || memIndex > memoryCombo.getItemCount()) {
       memIndex = 1;
     }
@@ -288,8 +249,7 @@ public class OptionDialog extends JDialog implements ActionListener {
   public void actionPerformed(ActionEvent evt) {
     String id = evt.getActionCommand();
     if (id.equals("OK")) {
-      if ((devBuilds.isSelected() && !SettingsUtil.isDevelopmentBuild())
-          || (recBuilds.isSelected() && !SettingsUtil.isRecommendedBuild())) {
+      if ((devBuilds.isSelected() && !SettingsUtil.isDevelopmentBuild()) || (recBuilds.isSelected() && !SettingsUtil.isRecommendedBuild())) {
         cleanMods();
       }
 
@@ -341,16 +301,11 @@ public class OptionDialog extends JDialog implements ActionListener {
       this.dispose();
     } else if (id.equals("Clear Cache")) {
       if (clearCache()) {
-        JOptionPane.showMessageDialog(getParent(),
-            "Successfully cleared the cache.");
+        JOptionPane.showMessageDialog(getParent(), "Successfully cleared the cache.");
       } else {
-        JOptionPane
-            .showMessageDialog(
-                getParent(),
-                "Failed to clear the cache! Ensure Modpack files are open.\nIf all else fails, close the launcher, restart it, and try again.");
+        JOptionPane.showMessageDialog(getParent(), "Failed to clear the cache! Ensure Modpack files are open.\nIf all else fails, close the launcher, restart it, and try again.");
       }
-    } else if (id.equals(customBuilds.getText())
-        || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {
+    } else if (id.equals(customBuilds.getText()) || id.equals(devBuilds.getText()) || id.equals(recBuilds.getText())) {
       updateBuildsCombo();
     }
   }

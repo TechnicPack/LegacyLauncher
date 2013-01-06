@@ -15,15 +15,13 @@ public class SpoutFocusTraversalPolicy extends FocusTraversalPolicy {
   }
 
   @Override
-  public Component getComponentAfter(Container focusCycleRoot,
-      Component aComponent) {
+  public Component getComponentAfter(Container focusCycleRoot, Component aComponent) {
     int idx = (order.indexOf(aComponent) + 1) % order.size();
     return order.get(idx);
   }
 
   @Override
-  public Component getComponentBefore(Container focusCycleRoot,
-      Component aComponent) {
+  public Component getComponentBefore(Container focusCycleRoot, Component aComponent) {
     int idx = order.indexOf(aComponent) - 1;
     if (idx < 0) {
       idx = order.size() - 1;

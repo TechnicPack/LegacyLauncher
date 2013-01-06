@@ -3,8 +3,7 @@ package org.spoutcraft.launcher;
 import java.util.Iterator;
 
 public class Range {
-  public static Iterable<Integer> range(final int start, final int stop,
-      final int step) {
+  public static Iterable<Integer> range(final int start, final int stop, final int step) {
     if (step <= 0)
       throw new IllegalArgumentException("step > 0 isrequired!");
 

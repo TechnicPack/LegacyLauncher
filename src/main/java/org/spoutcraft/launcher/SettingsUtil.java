@@ -4,13 +4,8 @@ import java.io.File;
 
 public class SettingsUtil {
   public static final String     DEFAULT_LAUNCHER_PROPERTIES = "defaults/launcher.properties";
-  public static File             settingsFile                = new File(
-                                                                 PlatformUtils
-                                                                     .getWorkingDirectory(),
-                                                                 "launcher.properties");
-  private static SettingsHandler settings                    = new SettingsHandler(
-                                                                 DEFAULT_LAUNCHER_PROPERTIES,
-                                                                 settingsFile);
+  public static File             settingsFile                = new File(PlatformUtils.getWorkingDirectory(), "launcher.properties");
+  private static SettingsHandler settings                    = new SettingsHandler(DEFAULT_LAUNCHER_PROPERTIES, settingsFile);
 
   static {
     settings.load();

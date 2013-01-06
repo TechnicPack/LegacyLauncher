@@ -18,9 +18,7 @@ import org.spoutcraft.launcher.async.DownloadListener;
 
 public class DownloadUtils {
 
-  public static Download downloadFile(String url, String output,
-      String cacheName, String md5, DownloadListener listener)
-      throws IOException {
+  public static Download downloadFile(String url, String output, String cacheName, String md5, DownloadListener listener) throws IOException {
     if (Main.isOffline)
       return null;
     int tries = SettingsUtil.getLoginTries();
@@ -28,11 +26,9 @@ public class DownloadUtils {
     File tempfile = File.createTempFile("file", null, GameUpdater.tempDir);
     tempfile.mkdirs();
     Download download = null;
-    boolean areFilesIdentical = tempfile.getPath().equalsIgnoreCase(
-        outputFile.getPath());
+    boolean areFilesIdentical = tempfile.getPath().equalsIgnoreCase(outputFile.getPath());
     while (tries > 0) {
-      Util.logi("Starting download of '%s', with %s trie(s) remaining", url,
-          tries);
+      Util.logi("Starting download of '%s', with %s trie(s) remaining", url, tries);
       tries--;
       download = new Download(url, tempfile.getPath());
       download.setListener(listener);
@@ -43,8 +39,7 @@ public class DownloadUtils {
         }
         Util.log("Download of " + url + " Failed!");
         if (listener != null) {
-          listener.stateChanged("Download Failed, retries remaining: " + tries,
-              0F);
+          listener.stateChanged("Download Failed, retries remaining: " + tries, 0F);
         }
       } else {
         String fileMD5 = MD5Utils.getMD5(download.getOutFile());
@@ -75,21 +70,18 @@ public class DownloadUtils {
     return download;
   }
 
-  public static Download downloadFile(String url, String output,
-      String cacheName) throws IOException {
+  public static Download downloadFile(String url, String output, String cacheName) throws IOException {
     return downloadFile(url, output, cacheName, null, null);
   }
 
-  public static Download downloadFile(String url, String output)
-      throws IOException {
+  public static Download downloadFile(String url, String output) throws IOException {
     return downloadFile(url, output, null, null, null);
   }
 
   private static int filesToDownload = 0;
   private static int filesDownloaded = 0;
 
-  public static int downloadFiles(Map<String, String> downloadFileList,
-      long timeout, TimeUnit unit) {
+  public static int downloadFiles(Map<String, String> downloadFileList, long timeout, TimeUnit unit) {
     if (Main.isOffline)
       return 0;
     filesToDownload = downloadFileList.size();
@@ -142,9 +134,7 @@ public class DownloadUtils {
       URLConnection con = (url.openConnection());
 
       System.setProperty("http.agent", "");
-      con.setRequestProperty(
-          "User-Agent",
-          "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
+      con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30");
 
       tempFile = File.createTempFile("Modpack", null);
 

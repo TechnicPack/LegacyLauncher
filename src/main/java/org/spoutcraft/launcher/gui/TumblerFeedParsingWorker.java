@@ -18,8 +18,7 @@ import javax.swing.event.HyperlinkListener;
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.Util;
 
-public class TumblerFeedParsingWorker extends SwingWorker<Object, Object>
-    implements PropertyChangeListener {
+public class TumblerFeedParsingWorker extends SwingWorker<Object, Object> implements PropertyChangeListener {
   JTextPane             editorPane;
   private static String username   = null;
   boolean               isUpdating = false;

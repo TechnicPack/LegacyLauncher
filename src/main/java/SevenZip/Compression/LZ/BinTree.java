@@ -61,16 +61,14 @@ public class BinTree extends InWindow {
       Normalize();
   }
 
-  public boolean Create(int historySize, int keepAddBufferBefore,
-      int matchMaxLen, int keepAddBufferAfter) {
+  public boolean Create(int historySize, int keepAddBufferBefore, int matchMaxLen, int keepAddBufferAfter) {
     if (historySize > kMaxValForNormalize - 256)
       return false;
     _cutValue = 16 + (matchMaxLen >> 1);
 
     int windowReservSize = (historySize + keepAddBufferBefore + matchMaxLen + keepAddBufferAfter) / 2 + 256;
 
-    super.Create(historySize + keepAddBufferBefore, matchMaxLen
-        + keepAddBufferAfter, windowReservSize);
+    super.Create(historySize + keepAddBufferBefore, matchMaxLen + keepAddBufferAfter, windowReservSize);
 
     _matchMaxLen = matchMaxLen;
 
@@ -112,20 +110,17 @@ public class BinTree extends InWindow {
     }
 
     int offset = 0;
-    int matchMinPos = (_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize)
-        : 0;
+    int matchMinPos = (_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0;
     int cur = _bufferOffset + _pos;
     int maxLen = kStartMaxLen; // to avoid items for len < hashSize;
     int hashValue, hash2Value = 0, hash3Value = 0;
 
     if (HASH_ARRAY) {
-      int temp = CrcTable[_bufferBase[cur] & 0xFF]
-          ^ (_bufferBase[cur + 1] & 0xFF);
+      int temp = CrcTable[_bufferBase[cur] & 0xFF] ^ (_bufferBase[cur + 1] & 0xFF);
       hash2Value = temp & (kHash2Size - 1);
       temp ^= ((_bufferBase[cur + 2] & 0xFF) << 8);
       hash3Value = temp & (kHash3Size - 1);
-      hashValue = (temp ^ (CrcTable[_bufferBase[cur + 3] & 0xFF] << 5))
-          & _hashMask;
+      hashValue = (temp ^ (CrcTable[_bufferBase[cur + 3] & 0xFF] << 5)) & _hashMask;
     } else
       hashValue = ((_bufferBase[cur] & 0xFF) ^ ((_bufferBase[cur + 1] & 0xFF) << 8));
 
@@ -164,8 +159,7 @@ public class BinTree extends InWindow {
 
     if (kNumHashDirectBytes != 0) {
       if (curMatch > matchMinPos) {
-        if (_bufferBase[_bufferOffset + curMatch + kNumHashDirectBytes] != _bufferBase[cur
-            + kNumHashDirectBytes]) {
+        if (_bufferBase[_bufferOffset + curMatch + kNumHashDirectBytes] != _bufferBase[cur + kNumHashDirectBytes]) {
           distances[offset++] = maxLen = kNumHashDirectBytes;
           distances[offset++] = _pos - curMatch - 1;
         }
@@ -180,8 +174,7 @@ public class BinTree extends InWindow {
         break;
       }
       int delta = _pos - curMatch;
-      int cyclicPos = ((delta <= _cyclicBufferPos) ? (_cyclicBufferPos - delta)
-          : (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
+      int cyclicPos = ((delta <= _cyclicBufferPos) ? (_cyclicBufferPos - delta) : (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
 
       int pby1 = _bufferOffset + curMatch;
       int len = Math.min(len0, len1);
@@ -228,22 +221,19 @@ public class BinTree extends InWindow {
         }
       }
 
-      int matchMinPos = (_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize)
-          : 0;
+      int matchMinPos = (_pos > _cyclicBufferSize) ? (_pos - _cyclicBufferSize) : 0;
       int cur = _bufferOffset + _pos;
 
       int hashValue;
 
       if (HASH_ARRAY) {
-        int temp = CrcTable[_bufferBase[cur] & 0xFF]
-            ^ (_bufferBase[cur + 1] & 0xFF);
+        int temp = CrcTable[_bufferBase[cur] & 0xFF] ^ (_bufferBase[cur + 1] & 0xFF);
         int hash2Value = temp & (kHash2Size - 1);
         _hash[hash2Value] = _pos;
         temp ^= ((_bufferBase[cur + 2] & 0xFF) << 8);
         int hash3Value = temp & (kHash3Size - 1);
         _hash[kHash3Offset + hash3Value] = _pos;
-        hashValue = (temp ^ (CrcTable[_bufferBase[cur + 3] & 0xFF] << 5))
-            & _hashMask;
+        hashValue = (temp ^ (CrcTable[_bufferBase[cur + 3] & 0xFF] << 5)) & _hashMask;
       } else
         hashValue = ((_bufferBase[cur] & 0xFF) ^ ((_bufferBase[cur + 1] & 0xFF) << 8));
 
@@ -264,8 +254,7 @@ public class BinTree extends InWindow {
         }
 
         int delta = _pos - curMatch;
-        int cyclicPos = ((delta <= _cyclicBufferPos) ? (_cyclicBufferPos - delta)
-            : (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
+        int cyclicPos = ((delta <= _cyclicBufferPos) ? (_cyclicBufferPos - delta) : (_cyclicBufferPos - delta + _cyclicBufferSize)) << 1;
 
         int pby1 = _bufferOffset + curMatch;
         int len = Math.min(len0, len1);

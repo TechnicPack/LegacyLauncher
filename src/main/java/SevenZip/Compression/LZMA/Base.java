@@ -60,8 +60,7 @@ public class Base {
 
   public static final int kStartPosModelIndex             = 4;
   public static final int kEndPosModelIndex               = 14;
-  public static final int kNumPosModels                   = kEndPosModelIndex
-                                                              - kStartPosModelIndex;
+  public static final int kNumPosModels                   = kEndPosModelIndex - kStartPosModelIndex;
 
   public static final int kNumFullDistances               = 1 << (kEndPosModelIndex / 2);
 
@@ -78,10 +77,6 @@ public class Base {
   public static final int kNumHighLenBits                 = 8;
   public static final int kNumLowLenSymbols               = 1 << kNumLowLenBits;
   public static final int kNumMidLenSymbols               = 1 << kNumMidLenBits;
-  public static final int kNumLenSymbols                  = kNumLowLenSymbols
-                                                              + kNumMidLenSymbols
-                                                              + (1 << kNumHighLenBits);
-  public static final int kMatchMaxLen                    = kMatchMinLen
-                                                              + kNumLenSymbols
-                                                              - 1;
+  public static final int kNumLenSymbols                  = kNumLowLenSymbols + kNumMidLenSymbols + (1 << kNumHighLenBits);
+  public static final int kMatchMaxLen                    = kMatchMinLen + kNumLenSymbols - 1;
 }

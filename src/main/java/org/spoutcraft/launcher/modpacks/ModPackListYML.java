@@ -24,9 +24,7 @@ import org.spoutcraft.launcher.YmlUtils;
 
 public class ModPackListYML {
 
-  public static final File                   ORIGINAL_PROPERTIES     = new File(
-                                                                         GameUpdater.cacheDir,
-                                                                         "launcher.properties");
+  public static final File                   ORIGINAL_PROPERTIES     = new File(GameUpdater.cacheDir, "launcher.properties");
   private static final String                RESOURCES_PATH          = "resources";
   private static final String                ICON_ICO                = "icon.ico";
   private static final String                ICON_ICNS               = "icon.icns";
@@ -36,9 +34,7 @@ public class ModPackListYML {
   private static final String                MODPACKS_YML            = "modpacks.yml";
 
   private static final List<String>          RESOURCES               = new LinkedList();
-  private static final File                  MODPACKS_YML_FILE       = new File(
-                                                                         GameUpdater.workDir,
-                                                                         MODPACKS_YML);
+  private static final File                  MODPACKS_YML_FILE       = new File(GameUpdater.workDir, MODPACKS_YML);
   private static final Object                key                     = new Object();
 
   public static final Map<String, String>    modpackMap;
@@ -93,8 +89,7 @@ public class ModPackListYML {
 
   public static void setCurrentModpack() {
     Map<String, String> modPackMap = getModPacks();
-    setModPack(SettingsUtil.getModPackSelection(),
-        modPackMap.get(SettingsUtil.getModPackSelection()), false);
+    setModPack(SettingsUtil.getModPackSelection(), modPackMap.get(SettingsUtil.getModPackSelection()), false);
     File propFile = new File(GameUpdater.modpackDir, "launcher.properties");
     if (!ORIGINAL_PROPERTIES.exists()) {
       GameUpdater.copy(SettingsUtil.settingsFile, ORIGINAL_PROPERTIES);
@@ -119,8 +114,7 @@ public class ModPackListYML {
     return setModPack(modPack, modPackLabel, false);
   }
 
-  public static boolean setModPack(String modPack, String modPackLabel,
-      boolean ignoreCheck) {
+  public static boolean setModPack(String modPack, String modPackLabel, boolean ignoreCheck) {
     if (modPack.equalsIgnoreCase(currentModPack)) {
       return true;
     }
@@ -150,17 +144,13 @@ public class ModPackListYML {
   }
 
   public static void downloadModPackResources() {
-    downloadModPackResources(currentModPack, currentModPackLabel,
-        currentModPackDirectory);
+    downloadModPackResources(currentModPack, currentModPackLabel, currentModPackDirectory);
   }
 
-  public static void downloadModPackResources(String name, String label,
-      File path) {
+  public static void downloadModPackResources(String name, String label, File path) {
     Map<String, String> downloadFileList = getModPackResources(name, path);
 
-    if (downloadFileList.size() > 0
-        && DownloadUtils.downloadFiles(downloadFileList, 30, TimeUnit.SECONDS) != downloadFileList
-            .size()) {
+    if (downloadFileList.size() > 0 && DownloadUtils.downloadFiles(downloadFileList, 30, TimeUnit.SECONDS) != downloadFileList.size()) {
       Util.log("Could not download all resources for modpack '%s'.", label);
     }
   }
@@ -169,8 +159,7 @@ public class ModPackListYML {
     return getModPackResources(name, path, true);
   }
 
-  private static Map<String, String> getModPackResources(String name,
-      File path, boolean doCheck) {
+  private static Map<String, String> getModPackResources(String name, File path, boolean doCheck) {
     Map<String, String> fileMap = new HashMap<String, String>();
 
     for (String resource : RESOURCES) {
@@ -214,21 +203,18 @@ public class ModPackListYML {
       File modPackLogo = new File(resourcesPath, LOGO_PNG);
       if (!modPackLogo.exists())
         continue;
-      modpackLogoList.put(modPack, new ImageIcon(Toolkit.getDefaultToolkit()
-          .getImage(modPackLogo.getAbsolutePath())));
+      modpackLogoList.put(modPack, new ImageIcon(Toolkit.getDefaultToolkit().getImage(modPackLogo.getAbsolutePath())));
     }
   }
 
   public static void downloadAllFiles(Map<String, String> fileMap) {
     int size = fileMap.size();
-    if (size > 0
-        && DownloadUtils.downloadFiles(fileMap, 30, TimeUnit.SECONDS) != size) {
+    if (size > 0 && DownloadUtils.downloadFiles(fileMap, 30, TimeUnit.SECONDS) != size) {
       Util.log("Could not download all files");
     }
   }
 
   public static ImageIcon getModPackLogo(String item) {
-    return (modpackLogoList.containsKey(item)) ? modpackLogoList.get(item)
-        : null;
+    return (modpackLogoList.containsKey(item)) ? modpackLogoList.get(item) : null;
   }
 }

@@ -15,8 +15,7 @@ public class ModpackBuild {
   Map<String, Object>      mods;
   private DownloadListener listener = null;
 
-  private ModpackBuild(String minecraft, String latest, String build,
-      Map<String, Object> libraries, Map<String, Object> mods) {
+  private ModpackBuild(String minecraft, String latest, String build, Map<String, Object> libraries, Map<String, Object> mods) {
     this.minecraftVersion = minecraft;
     this.latestVersion = latest;
     this.build = build;
@@ -37,8 +36,7 @@ public class ModpackBuild {
   }
 
   public String getMinecraftURL(String user) {
-    return "http://s3.amazonaws.com/MinecraftDownload/minecraft.jar?user="
-        + user + "&ticket=1";
+    return "http://s3.amazonaws.com/MinecraftDownload/minecraft.jar?user=" + user + "&ticket=1";
   }
 
   public void setDownloadListener(DownloadListener listener) {
@@ -89,8 +87,7 @@ public class ModpackBuild {
   @SuppressWarnings("unchecked")
   public static ModpackBuild getSpoutcraftBuild() {
     Configuration config = ModPackYML.getModPackYML();
-    Map<String, Object> builds = (Map<String, Object>) config
-        .getProperty("builds");
+    Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
     String latest = config.getString("latest", null);
     String recommended = config.getString("recommended", null);
     String selected = SettingsUtil.getSelectedBuild();
@@ -106,7 +103,6 @@ public class ModpackBuild {
     Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
     Map<String, Object> mods = (Map<String, Object>) build.get("mods");
     String minecraftVersion = build.get("minecraft").toString();
-    return new ModpackBuild(minecraftVersion,
-        MinecraftYML.getLatestMinecraftVersion(), buildName, libs, mods);
+    return new ModpackBuild(minecraftVersion, MinecraftYML.getLatestMinecraftVersion(), buildName, libs, mods);
   }
 }

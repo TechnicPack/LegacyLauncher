@@ -78,8 +78,7 @@ public class LoadingScreen extends JDialog {
     }
 
     // close "button" - show this image by default
-    closeNormal = new ImageIcon(getClass().getResource(
-        "/org/spoutcraft/launcher/splash_logo.png"));
+    closeNormal = new ImageIcon(getClass().getResource("/org/spoutcraft/launcher/splash_logo.png"));
     closeLabel = new JLabel(closeNormal);
 
     // Put the label with the image on the far right
@@ -95,8 +94,7 @@ public class LoadingScreen extends JDialog {
 
     // Set position somewhere near the middle of the screen
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    setLocation(screenSize.width / 2 - (getWidth() / 2), screenSize.height / 2
-        - (getHeight() / 2));
+    setLocation(screenSize.width / 2 - (getWidth() / 2), screenSize.height / 2 - (getHeight() / 2));
 
     // don't keep window on top of others
     setAlwaysOnTop(false);

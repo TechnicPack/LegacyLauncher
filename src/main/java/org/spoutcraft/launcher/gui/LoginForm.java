@@ -52,6 +52,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -94,27 +95,18 @@ import org.spoutcraft.launcher.modpacks.ModPackListYML;
 import org.spoutcraft.launcher.modpacks.ModPackUpdater;
 import org.spoutcraft.launcher.modpacks.ModPackYML;
 
-public class LoginForm extends JFrame implements ActionListener,
-    DownloadListener, KeyListener, WindowListener {
+public class LoginForm extends JFrame implements ActionListener, DownloadListener, KeyListener, WindowListener {
 
   private static final long                serialVersionUID = 1L;
-  private final JPanel                     contentPane;
+  private final BackgroundPanel            contentPane;
   private final JPasswordField             passwordField;
   private final JComboBox                  usernameField    = new JComboBox();
-  private final JButton                    loginButton      = new JButton(
-                                                                "Login");
-  JButton                                  optionsButton    = new JButton(
-                                                                "Options");
-  JButton                                  modsButton       = new JButton(
-                                                                "Mod Select");
-  private final JCheckBox                  rememberCheckbox = new JCheckBox(
-                                                                "Remember");
-  final JLabel                             background       = new JLabel(
-                                                                "Loading...");
-  private final JButton                    offlineMode      = new JButton(
-                                                                "Offline Mode");
-  private final JButton                    tryAgain         = new JButton(
-                                                                "Try Again");
+  private final JButton                    loginButton      = new JButton("Login");
+  JButton                                  optionsButton    = new JButton("Options");
+  JButton                                  modsButton       = new JButton("Mod Select");
+  private final JCheckBox                  rememberCheckbox = new JCheckBox("Remember");
+  private final JButton                    offlineMode      = new JButton("Offline Mode");
+  private final JButton                    tryAgain         = new JButton("Try Again");
   final JTextPane                          editorPane       = new JTextPane();
   private final JButton                    loginSkin1;
   private final List<JButton>              loginSkin1Image;
@@ -130,14 +122,10 @@ public class LoginForm extends JFrame implements ActionListener,
   private static String                    pass             = null;
   public static String[]                   values           = null;
   private int                              success          = LauncherFrame.ERROR_IN_LAUNCH;
-  public String                            workingDir       = PlatformUtils
-                                                                .getWorkingDirectory()
-                                                                .getAbsolutePath();
+  public String                            workingDir       = PlatformUtils.getWorkingDirectory().getAbsolutePath();
   public static final ModPackUpdater       gameUpdater      = new ModPackUpdater();
   OptionDialog                             options          = null;
-  ModsDialog                               mods             = new ModsDialog(
-                                                                ModPackYML
-                                                                    .getModList());
+  ModsDialog                               mods             = new ModsDialog(ModPackYML.getModList());
   Container                                loginPane        = new Container();
   Container                                offlinePane      = new Container();
   // private final JLabel lblLogo;
@@ -175,9 +163,9 @@ public class LoginForm extends JFrame implements ActionListener,
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
     setBounds((dim.width - 860) / 2, (dim.height - 500) / 2, 860, 500);
 
-    contentPane = new JPanel();
+    contentPane = new BackgroundPanel();
 
-    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+    contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
     setContentPane(contentPane);
 
     // lblLogo = new JLabel("");
@@ -236,9 +224,7 @@ public class LoginForm extends JFrame implements ActionListener,
     progressBar.setStringPainted(true);
     progressBar.setOpaque(true);
 
-    JLabel purchaseAccount = new HyperlinkJLabel(
-        "<html><u>Need a minecraft account?</u></html>",
-        "http://www.minecraft.net/register.jsp");
+    JLabel purchaseAccount = new HyperlinkJLabel("<html><u>Need a minecraft account?</u></html>", "http://www.minecraft.net/register.jsp");
     purchaseAccount.setHorizontalAlignment(SwingConstants.RIGHT);
     purchaseAccount.setBounds(243, 70, 111, 14);
 
@@ -246,8 +232,7 @@ public class LoginForm extends JFrame implements ActionListener,
     purchaseAccount.setFont(new Font("Arial", Font.PLAIN, 11));
     purchaseAccount.setForeground(new Color(0, 0, 255));
 
-    JLabel wikiLink = new HyperlinkJLabel(
-        "<html><u>Technic WebSite</u></html>", "http://technicpack.net/");
+    JLabel wikiLink = new HyperlinkJLabel("<html><u>Technic WebSite</u></html>", "http://technicpack.net/");
     wikiLink.setHorizontalAlignment(SwingConstants.RIGHT);
     wikiLink.setBounds(233, 85, 109, 14);
 
@@ -349,14 +334,8 @@ public class LoginForm extends JFrame implements ActionListener,
     contentPane.add(trans);
     contentPane.add(progressBar);
 
-    background.setVerticalAlignment(SwingConstants.CENTER);
-    background.setHorizontalAlignment(SwingConstants.CENTER);
-    background.setBounds(0, 0, 854, 480);
-    contentPane.add(background);
-
     // TODO: remove this after next release
-    (new File(PlatformUtils.getWorkingDirectory(), "launcher_cache.jpg"))
-        .delete();
+    (new File(PlatformUtils.getWorkingDirectory(), "launcher_cache.jpg")).delete();
 
     List<Component> order = new ArrayList<Component>(6);
     order.add(usernameField.getEditor().getEditorComponent());
@@ -418,10 +397,8 @@ public class LoginForm extends JFrame implements ActionListener,
 
         loginButton.setEnabled(true);
         optionsButton.setEnabled(true);
-        setIconImage(Toolkit.getDefaultToolkit().getImage(
-            ModPackYML.getModPackIcon()));
-        setTitle(String.format("Technic Launcher - %s - (%s)", Main.build,
-            ModPackListYML.currentModPackLabel));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(ModPackYML.getModPackIcon()));
+        setTitle(String.format("Technic Launcher - %s - (%s)", Main.build, ModPackListYML.currentModPackLabel));
         options.reloadSettings();
         MinecraftYML.updateMinecraftYMLCache();
         setModLoaderEnabled();
@@ -478,13 +455,11 @@ public class LoginForm extends JFrame implements ActionListener,
 
   private void tryConvertLastLogin() {
     try {
-      File lastLogin = new File(PlatformUtils.getWorkingDirectory(),
-          "lastlogin");
+      File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
       Cipher cipher = getCipher(2, "passwordfile");
       DataInputStream dis;
       if (cipher != null)
-        dis = new DataInputStream(new CipherInputStream(new FileInputStream(
-            lastLogin), cipher));
+        dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
       else
         dis = new DataInputStream(new FileInputStream(lastLogin));
       String userName = dis.readUTF();
@@ -496,8 +471,7 @@ public class LoginForm extends JFrame implements ActionListener,
 
       DataOutputStream dos;
       if (cipher != null) {
-        dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(
-            lastLogin), cipher));
+        dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
       } else {
         dos = new DataOutputStream(new FileOutputStream(lastLogin, true));
       }
@@ -513,8 +487,7 @@ public class LoginForm extends JFrame implements ActionListener,
   private void readUsedUsernames() {
     int i = 0;
     try {
-      File lastLogin = new File(PlatformUtils.getWorkingDirectory(),
-          "lastlogin");
+      File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
       if (!lastLogin.exists()) {
         return;
       }
@@ -522,8 +495,7 @@ public class LoginForm extends JFrame implements ActionListener,
 
       DataInputStream dis;
       if (cipher != null) {
-        dis = new DataInputStream(new CipherInputStream(new FileInputStream(
-            lastLogin), cipher));
+        dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
       } else {
         dis = new DataInputStream(new FileInputStream(lastLogin));
       }
@@ -553,17 +525,13 @@ public class LoginForm extends JFrame implements ActionListener,
                 if (!Main.isOffline) {
                   loginSkin1.setText(user);
                   loginSkin1.setVisible(true);
-                  ImageUtils.drawCharacter(contentPane, this,
-                      "http://s3.amazonaws.com/MinecraftSkins/" + skinName
-                          + ".png", 103, 170, loginSkin1Image);
+                  ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + skinName + ".png", 103, 170, loginSkin1Image);
                 }
               } else if (i == 2) {
                 if (!Main.isOffline) {
                   loginSkin2.setText(user);
                   loginSkin2.setVisible(true);
-                  ImageUtils.drawCharacter(contentPane, this,
-                      "http://s3.amazonaws.com/MinecraftSkins/" + skinName
-                          + ".png", 293, 170, loginSkin2Image);
+                  ImageUtils.drawCharacter(contentPane, this, "http://s3.amazonaws.com/MinecraftSkins/" + skinName + ".png", 293, 170, loginSkin2Image);
                 }
               }
             }
@@ -583,15 +551,13 @@ public class LoginForm extends JFrame implements ActionListener,
 
   private void writeUsernameList() {
     try {
-      File lastLogin = new File(PlatformUtils.getWorkingDirectory(),
-          "lastlogin");
+      File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
 
       Cipher cipher = getCipher(1, "passwordfile");
 
       DataOutputStream dos;
       if (cipher != null) {
-        dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(
-            lastLogin), cipher));
+        dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
       } else {
         dos = new DataOutputStream(new FileOutputStream(lastLogin, true));
       }
@@ -630,23 +596,19 @@ public class LoginForm extends JFrame implements ActionListener,
     if ((source == modpackList)) {
       if (ModPackListYML.currentModPack == null) {
         SettingsUtil.init();
-        GameUpdater.copy(SettingsUtil.settingsFile,
-            ModPackListYML.ORIGINAL_PROPERTIES);
+        GameUpdater.copy(SettingsUtil.settingsFile, ModPackListYML.ORIGINAL_PROPERTIES);
       } else {
-        GameUpdater.copy(SettingsUtil.settingsFile, new File(
-            GameUpdater.modpackDir, "launcher.properties"));
+        GameUpdater.copy(SettingsUtil.settingsFile, new File(GameUpdater.modpackDir, "launcher.properties"));
       }
       String selectedItem = (String) ((JComboBox) source).getSelectedItem();
       SettingsUtil.setModPack(selectedItem);
       updateBranding();
     }
-    if ((eventId.equals("Login") || eventId.equals(usernameField
-        .getSelectedItem())) && loginButton.isEnabled()) {
+    if ((eventId.equals("Login") || eventId.equals(usernameField.getSelectedItem())) && loginButton.isEnabled()) {
       doLogin();
     } else if (eventId.equals("Options")) {
       options.setVisible(true);
-      options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds()
-          .getCenterY() - 75, 300, 325);
+      options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
     } else if (eventId.equals(modsButton.getText())) {
       if (ModPackListYML.currentModPack != null) {
         open(new File(GameUpdater.modconfigsDir, "ModLoader.cfg"));
@@ -677,8 +639,7 @@ public class LoginForm extends JFrame implements ActionListener,
 
   private void updatePasswordField() {
     if (this.usernameField.getSelectedItem() != null) {
-      UserPasswordInformation info = usernames.get(this.usernameField
-          .getSelectedItem().toString());
+      UserPasswordInformation info = usernames.get(this.usernameField.getSelectedItem().toString());
       if (info != null) {
         if (info.isHash) {
           this.passwordField.setText("");
@@ -692,16 +653,14 @@ public class LoginForm extends JFrame implements ActionListener,
   }
 
   public void doLogin() {
-    doLogin(usernameField.getSelectedItem().toString(), new String(
-        passwordField.getPassword()), false);
+    doLogin(usernameField.getSelectedItem().toString(), new String(passwordField.getPassword()), false);
   }
 
   public void doLogin(final String user, final String pass) {
     doLogin(user, pass, true);
   }
 
-  public void doLogin(final String user, final String pass,
-      final boolean cmdLine) {
+  public void doLogin(final String user, final String pass, final boolean cmdLine) {
     if (user == null || user.isEmpty() || pass == null || pass.isEmpty()) {
       return;
     }
@@ -722,18 +681,15 @@ public class LoginForm extends JFrame implements ActionListener,
           values = MinecraftUtils.doLogin(user, pass, progressBar);
           return true;
         } catch (AccountMigratedException e) {
-          JOptionPane.showMessageDialog(getParent(),
-              "Account migrated, use e-mail as username");
+          JOptionPane.showMessageDialog(getParent(), "Account migrated, use e-mail as username");
           this.cancel(true);
           progressBar.setVisible(false);
         } catch (BadLoginException e) {
-          JOptionPane.showMessageDialog(getParent(),
-              "Incorrect usernameField/passwordField combination");
+          JOptionPane.showMessageDialog(getParent(), "Incorrect usernameField/passwordField combination");
           this.cancel(true);
           progressBar.setVisible(false);
         } catch (MinecraftUserNotPremiumException e) {
-          JOptionPane.showMessageDialog(getParent(),
-              "You purchase a minecraft account to play");
+          JOptionPane.showMessageDialog(getParent(), "You purchase a minecraft account to play");
           this.cancel(true);
           progressBar.setVisible(false);
         } catch (MCNetworkException e) {
@@ -768,14 +724,9 @@ public class LoginForm extends JFrame implements ActionListener,
           }
 
           if (authFailed) {
-            JOptionPane.showMessageDialog(getParent(),
-                "Unable to authenticate account with minecraft.net");
+            JOptionPane.showMessageDialog(getParent(), "Unable to authenticate account with minecraft.net");
           } else {
-            int result = JOptionPane
-                .showConfirmDialog(getParent(),
-                    "Would you like to run in offline mode?",
-                    "Unable to Connect to Minecraft.net",
-                    JOptionPane.YES_NO_OPTION);
+            int result = JOptionPane.showConfirmDialog(getParent(), "Would you like to run in offline mode?", "Unable to Connect to Minecraft.net", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
               values = new String[] { "0", "0", user, "0" };
               return true;
@@ -784,8 +735,7 @@ public class LoginForm extends JFrame implements ActionListener,
           this.cancel(true);
           progressBar.setVisible(false);
         } catch (OutdatedMCLauncherException e) {
-          JOptionPane.showMessageDialog(getParent(),
-              "Incompatible Login Version.");
+          JOptionPane.showMessageDialog(getParent(), "Incompatible Login Version.");
           progressBar.setVisible(false);
         } catch (UnsupportedEncodingException e) {
           e.printStackTrace();
@@ -819,14 +769,12 @@ public class LoginForm extends JFrame implements ActionListener,
         if (!cmdLine) {
           String password = new String(passwordField.getPassword());
           if (rememberCheckbox.isSelected()) {
-            usernames.put(gameUpdater.user, new UserPasswordInformation(
-                password, profileName));
+            usernames.put(gameUpdater.user, new UserPasswordInformation(password, profileName));
           } else {
             if (digest == null) {
               usernames.put(gameUpdater.user, new UserPasswordInformation(""));
             } else {
-              usernames.put(gameUpdater.user, new UserPasswordInformation(
-                  digest.digest(password.getBytes())));
+              usernames.put(gameUpdater.user, new UserPasswordInformation(digest.digest(password.getBytes())));
             }
           }
           writeUsernameList();
@@ -850,8 +798,7 @@ public class LoginForm extends JFrame implements ActionListener,
               e.printStackTrace();
             }
 
-            publish(String.format("Checking for %s update...\n",
-                ModPackListYML.currentModPackLabel));
+            publish(String.format("Checking for %s update...\n", ModPackListYML.currentModPackLabel));
             try {
               modpackUpdate = gameUpdater.isModpackUpdateAvailable();
             } catch (Exception e) {
@@ -921,8 +868,7 @@ public class LoginForm extends JFrame implements ActionListener,
             gameUpdater.updateModPackMods();
           }
         } catch (NoMirrorsAvailableException e) {
-          JOptionPane.showMessageDialog(getParent(),
-              "No Mirrors Are Available to download from!\nTry again later.");
+          JOptionPane.showMessageDialog(getParent(), "No Mirrors Are Available to download from!\nTry again later.");
         } catch (Exception e) {
           e.printStackTrace();
           JOptionPane.showMessageDialog(getParent(), "Update Failed!");
@@ -956,8 +902,7 @@ public class LoginForm extends JFrame implements ActionListener,
     random.nextBytes(salt);
     PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 5);
 
-    SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES")
-        .generateSecret(new PBEKeySpec(password.toCharArray()));
+    SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(new PBEKeySpec(password.toCharArray()));
     Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
     cipher.init(mode, pbeKey, pbeParamSpec);
     return cipher;
@@ -965,17 +910,14 @@ public class LoginForm extends JFrame implements ActionListener,
 
   public void runGame() {
     if (ModPackListYML.currentModPack.equals("technicssp")) {
-      File temp = new File(GameUpdater.modsDir,
-          "industrialcraft-2-client_1.64.jar");
+      File temp = new File(GameUpdater.modsDir, "industrialcraft-2-client_1.64.jar");
       if (temp.exists())
         temp.delete();
     }
 
     LauncherFrame launcher = new LauncherFrame();
     launcher.setLoginForm(this);
-    int result = (Main.isOffline) ? launcher.runGame(null, null, null, null)
-        : launcher.runGame(values[2].trim(), values[3].trim(),
-            values[1].trim(), pass);
+    int result = (Main.isOffline) ? launcher.runGame(null, null, null, null) : launcher.runGame(values[2].trim(), values[3].trim(), values[1].trim(), pass);
     if (result == LauncherFrame.SUCCESSFUL_LAUNCH) {
       LoginForm.updateDialog.dispose();
       LoginForm.updateDialog = null;
@@ -1003,8 +945,8 @@ public class LoginForm extends JFrame implements ActionListener,
 
     File cacheDir = new File(PlatformUtils.getWorkingDirectory(), "cache");
     cacheDir.mkdir();
-    File backgroundImage = new File(cacheDir, "launcher_background.jpg");
-    (new BackgroundImageWorker(backgroundImage, background)).execute();
+    File backgroundImage = new File(cacheDir, "launcher_background.png");
+    (new BackgroundImageWorker(backgroundImage, contentPane)).execute();
   }
 
   @Override

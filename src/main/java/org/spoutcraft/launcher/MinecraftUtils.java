@@ -39,14 +39,10 @@ public class MinecraftUtils {
     MinecraftUtils.options = options;
   }
 
-  public static String[] doLogin(String user, String pass, JProgressBar progress)
-      throws BadLoginException, MCNetworkException,
-      OutdatedMCLauncherException, UnsupportedEncodingException,
-      MinecraftUserNotPremiumException, AccountMigratedException {
-    String parameters = "user=" + URLEncoder.encode(user, "UTF-8")
-        + "&password=" + URLEncoder.encode(pass, "UTF-8") + "&version=" + 13;
-    String result = PlatformUtils.excutePost("https://login.minecraft.net/",
-        parameters, progress);
+  public static String[] doLogin(String user, String pass, JProgressBar progress) throws BadLoginException, MCNetworkException, OutdatedMCLauncherException,
+      UnsupportedEncodingException, MinecraftUserNotPremiumException, AccountMigratedException {
+    String parameters = "user=" + URLEncoder.encode(user, "UTF-8") + "&password=" + URLEncoder.encode(pass, "UTF-8") + "&version=" + 13;
+    String result = PlatformUtils.excutePost("https://login.minecraft.net/", parameters, progress);
     if (result == null) {
       throw new MCNetworkException();
     }
@@ -57,8 +53,7 @@ public class MinecraftUtils {
         throw new MinecraftUserNotPremiumException();
       } else if (result.trim().equals("Old version")) {
         throw new OutdatedMCLauncherException();
-      } else if (result.trim().equals(
-          "Account migrated, use e-mail as username.")) {
+      } else if (result.trim().equals("Account migrated, use e-mail as username.")) {
         throw new AccountMigratedException();
       } else {
         System.err.print("Unknown login result: " + result);

@@ -72,14 +72,9 @@ public class CheckBoxNodeTreeSample {
 
     MJFrame frame = new MJFrame("CheckBox Tree");
 
-    CheckBoxNode accessibilityOptions[] = {
-        new CheckBoxNode("Move system caret with focus/selection changes",
-            false), new CheckBoxNode("Always expand alt text for images", true) };
-    CheckBoxNode browsingOptions[] = {
-        new CheckBoxNode("Notify when downloads complete", true, 0),
-        new CheckBoxNode("Disable script debugging", true, 0),
-        new CheckBoxNode("Use AutoComplete", true),
-        new CheckBoxNode("Browse in a new process", false) };
+    CheckBoxNode accessibilityOptions[] = { new CheckBoxNode("Move system caret with focus/selection changes", false), new CheckBoxNode("Always expand alt text for images", true) };
+    CheckBoxNode browsingOptions[] = { new CheckBoxNode("Notify when downloads complete", true, 0), new CheckBoxNode("Disable script debugging", true, 0),
+        new CheckBoxNode("Use AutoComplete", true), new CheckBoxNode("Browse in a new process", false) };
     Vector accessVector = new NamedVector("Accessibility", accessibilityOptions);
     Vector browseVector = new NamedVector("Browsing", browsingOptions);
     Object rootNodes[] = { accessVector, browseVector };
@@ -148,28 +143,19 @@ public class CheckBoxNodeTreeSample {
     tree.setEditable(true);
 
     File workingDirectory = PlatformUtils.getWorkingDirectory();
-    Image im = Toolkit.getDefaultToolkit().getImage(
-        new File(workingDirectory, "splash_logo.png").getAbsolutePath());
+    Image im = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "splash_logo.png").getAbsolutePath());
     JList list = new JList(new Image[] { im, im });
 
     list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-    Image tek = Toolkit.getDefaultToolkit().getImage(
-        new File(workingDirectory, "tekkit_unselected.png").getAbsolutePath());
-    Image tekh = Toolkit.getDefaultToolkit().getImage(
-        new File(workingDirectory, "tekkit_hover.png").getAbsolutePath());
-    Image teks = Toolkit.getDefaultToolkit().getImage(
-        new File(workingDirectory, "tekkit_selected.png").getAbsolutePath());
-    Image tec = Toolkit.getDefaultToolkit().getImage(
-        new File(workingDirectory, "technic_unselected.png").getAbsolutePath());
-    Image tech = Toolkit.getDefaultToolkit().getImage(
-        new File(workingDirectory, "technic_hover.png").getAbsolutePath());
-    Image tecs = Toolkit.getDefaultToolkit().getImage(
-        new File(workingDirectory, "technic_selected.png").getAbsolutePath());
+    Image tek = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "tekkit_unselected.png").getAbsolutePath());
+    Image tekh = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "tekkit_hover.png").getAbsolutePath());
+    Image teks = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "tekkit_selected.png").getAbsolutePath());
+    Image tec = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "technic_unselected.png").getAbsolutePath());
+    Image tech = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "technic_hover.png").getAbsolutePath());
+    Image tecs = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "technic_selected.png").getAbsolutePath());
 
-    FancyButton b1 = new FancyButton(new ImageIcon(tek), new ImageIcon(teks),
-        new ImageIcon(tekh));
-    FancyButton b2 = new FancyButton(new ImageIcon(tec), new ImageIcon(tecs),
-        new ImageIcon(tech));
+    FancyButton b1 = new FancyButton(new ImageIcon(tek), new ImageIcon(teks), new ImageIcon(tekh));
+    FancyButton b2 = new FancyButton(new ImageIcon(tec), new ImageIcon(tecs), new ImageIcon(tech));
 
     ButtonGroup group = new ButtonGroup();
     group.add(b1);

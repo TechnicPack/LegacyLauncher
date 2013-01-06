@@ -41,8 +41,7 @@ public class JBPatch {
   public static void main(String[] arg) throws IOException {
 
     if (arg.length != 3) {
-      System.err
-          .println("usage example: java -Xmx200m ie.wombat.jbdiff.JBPatch oldfile newfile patchfile");
+      System.err.println("usage example: java -Xmx200m ie.wombat.jbdiff.JBPatch oldfile newfile patchfile");
     }
 
     File oldFile = new File(arg[0]);
@@ -52,8 +51,7 @@ public class JBPatch {
     bspatch(oldFile, newFile, diffFile);
   }
 
-  public static void bspatch(File oldFile, File newFile, File diffFile)
-      throws IOException {
+  public static void bspatch(File oldFile, File newFile, File diffFile) throws IOException {
 
     int oldpos, newpos;
 

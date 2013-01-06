@@ -56,22 +56,19 @@ public class PlatformUtils {
     case windows:
       String applicationData = System.getenv("APPDATA");
       if (applicationData != null) {
-        workingDirectory = new File(applicationData, "." + applicationName
-            + '/');
+        workingDirectory = new File(applicationData, "." + applicationName + '/');
       } else {
         workingDirectory = new File(userHome, '.' + applicationName + '/');
       }
       break;
     case macos:
-      workingDirectory = new File(userHome, "Library/Application Support/"
-          + applicationName);
+      workingDirectory = new File(userHome, "Library/Application Support/" + applicationName);
       break;
     default:
       workingDirectory = new File(userHome, applicationName + '/');
     }
     if ((!workingDirectory.exists()) && (!workingDirectory.mkdirs())) {
-      throw new RuntimeException("The working directory could not be created: "
-          + workingDirectory);
+      throw new RuntimeException("The working directory could not be created: " + workingDirectory);
     }
     return workingDirectory;
   }
@@ -104,18 +101,15 @@ public class PlatformUtils {
     linux, solaris, windows, macos, unknown
   }
 
-  public static String excutePost(String targetURL, String urlParameters,
-      JProgressBar progress) {
+  public static String excutePost(String targetURL, String urlParameters, JProgressBar progress) {
     HttpsURLConnection connection = null;
     try {
       URL url = new URL(targetURL);
       connection = (HttpsURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
-      connection.setRequestProperty("Content-Type",
-          "application/x-www-form-urlencoded");
+      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
-      connection.setRequestProperty("Content-Length",
-          Integer.toString(urlParameters.getBytes().length));
+      connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
       connection.setRequestProperty("Content-Language", "en-US");
 
       connection.setUseCaches(false);
@@ -128,8 +122,7 @@ public class PlatformUtils {
       Certificate[] certs = connection.getServerCertificates();
 
       byte[] bytes = new byte[294];
-      DataInputStream dis = new DataInputStream(
-          PlatformUtils.class.getResourceAsStream("minecraft.key"));
+      DataInputStream dis = new DataInputStream(PlatformUtils.class.getResourceAsStream("minecraft.key"));
       dis.readFully(bytes);
       dis.close();
 

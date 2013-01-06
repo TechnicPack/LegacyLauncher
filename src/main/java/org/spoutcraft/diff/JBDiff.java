@@ -228,8 +228,7 @@ public class JBDiff {
    * @param newOffset
    * @return
    */
-  private final static int matchlen(byte[] oldBuf, int oldOffset,
-      byte[] newBuf, int newOffset) {
+  private final static int matchlen(byte[] oldBuf, int oldOffset, byte[] newBuf, int newOffset) {
     int end = min(oldBuf.length - oldOffset, newBuf.length - newOffset);
     int i;
     for (i = 0; i < end; i++) {
@@ -240,8 +239,7 @@ public class JBDiff {
     return i;
   }
 
-  private final static int search(int[] I, byte[] oldBuf, byte[] newBuf,
-      int newBufOffset, int start, int end, IntByRef pos) {
+  private final static int search(int[] I, byte[] oldBuf, byte[] newBuf, int newBufOffset, int start, int end, IntByRef pos) {
     int x, y;
 
     if (end - start < 2) {
@@ -266,8 +264,7 @@ public class JBDiff {
 
   }
 
-  public static void bsdiff(File oldFile, File newFile, File diffFile)
-      throws IOException {
+  public static void bsdiff(File oldFile, File newFile, File diffFile) throws IOException {
 
     int oldsize = (int) oldFile.length();
     byte[] oldBuf = new byte[oldsize];
@@ -316,8 +313,7 @@ public class JBDiff {
      * comprises 3 x 32 bit integers. The ctrlBlock is not compressed.
      */
 
-    DataOutputStream diffOut = new DataOutputStream(new FileOutputStream(
-        diffFile));
+    DataOutputStream diffOut = new DataOutputStream(new FileOutputStream(diffFile));
 
     /*
      * Write as much of header as we have now. Size of ctrlBlock and diffBlock
@@ -350,8 +346,7 @@ public class JBDiff {
         len = search(I, oldBuf, newBuf, scan, 0, oldsize, pos);
 
         for (; scsc < scan + len; scsc++) {
-          if ((scsc + lastoffset < oldsize)
-              && (oldBuf[scsc + lastoffset] == newBuf[scsc])) {
+          if ((scsc + lastoffset < oldsize) && (oldBuf[scsc + lastoffset] == newBuf[scsc])) {
             oldscore++;
           }
         }
@@ -360,8 +355,7 @@ public class JBDiff {
           break;
         }
 
-        if ((scan + lastoffset < oldsize)
-            && (oldBuf[scan + lastoffset] == newBuf[scan])) {
+        if ((scan + lastoffset < oldsize) && (oldBuf[scan + lastoffset] == newBuf[scan])) {
           oldscore--;
         }
       }
@@ -400,8 +394,7 @@ public class JBDiff {
           Ss = 0;
           lens = 0;
           for (i = 0; i < overlap; i++) {
-            if (newBuf[lastscan + lenf - overlap + i] == oldBuf[lastpos + lenf
-                - overlap + i]) {
+            if (newBuf[lastscan + lenf - overlap + i] == oldBuf[lastpos + lenf - overlap + i]) {
               s++;
             }
             if (newBuf[scan - lenb + i] == oldBuf[pos.value - lenb + i]) {
@@ -486,8 +479,7 @@ public class JBDiff {
   public static void main(String[] arg) throws IOException {
 
     if (arg.length != 3) {
-      System.err
-          .println("usage example: java -Xmx200m ie.wombat.jbdiff.JBDiff oldfile newfile patchfile\n");
+      System.err.println("usage example: java -Xmx200m ie.wombat.jbdiff.JBDiff oldfile newfile patchfile\n");
       return;
     }
 

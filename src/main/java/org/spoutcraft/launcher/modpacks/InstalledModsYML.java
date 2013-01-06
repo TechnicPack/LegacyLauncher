@@ -19,8 +19,7 @@ public class InstalledModsYML {
 
   public static Configuration getInstalledModsConfig() {
     File installedModsYmlFile = getInstalledModsYmlFile();
-    if (installedModsConfig == null
-        || installedModsLocation.compareTo(installedModsYmlFile) != 0) {
+    if (installedModsConfig == null || installedModsLocation.compareTo(installedModsYmlFile) != 0) {
       installedModsLocation = installedModsYmlFile;
       installedModsConfig = new Configuration(installedModsLocation);
       installedModsConfig.load();

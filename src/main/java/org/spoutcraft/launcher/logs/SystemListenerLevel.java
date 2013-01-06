@@ -31,11 +31,9 @@ public class SystemListenerLevel extends Level {
     super(name, value);
   }
 
-  public static Level STDOUT = new SystemListenerLevel("STDOUT",
-                                 Level.INFO.intValue() + 53);
+  public static Level STDOUT = new SystemListenerLevel("STDOUT", Level.INFO.intValue() + 53);
 
-  public static Level STDERR = new SystemListenerLevel("STDERR",
-                                 Level.INFO.intValue() + 54);
+  public static Level STDERR = new SystemListenerLevel("STDERR", Level.INFO.intValue() + 54);
 
   protected Object readResolve() throws ObjectStreamException {
     if (this.intValue() == STDOUT.intValue())

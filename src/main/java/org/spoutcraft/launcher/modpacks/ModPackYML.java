@@ -11,10 +11,7 @@ import org.spoutcraft.launcher.YmlUtils;
 public class ModPackYML {
 
   private static final String     MODPACK_YML  = "modpack.yml";
-  private static final String     FALLBACK_URL = String
-                                                   .format(
-                                                       "http://technic.freeworldsgaming.com/%s",
-                                                       MODPACK_YML);
+  private static final String     FALLBACK_URL = String.format("http://technic.freeworldsgaming.com/%s", MODPACK_YML);
 
   private static volatile boolean updated      = false;
   private static final Object     key          = new Object();
@@ -39,8 +36,7 @@ public class ModPackYML {
       synchronized (key) {
         String selected = getSelectedBuild();
 
-        YmlUtils.downloadYmlFile(ModPackListYML.currentModPack + "/"
-            + MODPACK_YML, FALLBACK_URL, getModPackYMLFile());
+        YmlUtils.downloadYmlFile(ModPackListYML.currentModPack + "/" + MODPACK_YML, FALLBACK_URL, getModPackYMLFile());
 
         Configuration config = new Configuration(getModPackYMLFile());
         config.load();
@@ -80,24 +76,20 @@ public class ModPackYML {
   }
 
   public static String getModPackIcon() {
-    return new File(ModPackListYML.currentModPackDirectory, "resources"
-        + File.separator + ModPackListYML.getIconName()).getAbsolutePath();
+    return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + ModPackListYML.getIconName()).getAbsolutePath();
   }
 
   public static String getModPackLogo() {
-    return new File(ModPackListYML.currentModPackDirectory, "resources"
-        + File.separator + "logo.png").getAbsolutePath();
+    return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "logo.png").getAbsolutePath();
   }
 
   public static String getModPackFavIcon() {
-    return new File(ModPackListYML.currentModPackDirectory, "resources"
-        + File.separator + "favicon.png").getAbsolutePath();
+    return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "favicon.png").getAbsolutePath();
   }
 
   public static String[] getModpackBuilds() {
     Configuration config = getModPackYML();
-    Map<String, Object> builds = (Map<String, Object>) config
-        .getProperty("builds");
+    Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
     String latest = config.getString("latest", null);
     String recommended = config.getString("recommended", null);
 

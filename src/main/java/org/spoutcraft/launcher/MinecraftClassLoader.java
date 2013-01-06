@@ -29,13 +29,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class MinecraftClassLoader extends URLClassLoader {
-  private final HashMap<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>(
-                                                            1000);
+  private final HashMap<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>(1000);
   private File                            spoutcraft    = null;
   private final File[]                    libraries;
 
-  public MinecraftClassLoader(URL[] urls, ClassLoader parent, File spoutcraft,
-      File[] libraries) {
+  public MinecraftClassLoader(URL[] urls, ClassLoader parent, File spoutcraft, File[] libraries) {
     super(urls, parent);
     this.spoutcraft = spoutcraft;
     this.libraries = libraries;
@@ -72,8 +70,7 @@ public class MinecraftClassLoader extends URLClassLoader {
     return super.findClass(name);
   }
 
-  private Class<?> findClassInjar(String name, File file)
-      throws ClassNotFoundException {
+  private Class<?> findClassInjar(String name, File file) throws ClassNotFoundException {
     try {
       if (!file.canRead()) {
         Util.log("Not allowed to open '%s'!.", file.getName());
@@ -90,8 +87,7 @@ public class MinecraftClassLoader extends URLClassLoader {
         }
 
         byte classByte[] = byteStream.toByteArray();
-        Class<?> result = defineClass(name, classByte, 0, classByte.length,
-            new CodeSource(file.toURI().toURL(), (CodeSigner[]) null));
+        Class<?> result = defineClass(name, classByte, 0, classByte.length, new CodeSource(file.toURI().toURL(), (CodeSigner[]) null));
         loadedClasses.put(name, result);
         return result;
       }

@@ -22,8 +22,7 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
    * and returns the label, set up to display the text and image.
    */
   @Override
-  public Component getListCellRendererComponent(JList list, Object value,
-      int index, boolean isSelected, boolean cellHasFocus) {
+  public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     // Get the selected index. (The index param isn't
     // always valid, so just use the value.)
     String selectedItem = (String) value;
