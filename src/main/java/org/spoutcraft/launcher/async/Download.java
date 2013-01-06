@@ -117,6 +117,7 @@ public class Download implements Runnable {
       fos.getChannel().transferFrom(rbc, 0, size > 0 ? size : Integer.MAX_VALUE);
       in.close();
       rbc.close();
+      fos.close();
       progress.interrupt();
       success = size > 0 ? (size == outFile.length()) : true;
     } catch (IOException ioe) {

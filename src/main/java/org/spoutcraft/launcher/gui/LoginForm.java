@@ -23,7 +23,6 @@ import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,22 +51,18 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -100,7 +95,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
   private static final long                serialVersionUID = 1L;
   private final BackgroundPanel            contentPane;
   private final JPasswordField             passwordField;
-  private final JComboBox                  usernameField    = new JComboBox();
+  private final JComboBox<String>          usernameField    = new JComboBox<String>();
   private final JButton                    loginButton      = new JButton("Login");
   JButton                                  optionsButton    = new JButton("Options");
   JButton                                  modsButton       = new JButton("Mod Select");
@@ -128,8 +123,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
   ModsDialog                               mods             = new ModsDialog(ModPackYML.getModList());
   Container                                loginPane        = new Container();
   Container                                offlinePane      = new Container();
-  // private final JLabel lblLogo;
-  private final JComboBox                  modpackList;
+  private final JComboBox<String>          modpackList;
 
   public LoginForm() {
     loadLauncherData();
@@ -179,7 +173,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
       }
     }
     String[] itemArray = new String[i];
-    modpackList = new JComboBox(items.toArray(itemArray));
+    modpackList = new JComboBox<String>(items.toArray(itemArray));
     modpackList.setBounds(10, 10, 328, 100);
     ComboBoxRenderer renderer = new ComboBoxRenderer();
     renderer.setPreferredSize(new Dimension(200, 110));
@@ -453,37 +447,6 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
   public void keyReleased(KeyEvent e) {
   }
 
-  private void tryConvertLastLogin() {
-    try {
-      File lastLogin = new File(PlatformUtils.getWorkingDirectory(), "lastlogin");
-      Cipher cipher = getCipher(2, "passwordfile");
-      DataInputStream dis;
-      if (cipher != null)
-        dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
-      else
-        dis = new DataInputStream(new FileInputStream(lastLogin));
-      String userName = dis.readUTF();
-      String password = dis.readUTF();
-
-      dis.close();
-
-      cipher = getCipher(1, "passwordfile");
-
-      DataOutputStream dos;
-      if (cipher != null) {
-        dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
-      } else {
-        dos = new DataOutputStream(new FileOutputStream(lastLogin, true));
-      }
-      dos.writeUTF(userName);
-      dos.writeBoolean(false);
-      dos.writeUTF(password);
-      dos.close();
-    } catch (Exception ignore) {
-
-    }
-  }
-
   private void readUsedUsernames() {
     int i = 0;
     try {
@@ -600,7 +563,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
       } else {
         GameUpdater.copy(SettingsUtil.settingsFile, new File(GameUpdater.modpackDir, "launcher.properties"));
       }
-      String selectedItem = (String) ((JComboBox) source).getSelectedItem();
+      String selectedItem = modpackList.getItemAt(modpackList.getSelectedIndex());
       SettingsUtil.setModPack(selectedItem);
       updateBranding();
     }

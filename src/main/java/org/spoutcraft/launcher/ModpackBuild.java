@@ -11,15 +11,13 @@ public class ModpackBuild {
   private final String     minecraftVersion;
   private final String     latestVersion;
   private final String     build;
-  Map<String, Object>      libraries;
   Map<String, Object>      mods;
   private DownloadListener listener = null;
 
-  private ModpackBuild(String minecraft, String latest, String build, Map<String, Object> libraries, Map<String, Object> mods) {
+  private ModpackBuild(String minecraft, String latest, String build, Map<String, Object> mods) {
     this.minecraftVersion = minecraft;
     this.latestVersion = latest;
     this.build = build;
-    this.libraries = libraries;
     this.mods = mods;
   }
 
@@ -76,10 +74,6 @@ public class ModpackBuild {
     return MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, listener);
   }
 
-  public Map<String, Object> getLibraries() {
-    return libraries;
-  }
-
   public Map<String, Object> getMods() {
     return mods;
   }
@@ -100,9 +94,8 @@ public class ModpackBuild {
     }
 
     Map<String, Object> build = (Map<String, Object>) builds.get(buildName);
-    Map<String, Object> libs = (Map<String, Object>) build.get("libraries");
     Map<String, Object> mods = (Map<String, Object>) build.get("mods");
     String minecraftVersion = build.get("minecraft").toString();
-    return new ModpackBuild(minecraftVersion, MinecraftYML.getLatestMinecraftVersion(), buildName, libs, mods);
+    return new ModpackBuild(minecraftVersion, MinecraftYML.getLatestMinecraftVersion(), buildName, mods);
   }
 }

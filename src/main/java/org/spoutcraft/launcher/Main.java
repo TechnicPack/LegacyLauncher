@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -93,7 +92,7 @@ public class Main {
 
       Util.log("Rebooting with %s", Arrays.toString(pb.command().toArray()));
       try {
-        Process process = pb.start();
+        pb.start();
       } catch (IOException e) {
         Util.log("Failed to load reboot Process");
         e.printStackTrace();
@@ -215,6 +214,7 @@ public class Main {
         try {
           BufferedReader bf = new BufferedReader(new FileReader(buildInfo));
           build = bf.readLine();
+          bf.close();
         } catch (Exception e) {
           e.printStackTrace();
         }

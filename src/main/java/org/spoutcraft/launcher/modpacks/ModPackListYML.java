@@ -22,18 +22,18 @@ import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.YmlUtils;
 
+@SuppressWarnings("unchecked")
 public class ModPackListYML {
 
   public static final File                   ORIGINAL_PROPERTIES     = new File(GameUpdater.cacheDir, "launcher.properties");
   private static final String                RESOURCES_PATH          = "resources";
-  private static final String                ICON_ICO                = "icon.ico";
   private static final String                ICON_ICNS               = "icon.icns";
   private static final String                ICON_PNG                = "icon.png";
   private static final String                FAVICON_PNG             = "favicon.png";
   private static final String                LOGO_PNG                = "logo.png";
   private static final String                MODPACKS_YML            = "modpacks.yml";
 
-  private static final List<String>          RESOURCES               = new LinkedList();
+  private static final List<String>          RESOURCES               = new LinkedList<String>();
   private static final File                  MODPACKS_YML_FILE       = new File(GameUpdater.workDir, MODPACKS_YML);
   private static final Object                key                     = new Object();
 
@@ -51,7 +51,6 @@ public class ModPackListYML {
   public static Image                        logo                    = null;
 
   private static Configuration               config                  = null;
-  private static File                        configFile              = null;
 
   static {
     RESOURCES.add(FAVICON_PNG);

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.GameUpdater;
 
+@SuppressWarnings("unchecked")
 public class InstalledModsYML {
 
   private static final String  INSTALLED_MODS_YML = "installedMods.yml";

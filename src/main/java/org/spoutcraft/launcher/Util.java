@@ -38,28 +38,28 @@ public class Util {
     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).info(String.format(formatString, params));
   }
 
-  public static void addComboItem(JComboBox combobox, String label, String value) {
+  public static void addComboItem(JComboBox<ComboItem> combobox, String label, String value) {
     combobox.addItem(new ComboItem(label, value));
   }
 
-  public static void setSelectedComboByLabel(JComboBox combobox, String label) {
+  public static void setSelectedComboByLabel(JComboBox<ComboItem> combobox, String label) {
     for (int i = 0; i < combobox.getItemCount(); i++) {
-      if (((ComboItem) combobox.getItemAt(i)).getLabel().equalsIgnoreCase(label)) {
+      if ((combobox.getItemAt(i)).getLabel().equalsIgnoreCase(label)) {
         combobox.setSelectedIndex(i);
       }
     }
   }
 
-  public static void setSelectedComboByValue(JComboBox combobox, String value) {
+  public static void setSelectedComboByValue(JComboBox<ComboItem> combobox, String value) {
     for (int i = 0; i < combobox.getItemCount(); i++) {
-      if (((ComboItem) combobox.getItemAt(i)).getValue().equalsIgnoreCase(value)) {
+      if ((combobox.getItemAt(i)).getValue().equalsIgnoreCase(value)) {
         combobox.setSelectedIndex(i);
       }
     }
   }
 
-  public static String getSelectedValue(JComboBox combobox) {
-    return ((ComboItem) combobox.getSelectedItem()).getValue();
+  public static String getSelectedValue(JComboBox<ComboItem> combobox) {
+    return combobox.getItemAt(combobox.getSelectedIndex()).getValue();
   }
 
   public static List<String> readTextFromJar(String s) {

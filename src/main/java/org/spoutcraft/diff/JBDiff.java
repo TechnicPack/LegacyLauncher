@@ -37,8 +37,6 @@ import java.util.zip.GZIPOutputStream;
  */
 public class JBDiff {
 
-  private static final String VERSION = "jbdiff-0.1.0";
-
   private static final int min(int x, int y) {
     return x < y ? x : y;
   }
@@ -453,9 +451,6 @@ public class JBDiff {
     gzOut = new GZIPOutputStream(diffOut);
     gzOut.write(eb, 0, eblen);
     gzOut.finish();
-    long extraBlockLen = diffOut.size() - diffBlockLen - ctrlBlockLen - 32;
-    // System.err.println ("extraBlockLen=" + extraBlockLen);
-
     diffOut.close();
 
     /*

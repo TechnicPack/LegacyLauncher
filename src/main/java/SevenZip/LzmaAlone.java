@@ -1,5 +1,10 @@
 package SevenZip;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 public class LzmaAlone {
   static public class CommandLine {
     public static final int kEncode                 = 0;
@@ -152,55 +157,62 @@ public class LzmaAlone {
       java.io.File inFile = new java.io.File(params.InFile);
       java.io.File outFile = new java.io.File(params.OutFile);
 
-      java.io.BufferedInputStream inStream = new java.io.BufferedInputStream(new java.io.FileInputStream(inFile));
-      java.io.BufferedOutputStream outStream = new java.io.BufferedOutputStream(new java.io.FileOutputStream(outFile));
+      BufferedInputStream inStream = null;
+      BufferedOutputStream outStream = null;
+      try {
+        inStream = new BufferedInputStream(new FileInputStream(inFile));
+        outStream = new BufferedOutputStream(new FileOutputStream(outFile));
 
-      boolean eos = false;
-      if (params.Eos)
-        eos = true;
-      if (params.Command == CommandLine.kEncode) {
-        SevenZip.Compression.LZMA.Encoder encoder = new SevenZip.Compression.LZMA.Encoder();
-        if (!encoder.SetAlgorithm(params.Algorithm))
-          throw new Exception("Incorrect compression mode");
-        if (!encoder.SetDictionarySize(params.DictionarySize))
-          throw new Exception("Incorrect dictionary size");
-        if (!encoder.SetNumFastBytes(params.Fb))
-          throw new Exception("Incorrect -fb value");
-        if (!encoder.SetMatchFinder(params.MatchFinder))
-          throw new Exception("Incorrect -mf value");
-        if (!encoder.SetLcLpPb(params.Lc, params.Lp, params.Pb))
-          throw new Exception("Incorrect -lc or -lp or -pb value");
-        encoder.SetEndMarkerMode(eos);
-        encoder.WriteCoderProperties(outStream);
-        long fileSize;
-        if (eos)
-          fileSize = -1;
-        else
-          fileSize = inFile.length();
-        for (int i = 0; i < 8; i++)
-          outStream.write((int) (fileSize >>> (8 * i)) & 0xFF);
-        encoder.Code(inStream, outStream, -1, -1, null);
-      } else {
-        int propertiesSize = 5;
-        byte[] properties = new byte[propertiesSize];
-        if (inStream.read(properties, 0, propertiesSize) != propertiesSize)
-          throw new Exception("input .lzma file is too short");
-        SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
-        if (!decoder.SetDecoderProperties(properties))
-          throw new Exception("Incorrect stream properties");
-        long outSize = 0;
-        for (int i = 0; i < 8; i++) {
-          int v = inStream.read();
-          if (v < 0)
-            throw new Exception("Can't read stream size");
-          outSize |= ((long) v) << (8 * i);
+        boolean eos = false;
+        if (params.Eos)
+          eos = true;
+        if (params.Command == CommandLine.kEncode) {
+          SevenZip.Compression.LZMA.Encoder encoder = new SevenZip.Compression.LZMA.Encoder();
+          if (!encoder.SetAlgorithm(params.Algorithm))
+            throw new Exception("Incorrect compression mode");
+          if (!encoder.SetDictionarySize(params.DictionarySize))
+            throw new Exception("Incorrect dictionary size");
+          if (!encoder.SetNumFastBytes(params.Fb))
+            throw new Exception("Incorrect -fb value");
+          if (!encoder.SetMatchFinder(params.MatchFinder))
+            throw new Exception("Incorrect -mf value");
+          if (!encoder.SetLcLpPb(params.Lc, params.Lp, params.Pb))
+            throw new Exception("Incorrect -lc or -lp or -pb value");
+          encoder.SetEndMarkerMode(eos);
+          encoder.WriteCoderProperties(outStream);
+          long fileSize;
+          if (eos)
+            fileSize = -1;
+          else
+            fileSize = inFile.length();
+          for (int i = 0; i < 8; i++)
+            outStream.write((int) (fileSize >>> (8 * i)) & 0xFF);
+          encoder.Code(inStream, outStream, -1, -1, null);
+        } else {
+          int propertiesSize = 5;
+          byte[] properties = new byte[propertiesSize];
+          if (inStream.read(properties, 0, propertiesSize) != propertiesSize)
+            throw new Exception("input .lzma file is too short");
+          SevenZip.Compression.LZMA.Decoder decoder = new SevenZip.Compression.LZMA.Decoder();
+          if (!decoder.SetDecoderProperties(properties))
+            throw new Exception("Incorrect stream properties");
+          long outSize = 0;
+          for (int i = 0; i < 8; i++) {
+            int v = inStream.read();
+            if (v < 0)
+              throw new Exception("Can't read stream size");
+            outSize |= ((long) v) << (8 * i);
+          }
+          if (!decoder.Code(inStream, outStream, outSize))
+            throw new Exception("Error in data stream");
         }
-        if (!decoder.Code(inStream, outStream, outSize))
-          throw new Exception("Error in data stream");
+        outStream.flush();
+        outStream.close();
+        inStream.close();
+      } finally {
+        inStream.close();
+        outStream.close();
       }
-      outStream.flush();
-      outStream.close();
-      inStream.close();
     } else
       throw new Exception("Incorrect command");
     return;

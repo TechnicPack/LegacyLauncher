@@ -25,6 +25,7 @@ import org.spoutcraft.launcher.ModpackBuild;
 import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.async.Download;
 
+@SuppressWarnings("unchecked")
 public class ModPackUpdater extends GameUpdater {
 
   public static final String  defaultModPackName = "technicssp";
@@ -59,7 +60,6 @@ public class ModPackUpdater extends GameUpdater {
 
         String installType = modProperties.containsKey("installtype") ? (String) modProperties.get("installtype") : "zip";
         String fullFilename = modName + "-" + version + "." + installType;
-        Boolean isOptional = modProperties.containsKey("optional") ? (Boolean) modProperties.get("optional") : false;
 
         String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
 
@@ -198,7 +198,7 @@ public class ModPackUpdater extends GameUpdater {
           file.delete();
         }
       }
-
+      zf.close();
       InstalledModsYML.removeMod(modName);
     } catch (IOException e) {
       e.printStackTrace();
@@ -233,7 +233,7 @@ public class ModPackUpdater extends GameUpdater {
       if (!MD5Utils.checksumCachePath(fullFilename, md5Name)) {
         return true;
       }
-      int a = 1;
+
       String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
       if (installedModVersion == null || !installedModVersion.equals(version)) {
         return true;

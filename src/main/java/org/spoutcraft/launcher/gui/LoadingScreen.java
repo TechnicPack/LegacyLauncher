@@ -14,11 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class LoadingScreen extends JDialog {
-  public JPanel     contentPane;
-  public JPanel     closePanel;
-  public JPanel     main;
-  private ImageIcon closeNormal;
-  private JLabel    closeLabel;
+  private static final long serialVersionUID = -1154537612354852093L;
+  public JPanel             contentPane;
+  public JPanel             closePanel;
+  public JPanel             main;
+  private ImageIcon         closeNormal;
+  private JLabel            closeLabel;
 
   public LoadingScreen() {
     initialize();

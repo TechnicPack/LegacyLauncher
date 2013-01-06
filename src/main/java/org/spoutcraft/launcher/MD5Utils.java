@@ -54,6 +54,7 @@ public class MD5Utils {
     return null;
   }
 
+  @SuppressWarnings("unchecked")
   public static String getMinecraftMD5(String md5Hash) {
     Configuration config = MinecraftYML.getMinecraftYML();
     Map<String, Map<String, String>> builds = (Map<String, Map<String, String>>) config.getProperty("versions");
@@ -95,13 +96,15 @@ public class MD5Utils {
 
   private static void parseChecksumFile() throws FileNotFoundException {
     md5Map.clear();
-    Scanner scanner = new Scanner(CHECKSUM_FILE).useDelimiter("\\||\n");
-    while (scanner.hasNext()) {
-      String md5 = scanner.next().toLowerCase();
-      String path = scanner.next().replace("\r", "").replace('/', '\\');
+    Scanner scanner = new Scanner(CHECKSUM_FILE);
+    Scanner scannerDelimited = scanner.useDelimiter("\\||\n");
+    while (scannerDelimited.hasNext()) {
+      String md5 = scannerDelimited.next().toLowerCase();
+      String path = scannerDelimited.next().replace("\r", "").replace('/', '\\');
       md5Map.put(path, md5);
-      scanner.nextLine();
+      scannerDelimited.nextLine();
     }
+    scanner.close();
   }
 
   public static boolean checksumPath(String relativePath) {

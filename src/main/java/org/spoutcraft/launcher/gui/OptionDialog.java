@@ -62,16 +62,15 @@ public class OptionDialog extends JDialog implements ActionListener {
   JCheckBox                  backupCheckbox      = new JCheckBox("Include worlds when doing automated backup");
   JCheckBox                  retryLoginCheckbox  = new JCheckBox("Retry after connection timeout");
   JCheckBox                  latestLWJGLCheckbox = new JCheckBox("Use latest LWJGL binaries");
-  JComboBox                  memoryCombo         = new JComboBox();
+  JComboBox<String>          memoryCombo         = new JComboBox<String>();
   JButton                    clearCache          = new JButton("Clear Cache");
   JLabel                     buildInfo           = new JLabel();
-  JComboBox                  buildsCombo         = new JComboBox();
+  JComboBox<String>          buildsCombo         = new JComboBox<String>();
   int[]                      memValues           = new int[] { 1, 2, 3, 4, 6, 8, 10 };
 
   /**
    * Create the dialog.
    */
-  @SuppressWarnings("unchecked")
   public OptionDialog() {
     setTitle("Technic Launcher Settings");
 
@@ -119,8 +118,6 @@ public class OptionDialog extends JDialog implements ActionListener {
     }
 
     JLabel lblMemoryToAllocate = new JLabel("Memory to allocate: ");
-    JLabel lblPack = new JLabel("Select Mod Pack: ");
-
     JLabel selectBuild = new JLabel("Select Modpack build: ");
 
     GroupLayout gl_contentPanel = new GroupLayout(contentPanel);

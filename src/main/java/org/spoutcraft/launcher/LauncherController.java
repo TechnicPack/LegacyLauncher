@@ -24,9 +24,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.jar.JarOutputStream;
 
 import org.spoutcraft.launcher.exception.CorruptedMinecraftJarException;
@@ -38,7 +35,6 @@ public class LauncherController {
   public static Class<?> mcClass = null, appletClass = null;
   public static Field    mcField = null;
 
-  @SuppressWarnings("rawtypes")
   public static Applet getMinecraftApplet() throws CorruptedMinecraftJarException, MinecraftVerifyException {
 
     File mcBinFolder = GameUpdater.binDir;
@@ -49,9 +45,7 @@ public class LauncherController {
     File lwglJar = new File(mcBinFolder, "lwjgl.jar");
     File lwjgl_utilJar = new File(mcBinFolder, "lwjgl_util.jar");
     File customJar = new File(mcBinFolder, "custom.jar");
-
-    ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
-    Map<String, Object> libraries = build.getLibraries();
+    int librarycount = 5;
 
     if(!customJar.exists()) {
     	try {
@@ -59,49 +53,37 @@ public class LauncherController {
     		JarOutputStream out = new JarOutputStream(stream);
     		out.close();
     		stream.close();
+    		librarycount++;
     	}
     	catch(IOException e) {
     		e.printStackTrace();
     	}
     }
 
-    int librarycount = 5;
-    if (libraries != null) {
-      librarycount += libraries.size();
-    }
     File[] files = new File[librarycount];
-
-    int index = 0;
-    if (libraries != null) {
-      Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-      while (i.hasNext()) {
-        Entry<String, Object> lib = i.next();
-        File libraryFile = new File(mcBinFolder, "lib" + File.separator + lib.getKey() + ".jar");
-        files[index] = libraryFile;
-        index++;
-      }
-    }
-
-    URL urls[] = new URL[6];
+    URL urls[] = new URL[librarycount];
 
     try {
       // spoutcraftJar must be loaded first into classpath with FML 3.x+
       urls[0] = spoutcraftJar.toURI().toURL();
-      files[index + 0] = spoutcraftJar;
+      files[0] = spoutcraftJar;
       urls[1] = minecraftJar.toURI().toURL();
-      files[index + 1] = minecraftJar;
+      files[1] = minecraftJar;
       urls[2] = jinputJar.toURI().toURL();
-      files[index + 2] = jinputJar;
+      files[2] = jinputJar;
       urls[3] = lwglJar.toURI().toURL();
-      files[index + 3] = lwglJar;
+      files[3] = lwglJar;
       urls[4] = lwjgl_utilJar.toURI().toURL();
-      files[index + 4] = lwjgl_utilJar;
-      urls[5] = customJar.toURI().toURL();
+      files[4] = lwjgl_utilJar;
+      if (customJar.exists()) {
+        urls[5] = customJar.toURI().toURL();
+        files[5] = customJar;
+      }
 
       ClassLoader classLoader = new MinecraftClassLoader(urls, ClassLoader.getSystemClassLoader(), spoutcraftJar, customJar, files);
 
       setMinecraftDirectory(classLoader, GameUpdater.modpackDir);
-      int a = 1;
+
       String nativesPath = new File(mcBinFolder, "natives").getAbsolutePath();
       System.setProperty("org.lwjgl.librarypath", nativesPath);
       System.setProperty("net.java.games.input.librarypath", nativesPath);

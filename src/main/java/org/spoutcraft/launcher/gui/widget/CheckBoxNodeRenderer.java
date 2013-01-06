@@ -19,7 +19,6 @@ class CheckBoxNodeRenderer implements TreeCellRenderer {
   private final JToggleButton           leafRadioButtonRenderer = new JRadioButton();
   private JToggleButton                 leafRenderer;
   private final DefaultTreeCellRenderer nonLeafRenderer         = new DefaultTreeCellRenderer();
-  private final Color                   selectionBorderColor;
   private final Color                   selectionForeground;
   private final Color                   selectionBackground;
   private final Color                   textForeground;
@@ -43,7 +42,6 @@ class CheckBoxNodeRenderer implements TreeCellRenderer {
     leafRadioButtonRenderer.setFocusPainted((booleanValue != null) && (booleanValue.booleanValue()));
     leafRadioButtonRenderer.setMargin(insets);
 
-    selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
     selectionForeground = UIManager.getColor("Tree.selectionForeground");
     selectionBackground = UIManager.getColor("Tree.selectionBackground");
     textForeground = UIManager.getColor("Tree.textForeground");

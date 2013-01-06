@@ -29,8 +29,6 @@ import java.util.zip.GZIPInputStream;
  */
 public class JBPatch {
 
-  private static final String VERSION = "jbdiff-0.1.0";
-
   /**
    * Run JBPatch from the command line. Params: oldfile newfile patchfile.
    * newfile will be created.
@@ -51,14 +49,14 @@ public class JBPatch {
     bspatch(oldFile, newFile, diffFile);
   }
 
+  @SuppressWarnings("resource")
   public static void bspatch(File oldFile, File newFile, File diffFile) throws IOException {
 
     int oldpos, newpos;
 
     DataInputStream diffIn = new DataInputStream(new FileInputStream(diffFile));
 
-    // headerMagic at header offset 0 (length 8 bytes)
-    long headerMagic = diffIn.readLong();
+    diffIn.readLong();
 
     // ctrlBlockLen after gzip compression at heater offset 8 (length 8
     // bytes)
@@ -97,61 +95,64 @@ public class JBPatch {
 
     byte[] newBuf = new byte[newsize + 1];
 
-    oldpos = 0;
-    newpos = 0;
-    int[] ctrl = new int[3];
-    int nbytes;
-    while (newpos < newsize) {
+    try {
+      oldpos = 0;
+      newpos = 0;
+      int[] ctrl = new int[3];
+      while (newpos < newsize) {
 
-      for (int i = 0; i <= 2; i++) {
-        ctrl[i] = diffIn.readInt();
-        // System.err.println ("  ctrl[" + i + "]=" + ctrl[i]);
-      }
-
-      if (newpos + ctrl[0] > newsize) {
-        System.err.println("Corrupt patch\n");
-        return;
-      }
-
-      /*
-       * Read ctrl[0] bytes from diffBlock stream
-       */
-
-      if (!Util.readFromStream(diffBlockIn, newBuf, newpos, ctrl[0])) {
-        System.err.println("error reading from extraIn");
-        return;
-      }
-
-      for (int i = 0; i < ctrl[0]; i++) {
-        if ((oldpos + i >= 0) && (oldpos + i < oldsize)) {
-          newBuf[newpos + i] += oldBuf[oldpos + i];
+        for (int i = 0; i <= 2; i++) {
+          ctrl[i] = diffIn.readInt();
+          // System.err.println ("  ctrl[" + i + "]=" + ctrl[i]);
         }
+
+        if (newpos + ctrl[0] > newsize) {
+          System.err.println("Corrupt patch\n");
+          return;
+        }
+
+        /*
+         * Read ctrl[0] bytes from diffBlock stream
+         */
+
+        if (!Util.readFromStream(diffBlockIn, newBuf, newpos, ctrl[0])) {
+          System.err.println("error reading from extraIn");
+          return;
+        }
+
+        for (int i = 0; i < ctrl[0]; i++) {
+          if ((oldpos + i >= 0) && (oldpos + i < oldsize)) {
+            newBuf[newpos + i] += oldBuf[oldpos + i];
+          }
+        }
+
+        newpos += ctrl[0];
+        oldpos += ctrl[0];
+
+        if (newpos + ctrl[1] > newsize) {
+          System.err.println("Corrupt patch");
+          return;
+        }
+
+        if (!Util.readFromStream(extraBlockIn, newBuf, newpos, ctrl[1])) {
+          System.err.println("error reading from extraIn");
+          return;
+        }
+
+        newpos += ctrl[1];
+        oldpos += ctrl[2];
       }
 
-      newpos += ctrl[0];
-      oldpos += ctrl[0];
+      // TODO: Check if at end of ctrlIn
+      // TODO: Check if at the end of diffIn
+      // TODO: Check if at the end of extraIn
 
-      if (newpos + ctrl[1] > newsize) {
-        System.err.println("Corrupt patch");
-        return;
-      }
-
-      if (!Util.readFromStream(extraBlockIn, newBuf, newpos, ctrl[1])) {
-        System.err.println("error reading from extraIn");
-        return;
-      }
-
-      newpos += ctrl[1];
-      oldpos += ctrl[2];
+    } finally {
+      diffBlockIn.close();
+      extraBlockIn.close();
+      diffIn.close();
+      in.close();
     }
-
-    // TODO: Check if at end of ctrlIn
-    // TODO: Check if at the end of diffIn
-    // TODO: Check if at the end of extraIn
-
-    diffBlockIn.close();
-    extraBlockIn.close();
-    diffIn.close();
 
     FileOutputStream out = new FileOutputStream(newFile);
     out.write(newBuf, 0, newBuf.length - 1);

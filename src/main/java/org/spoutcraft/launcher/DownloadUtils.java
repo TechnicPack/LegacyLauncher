@@ -78,13 +78,11 @@ public class DownloadUtils {
     return downloadFile(url, output, null, null, null);
   }
 
-  private static int filesToDownload = 0;
   private static int filesDownloaded = 0;
 
   public static int downloadFiles(Map<String, String> downloadFileList, long timeout, TimeUnit unit) {
     if (Main.isOffline)
       return 0;
-    filesToDownload = downloadFileList.size();
     filesDownloaded = 0;
 
     ExecutorService es = Executors.newCachedThreadPool();

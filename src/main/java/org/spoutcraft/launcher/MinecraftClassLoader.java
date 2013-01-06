@@ -104,6 +104,7 @@ public class MinecraftClassLoader extends URLClassLoader {
         loadedClasses.put(name, result);
         return result;
       }
+      jar.close();
     } catch (Exception e) {
       Util.log("Errpr opening '%s'.", file.getName());
       e.printStackTrace();

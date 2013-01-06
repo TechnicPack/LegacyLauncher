@@ -22,14 +22,14 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 public class ModsDialog extends JDialog implements ActionListener {
-  private final JPanel                contentPanel = new JPanel();
+  private static final long           serialVersionUID = -6662344712140426961L;
+  private final JPanel                contentPanel     = new JPanel();
   protected JToggleButton[]           modLists;
   protected Map<Integer, ButtonGroup> groups;
 
   /**
    * Create the dialog.
    */
-  @SuppressWarnings({ "unchecked", "rawtypes", "serial" })
   public ModsDialog(List<Map<String, String>> modNameList) {
     setTitle("Select Mods to Install");
     setBounds(100, 100, 616, 492);
@@ -70,12 +70,14 @@ public class ModsDialog extends JDialog implements ActionListener {
       CheckBoxList modList = new CheckBoxList();
       modList.setOpaque(false);
       modList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-      modList.setModel(new AbstractListModel() {
+      modList.setModel(new AbstractListModel<JToggleButton>() {
+        private static final long serialVersionUID = 6496577973696318501L;
+
         public int getSize() {
           return modLists.length;
         }
 
-        public Object getElementAt(int index) {
+        public JToggleButton getElementAt(int index) {
           return modLists[index];
         }
       });

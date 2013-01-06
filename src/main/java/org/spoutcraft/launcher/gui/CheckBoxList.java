@@ -12,7 +12,8 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-public class CheckBoxList extends JList {
+public class CheckBoxList extends JList<JToggleButton> {
+  private static final long serialVersionUID = 6312625994485308085L;
   protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 
   public CheckBoxList() {
@@ -34,8 +35,8 @@ public class CheckBoxList extends JList {
     setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
   }
 
-  protected class CellRenderer implements ListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+  protected class CellRenderer implements ListCellRenderer<JToggleButton> {
+    public Component getListCellRendererComponent(JList<? extends JToggleButton> list, JToggleButton value, int index, boolean isSelected, boolean cellHasFocus) {
       JToggleButton checkbox = (JToggleButton) value;
       checkbox.setBackground(isSelected ? getSelectionBackground() : getBackground());
       checkbox.setForeground(isSelected ? getSelectionForeground() : getForeground());

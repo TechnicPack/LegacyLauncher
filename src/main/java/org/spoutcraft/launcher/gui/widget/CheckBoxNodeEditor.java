@@ -16,10 +16,11 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 
 class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
+  private static final long serialVersionUID = -3505429235899766965L;
 
-  CheckBoxNodeRenderer renderer    = new CheckBoxNodeRenderer();
-  ChangeEvent          changeEvent = null;
-  JTree                tree;
+  CheckBoxNodeRenderer      renderer         = new CheckBoxNodeRenderer();
+  ChangeEvent               changeEvent      = null;
+  JTree                     tree;
 
   public CheckBoxNodeEditor(JTree tree) {
     this.tree = tree;

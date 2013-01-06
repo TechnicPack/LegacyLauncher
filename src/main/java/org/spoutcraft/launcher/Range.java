@@ -35,11 +35,11 @@ public class Range {
     };
   }
 
-  public static Iterable range(final int start, final int stop) {
+  public static Iterable<Integer> range(final int start, final int stop) {
     return range(start, stop, 1);
   }
 
-  public static Iterable range(final int stop) {
+  public static Iterable<Integer> range(final int stop) {
     return range(0, stop, 1);
   }
 

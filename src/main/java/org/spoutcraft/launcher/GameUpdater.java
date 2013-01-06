@@ -31,19 +31,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Pack200;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.spoutcraft.launcher.async.Download;
 import org.spoutcraft.launcher.async.DownloadListener;
 import org.spoutcraft.launcher.exception.UnsupportedOSException;
 
@@ -235,9 +229,6 @@ public class GameUpdater implements DownloadListener {
     JarFile jar = new JarFile(nativesJar);
     Enumeration<JarEntry> entries = jar.entries();
 
-    float progressStep = 100F / jar.size();
-    float progress = 0;
-
     while (entries.hasMoreElements()) {
       JarEntry entry = entries.nextElement();
       String name = entry.getName();
@@ -258,12 +249,11 @@ public class GameUpdater implements DownloadListener {
         out.write(bytes, 0, read);
       }
 
-      progress += progressStep;
-
       inputStream.close();
       out.flush();
       out.close();
     }
+    jar.close();
     stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
   }
 
@@ -310,6 +300,7 @@ public class GameUpdater implements DownloadListener {
         out.close();
       }
       nativesJar.delete();
+      jar.close();
       stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
     } catch (IOException e) {
       // Zip failed to extract properly"
@@ -364,42 +355,6 @@ public class GameUpdater implements DownloadListener {
       copy(mcCache, updateMC);
     }
 
-    File libDir = new File(binDir, "lib");
-    libDir.mkdir();
-
-    Map<String, Object> libraries = build.getLibraries();
-    if (libraries != null) {
-      Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-      while (i.hasNext()) {
-        Entry<String, Object> lib = i.next();
-        String version = String.valueOf(lib.getValue());
-        String name = lib.getKey() + "-" + version;
-
-        File libraryFile = new File(libDir, lib.getKey() + ".jar");
-        String MD5 = LibrariesYML.getMD5(lib.getKey(), version);
-
-        if (libraryFile.exists()) {
-          String computedMD5 = MD5Utils.getMD5(libraryFile);
-          if (!computedMD5.equals(MD5)) {
-            libraryFile.delete();
-          }
-        }
-
-        File cacheFile = new File(cacheDir, name.replace("-" + version, "") + ".jar");
-        if (cacheFile.exists() && MD5.equalsIgnoreCase(MD5Utils.getMD5(cacheFile))) {
-          stateChanged("Copying " + name + " from cache", 0);
-          copy(cacheFile, libraryFile);
-          stateChanged("Copied " + name + " from cache", 100);
-        }
-
-        if (!libraryFile.exists()) {
-          String mirrorURL = "Libraries/" + lib.getKey() + "/" + name + ".jar";
-          String fallbackURL = "http://spouty.org/Libraries/" + lib.getKey() + "/" + name + ".jar";
-          String url = MirrorUtils.getMirrorUrl(mirrorURL, fallbackURL, this);
-          Download download = DownloadUtils.downloadFile(url, libraryFile.getPath(), lib.getKey() + ".jar", MD5, this);
-        }
-      }
-    }
     build.install();
 
     // TODO: remove this once this build has been out for a few weeks
@@ -417,21 +372,6 @@ public class GameUpdater implements DownloadListener {
 
     if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild()))
       return true;
-
-    File libDir = new File(binDir, "lib");
-    libDir.mkdir();
-
-    Map<String, Object> libraries = build.getLibraries();
-    if (libraries != null) {
-      Iterator<Entry<String, Object>> i = libraries.entrySet().iterator();
-      while (i.hasNext()) {
-        Entry<String, Object> lib = i.next();
-        File libraryFile = new File(libDir, lib.getKey() + ".jar");
-        if (!libraryFile.exists()) {
-          return true;
-        }
-      }
-    }
     return false;
   }
 
@@ -466,9 +406,7 @@ public class GameUpdater implements DownloadListener {
       backupDir.mkdir();
     }
 
-    ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
     String date = new StringBuilder(new SimpleDateFormat("yyyy-MM-dd-kk.mm.ss").format(new Date())).toString();
-
     File zip = new File(GameUpdater.backupDir, date + "-backup.zip");
 
     if (!zip.exists()) {
@@ -538,9 +476,9 @@ public class GameUpdater implements DownloadListener {
 
   public static boolean canPlayOffline(String modPackName) {
     try {
-      File path = (File) AccessController.doPrivileged(new PrivilegedExceptionAction() {
+      File path = (File) AccessController.doPrivileged(new PrivilegedExceptionAction<File>() {
         @Override
-        public Object run() throws Exception {
+        public File run() throws Exception {
           return WORKING_DIRECTORY;
         }
       });
@@ -586,7 +524,9 @@ public class GameUpdater implements DownloadListener {
     float progress = 0F;
     float progressStep = 0F;
     if (progressBar) {
-      int jarSize = new JarFile(tempFile).size();
+      JarFile jarFile = new JarFile(tempFile);
+      int jarSize = jarFile.size();
+      jarFile.close();
       progressStep = 100F / (files.size() + jarSize);
     }
 
@@ -644,22 +584,6 @@ public class GameUpdater implements DownloadListener {
   private void extractLZMA(String in, String out) throws Exception {
     String[] args = { "d", in, out };
     LzmaAlone.main(args);
-  }
-
-  // @SuppressWarnings("unused")
-  private void extractPack(String in, String out) throws Exception {
-    File f = new File(in);
-    if (!f.exists())
-      return;
-
-    FileOutputStream fostream = new FileOutputStream(out);
-    JarOutputStream jostream = new JarOutputStream(fostream);
-
-    Pack200.Unpacker unpacker = Pack200.newUnpacker();
-    unpacker.unpack(f, jostream);
-    jostream.close();
-
-    f.delete();
   }
 
   public Set<ClassFile> getFiles(File dir, String rootDir) {

@@ -8,14 +8,12 @@ import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.JTree.DynamicUtilTreeNode;
 import javax.swing.UIManager;
@@ -29,8 +27,10 @@ public class CheckBoxNodeTreeSample {
   /**
    * @param args
    */
+  @SuppressWarnings("rawtypes")
   public static void main(String args[]) {
     class MJFrame extends JFrame implements WindowListener {
+      private static final long serialVersionUID = -3236467627758556743L;
 
       public MJFrame(String string) {
         setTitle(string);
@@ -75,10 +75,10 @@ public class CheckBoxNodeTreeSample {
     CheckBoxNode accessibilityOptions[] = { new CheckBoxNode("Move system caret with focus/selection changes", false), new CheckBoxNode("Always expand alt text for images", true) };
     CheckBoxNode browsingOptions[] = { new CheckBoxNode("Notify when downloads complete", true, 0), new CheckBoxNode("Disable script debugging", true, 0),
         new CheckBoxNode("Use AutoComplete", true), new CheckBoxNode("Browse in a new process", false) };
-    Vector accessVector = new NamedVector("Accessibility", accessibilityOptions);
-    Vector browseVector = new NamedVector("Browsing", browsingOptions);
-    Object rootNodes[] = { accessVector, browseVector };
-    Vector rootVector = new NamedVector("Root", rootNodes);
+    NamedVector<CheckBoxNode> accessVector = new NamedVector<CheckBoxNode>("Accessibility", accessibilityOptions);
+    NamedVector<CheckBoxNode> browseVector = new NamedVector<CheckBoxNode>("Browsing", browsingOptions);
+    NamedVector rootNodes[] = { accessVector, browseVector };
+    NamedVector rootVector = new NamedVector<Object>("Root", rootNodes);
 
     Icon empty = new TreeIcon();
     UIManager.put("Tree.closedIcon", empty);
@@ -87,6 +87,8 @@ public class CheckBoxNodeTreeSample {
     UIManager.put("Tree.expandedIcon", empty);
 
     JTree tree = new JTree(rootVector) {
+      private static final long serialVersionUID = -1845461866985537024L;
+
       @Override
       protected void setExpandedState(TreePath path, boolean state) {
         if (state) {
@@ -117,8 +119,6 @@ public class CheckBoxNodeTreeSample {
 
       @Override
       public void treeNodesChanged(TreeModelEvent e) {
-        int a = 1;
-        TreePath path = e.getTreePath();
         Object[] children = e.getChildren();
         if (children.length == 1) {
           if (children[0] instanceof DynamicUtilTreeNode) {
@@ -144,7 +144,7 @@ public class CheckBoxNodeTreeSample {
 
     File workingDirectory = PlatformUtils.getWorkingDirectory();
     Image im = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "splash_logo.png").getAbsolutePath());
-    JList list = new JList(new Image[] { im, im });
+    JList<Image> list = new JList<Image>(new Image[] { im, im });
 
     list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     Image tek = Toolkit.getDefaultToolkit().getImage(new File(workingDirectory, "tekkit_unselected.png").getAbsolutePath());
@@ -161,10 +161,7 @@ public class CheckBoxNodeTreeSample {
     group.add(b1);
     group.add(b2);
 
-    JScrollPane scrollPane = new JScrollPane(list);
     Container contentPane = frame.getContentPane();
-    // FlowLayout mgr = new java.awt.();
-    // mgr.
     contentPane.setLayout(new FlowLayout());
     contentPane.add(b1, BorderLayout.CENTER);
     contentPane.add(b2, BorderLayout.CENTER);

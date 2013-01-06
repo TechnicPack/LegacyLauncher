@@ -8,6 +8,7 @@ import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.Main;
 import org.spoutcraft.launcher.YmlUtils;
 
+@SuppressWarnings("unchecked")
 public class ModPackYML {
 
   private static final String     MODPACK_YML  = "modpack.yml";

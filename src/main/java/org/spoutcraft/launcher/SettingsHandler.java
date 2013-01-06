@@ -137,7 +137,7 @@ public class SettingsHandler {
   }
 
   public static void create(String resource, File out) {
-    Class a = new Util().getClass();
+    Class<? extends Util> a = new Util().getClass();
     InputStream is = a.getResourceAsStream(resource);
     if (is != null) {
       FileOutputStream output = null;
@@ -227,7 +227,7 @@ public class SettingsHandler {
         }
         result.put(args[0], args[1]);
       }
-
+      br.close();
     } catch (IOException ex) {
       ex.printStackTrace();
     }
@@ -441,6 +441,7 @@ public class SettingsHandler {
         result.put(i, line);
         i++;
       }
+      br.close();
     } catch (Exception ex) {
       ex.printStackTrace();
     }

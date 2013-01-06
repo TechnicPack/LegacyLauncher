@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.bukkit.util.config.Configuration;
 
+@SuppressWarnings("unchecked")
 public class MinecraftYML {
   private static final String     MINECRAFT_YML = "minecraft.yml";
   private static volatile boolean updated       = false;
