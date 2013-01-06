@@ -95,7 +95,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
   private static final long                serialVersionUID = 1L;
   private final BackgroundPanel            contentPane;
   private final JPasswordField             passwordField;
-  private final JComboBox<String>          usernameField    = new JComboBox<String>();
+  private final JComboBox                  usernameField    = new JComboBox();
   private final JButton                    loginButton      = new JButton("Login");
   JButton                                  optionsButton    = new JButton("Options");
   JButton                                  modsButton       = new JButton("Mod Select");
@@ -123,7 +123,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
   ModsDialog                               mods             = new ModsDialog(ModPackYML.getModList());
   Container                                loginPane        = new Container();
   Container                                offlinePane      = new Container();
-  private final JComboBox<String>          modpackList;
+  private final JComboBox                  modpackList;
 
   public LoginForm() {
     loadLauncherData();
@@ -173,7 +173,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
       }
     }
     String[] itemArray = new String[i];
-    modpackList = new JComboBox<String>(items.toArray(itemArray));
+    modpackList = new JComboBox(items.toArray(itemArray));
     modpackList.setBounds(10, 10, 328, 100);
     ComboBoxRenderer renderer = new ComboBoxRenderer();
     renderer.setPreferredSize(new Dimension(200, 110));
@@ -563,7 +563,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
       } else {
         GameUpdater.copy(SettingsUtil.settingsFile, new File(GameUpdater.modpackDir, "launcher.properties"));
       }
-      String selectedItem = modpackList.getItemAt(modpackList.getSelectedIndex());
+      String selectedItem = (String) modpackList.getSelectedItem();
       SettingsUtil.setModPack(selectedItem);
       updateBranding();
     }

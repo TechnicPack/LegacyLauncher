@@ -11,7 +11,7 @@
 	<!-- Project information -->
 	<groupId>org.spoutcraft</groupId>
 	<artifactId>technic-launcher</artifactId>
-	<version>1.0.4.1</version>
+	<version>1.0.4.3</version>
 	<name>Technic Launcher</name>
 	<url>https://github.com/TechnicPack/Spoutcraft-Launcher</url>
 	<description></description>

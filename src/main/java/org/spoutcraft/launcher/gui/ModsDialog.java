@@ -70,7 +70,7 @@ public class ModsDialog extends JDialog implements ActionListener {
       CheckBoxList modList = new CheckBoxList();
       modList.setOpaque(false);
       modList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-      modList.setModel(new AbstractListModel<JToggleButton>() {
+      modList.setModel(new AbstractListModel() {
         private static final long serialVersionUID = 6496577973696318501L;
 
         public int getSize() {

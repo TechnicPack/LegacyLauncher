@@ -62,10 +62,10 @@ public class OptionDialog extends JDialog implements ActionListener {
   JCheckBox                  backupCheckbox      = new JCheckBox("Include worlds when doing automated backup");
   JCheckBox                  retryLoginCheckbox  = new JCheckBox("Retry after connection timeout");
   JCheckBox                  latestLWJGLCheckbox = new JCheckBox("Use latest LWJGL binaries");
-  JComboBox<String>          memoryCombo         = new JComboBox<String>();
+  JComboBox                  memoryCombo         = new JComboBox();
   JButton                    clearCache          = new JButton("Clear Cache");
   JLabel                     buildInfo           = new JLabel();
-  JComboBox<String>          buildsCombo         = new JComboBox<String>();
+  JComboBox                  buildsCombo         = new JComboBox();
   int[]                      memValues           = new int[] { 1, 2, 3, 4, 6, 8, 10 };
 
   /**

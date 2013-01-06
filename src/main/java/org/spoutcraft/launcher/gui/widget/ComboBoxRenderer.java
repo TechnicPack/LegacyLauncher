@@ -9,7 +9,7 @@ import javax.swing.ListCellRenderer;
 
 import org.spoutcraft.launcher.modpacks.ModPackListYML;
 
-public class ComboBoxRenderer extends JLabel implements ListCellRenderer<String> {
+public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
   private static final long serialVersionUID = 3596084337758726795L;
 
   public ComboBoxRenderer() {
@@ -23,7 +23,7 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer<String>
    * and returns the label, set up to display the text and image.
    */
   @Override
-  public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
+  public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     // Get the selected index. (The index param isn't
     // always valid, so just use the value.)
     String selectedItem = (String) value;
