@@ -85,6 +85,14 @@ public class SettingsUtil {
     setProperty("modpack", value);
   }
 
+  public static String getCustomZipUrl() {
+    return getProperty("customzip", null);
+  }
+
+  public static void setCustomZipUrl(String value) {
+    setProperty("customzip", value);
+  }
+
   public static int getMemorySelection() {
     return getProperty("memory", 1);
   }

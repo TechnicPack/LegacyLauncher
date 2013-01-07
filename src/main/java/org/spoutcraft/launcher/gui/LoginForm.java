@@ -571,7 +571,7 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
       doLogin();
     } else if (eventId.equals("Options")) {
       options.setVisible(true);
-      options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 300, 325);
+      options.setBounds((int) getBounds().getCenterX() - 250, (int) getBounds().getCenterY() - 75, 360, 325);
     } else if (eventId.equals(modsButton.getText())) {
       if (ModPackListYML.currentModPack != null) {
         open(new File(GameUpdater.modconfigsDir, "ModLoader.cfg"));

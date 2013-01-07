@@ -22,6 +22,7 @@ import org.spoutcraft.launcher.GameUpdater;
 import org.spoutcraft.launcher.MD5Utils;
 import org.spoutcraft.launcher.MirrorUtils;
 import org.spoutcraft.launcher.ModpackBuild;
+import org.spoutcraft.launcher.SettingsUtil;
 import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.async.Download;
 
@@ -79,8 +80,25 @@ public class ModPackUpdater extends GameUpdater {
           updateMod(modFile, modName, version);
         }
       }
+
+      extractCustomZip();
     } catch (IOException e) {
       e.printStackTrace();
+    }
+  }
+
+  private void extractCustomZip() {
+    try {
+      File customZipFile = new File(tempDir, "custom.zip");
+      Download download = DownloadUtils.downloadFile(SettingsUtil.getCustomZipUrl(), customZipFile.getPath(), null, null, this);
+      if (download.isSuccess()) {
+        stateChanged("Extracting Custom Zip Files ...", 0);
+        // Extract Natives
+        extractNatives2(GameUpdater.modpackDir, customZipFile);
+        customZipFile.delete();
+      }
+    } catch (Exception e) {
+      // TODO: handle exception
     }
   }
 
