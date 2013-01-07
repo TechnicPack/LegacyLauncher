@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 import org.spoutcraft.launcher.exception.CorruptedMinecraftJarException;
@@ -45,15 +46,16 @@ public class LauncherController {
     File lwglJar = new File(mcBinFolder, "lwjgl.jar");
     File lwjgl_utilJar = new File(mcBinFolder, "lwjgl_util.jar");
     File customJar = new File(mcBinFolder, "custom.jar");
-    int librarycount = 5;
+    int librarycount = 6;
 
     if(!customJar.exists()) {
     	try {
     		FileOutputStream stream = new FileOutputStream(customJar);
     		JarOutputStream out = new JarOutputStream(stream);
+    		JarEntry entry = new JarEntry("wee/");
+    		out.putNextEntry(entry);
     		out.close();
     		stream.close();
-    		librarycount++;
     	}
     	catch(IOException e) {
     		e.printStackTrace();
@@ -75,10 +77,8 @@ public class LauncherController {
       files[3] = lwglJar;
       urls[4] = lwjgl_utilJar.toURI().toURL();
       files[4] = lwjgl_utilJar;
-      if (customJar.exists()) {
-        urls[5] = customJar.toURI().toURL();
-        files[5] = customJar;
-      }
+      urls[5] = customJar.toURI().toURL();
+      files[5] = customJar;
 
       ClassLoader classLoader = new MinecraftClassLoader(urls, ClassLoader.getSystemClassLoader(), spoutcraftJar, customJar, files);
 
