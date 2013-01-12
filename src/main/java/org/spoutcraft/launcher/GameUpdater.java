@@ -194,30 +194,48 @@ public class GameUpdater implements DownloadListener {
   }
 
   public boolean checkMCUpdate() {
-    if (!GameUpdater.binDir.exists())
+    if (!GameUpdater.binDir.exists()) {
+      Util.log("%s does not exist! Updating..", GameUpdater.binDir.getPath());
       return true;
-    if (!new File(binDir, "natives").exists())
+    }
+    File nativesDir = new File(binDir, "natives");
+    if (!nativesDir.exists()) {
+      Util.log("%s does not exist! Updating..", nativesDir.getPath());
       return true;
+    }
     File minecraft = new File(binDir, "minecraft.jar");
-    if (!minecraft.exists())
+    if (!minecraft.exists()) {
+      Util.log("%s does not exist! Updating..", minecraft.getPath());
       return true;
+    }
 
     File lib = new File(binDir, "jinput.jar");
-    if (!lib.exists())
+    if (!lib.exists()) {
+      Util.log("%s does not exist! Updating..", lib.getPath());
       return true;
+    }
 
     lib = new File(binDir, "lwjgl.jar");
-    if (!lib.exists())
+    if (!lib.exists()) {
+      Util.log("%s does not exist! Updating..", lib.getPath());
       return true;
+    }
 
     lib = new File(binDir, "lwjgl_util.jar");
-    if (!lib.exists())
+    if (!lib.exists()) {
+      Util.log("%s does not exist! Updating..", lib.getPath());
       return true;
+    }
 
     ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
     String installed = MinecraftYML.getInstalledVersion();
     String required = build.getMinecraftVersion();
-    return !installed.equals(required);
+    
+    if (!installed.equals(required)) {
+      Util.log("Looking for minecraft.jar version '%s'. Found '%s' Updating..", required, installed);
+      return true;
+    }
+    return false;
   }
 
   private void extractNatives(File nativesDir, File nativesJar) throws Exception {
@@ -363,15 +381,21 @@ public class GameUpdater implements DownloadListener {
   }
 
   public boolean isSpoutcraftUpdateAvailable() {
-    if (!WORKING_DIRECTORY.exists())
+    if (!WORKING_DIRECTORY.exists()) {
+      Util.log("%s does not exist! Updating..", WORKING_DIRECTORY.getPath());
       return true;
-    if (!GameUpdater.workDir.exists())
+    }
+    if (!GameUpdater.workDir.exists()) {
+      Util.log("%s does not exist! Updating..", GameUpdater.workDir.getPath());
       return true;
+    }
 
     ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
 
-    if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild()))
+    if (!build.getBuild().equalsIgnoreCase(build.getInstalledBuild())) {
+      Util.log("Modpack version requested '%s' does not match installed version '%s'! Updating..", build.getBuild(), build.getInstalledBuild());
       return true;
+    }
     return false;
   }
 
