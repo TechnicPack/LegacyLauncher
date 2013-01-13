@@ -8,14 +8,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.FileHeader;
 
 import org.spoutcraft.launcher.DownloadUtils;
 import org.spoutcraft.launcher.GameUpdater;
@@ -89,16 +91,19 @@ public class ModPackUpdater extends GameUpdater {
 
   private void extractCustomZip() {
     try {
+      String customZipUrl = SettingsUtil.getCustomZipUrl();
+      if (customZipUrl == null || customZipUrl.isEmpty()) {
+        return;
+      }
       File customZipFile = new File(tempDir, "custom.zip");
       Download download = DownloadUtils.downloadFile(SettingsUtil.getCustomZipUrl(), customZipFile.getPath(), null, null, this);
       if (download.isSuccess()) {
         stateChanged("Extracting Custom Zip Files ...", 0);
         // Extract Natives
-        extractNatives2(GameUpdater.modpackDir, customZipFile);
-        customZipFile.delete();
+        extractCompressedFile(GameUpdater.modpackDir, customZipFile, true);
       }
     } catch (Exception e) {
-      // TODO: handle exception
+      e.printStackTrace();
     }
   }
 
@@ -188,8 +193,8 @@ public class ModPackUpdater extends GameUpdater {
     }
 
     stateChanged("Extracting Files ...", 0);
-    // Extract Natives
-    extractNatives2(GameUpdater.modpackDir, modFile);
+    // Extract Mod zip
+    extractCompressedFile(GameUpdater.modpackDir, modFile, true);
 
     InstalledModsYML.setInstalledModVersion(modName, modVersion);
 
@@ -197,28 +202,30 @@ public class ModPackUpdater extends GameUpdater {
   }
 
   private void removePreviousModVersion(String modName, String installedVersion) {
+    File previousModZip = new File(cacheDir, modName + "-" + installedVersion + ".zip");
+    if (!previousModZip.exists()) {
+      Util.log("[File not Found] Could not delete '%s'.", previousModZip.getPath());
+      return;
+    }
     try {
       // Mod has been previously installed uninstall previous version
-      File previousModZip = new File(cacheDir, modName + "-" + installedVersion + ".zip");
       ZipFile zf = new ZipFile(previousModZip);
-      Enumeration<? extends ZipEntry> entries = zf.entries();
+      List<FileHeader> entries = zf.getFileHeaders();
       // Go through zipfile of previous version and delete all file from
       // Modpack that exist in the zip
-      while (entries.hasMoreElements()) {
-        ZipEntry entry = entries.nextElement();
-        if (entry.isDirectory()) {
+      for (FileHeader fileHeader : entries) {
+        if (fileHeader.isDirectory()) {
           continue;
         }
-        File file = new File(GameUpdater.modpackDir, entry.getName());
-        Util.log("Deleting '%s'", entry.getName());
+        File file = new File(GameUpdater.modpackDir, fileHeader.getFileName());
+        Util.log("Deleting '%s'", file.getPath());
         if (file.exists()) {
           // File from mod exists.. delete it
           file.delete();
         }
       }
-      zf.close();
       InstalledModsYML.removeMod(modName);
-    } catch (IOException e) {
+    } catch (ZipException e) {
       e.printStackTrace();
     }
   }
@@ -249,11 +256,18 @@ public class ModPackUpdater extends GameUpdater {
 
       String md5Name = "mods\\" + modName + "\\" + fullFilename;
       if (!MD5Utils.checksumCachePath(fullFilename, md5Name)) {
+        Util.log("'%s' has MD5 mismatch! Updating..", fullFilename);
         return true;
       }
 
       String installedModVersion = InstalledModsYML.getInstalledModVersion(modName);
-      if (installedModVersion == null || !installedModVersion.equals(version)) {
+      if (installedModVersion == null) {
+        Util.log("No 'installedMods.yml'! Updating..", fullFilename);
+        return true;
+      }
+
+      if (!installedModVersion.equals(version)) {
+        Util.log("'%s' has version '%s' installed instead of '%s'! Updating..", fullFilename, installedModVersion, version);
         return true;
       }
     }

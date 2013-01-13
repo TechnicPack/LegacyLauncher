@@ -11,7 +11,7 @@
 	<!-- Project information -->
 	<groupId>org.spoutcraft</groupId>
 	<artifactId>technic-launcher</artifactId>
-	<version>1.0.4.4</version>
+	<version>1.1.0.0</version>
 	<name>Technic Launcher</name>
 	<url>https://github.com/TechnicPack/Spoutcraft-Launcher</url>
 	<description></description>
@@ -79,6 +79,13 @@
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>
 			<version>1.20</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.lingala.zip4j</groupId>
+			<artifactId>zip4j</artifactId>
+			<version>1.3.1</version>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -156,6 +163,7 @@
 									<include>commons-codec:commons-codec</include>
 									<include>org.yaml:snakeyaml</include>
 									<include>com.beust:jcommander</include>
+									<include>net.lingala.zip4j</include>
 								</includes>
 							</artifactSet>
 						</configuration>

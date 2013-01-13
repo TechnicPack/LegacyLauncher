@@ -17,6 +17,8 @@ public class ModPackYML {
   private static volatile boolean updated      = false;
   private static final Object     key          = new Object();
 
+  private static String           recommendedBuild, latestBuild;
+
   private static File getModPackYMLFile() {
     return new File(ModPackListYML.currentModPackDirectory, MODPACK_YML);
   }
@@ -88,11 +90,19 @@ public class ModPackYML {
     return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "favicon.png").getAbsolutePath();
   }
 
+  public static String getLatestBuild() {
+    return getModPackYML().getString("latest", null);
+  }
+
+  public static String getRecommendedBuild() {
+    return getModPackYML().getString("recommended", null);
+  }
+
   public static String[] getModpackBuilds() {
     Configuration config = getModPackYML();
     Map<String, Object> builds = (Map<String, Object>) config.getProperty("builds");
-    String latest = config.getString("latest", null);
-    String recommended = config.getString("recommended", null);
+    latestBuild = config.getString("latest", null);
+    recommendedBuild = config.getString("recommended", null);
 
     if (builds != null) {
       String[] results = new String[builds.size()];
@@ -102,10 +112,10 @@ public class ModPackYML {
         Map<String, Object> map = (Map<String, Object>) builds.get(i);
         String version = String.valueOf(map.get("minecraft"));
         results[index] += "| " + version;
-        if (i.equals(latest)) {
+        if (i.equals(latestBuild)) {
           results[index] += " | Latest";
         }
-        if (i.equals(recommended)) {
+        if (i.equals(recommendedBuild)) {
           results[index] += " | Rec. Build";
         }
         index++;

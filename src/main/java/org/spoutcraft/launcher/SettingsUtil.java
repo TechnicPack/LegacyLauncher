@@ -86,7 +86,7 @@ public class SettingsUtil {
   }
 
   public static String getCustomZipUrl() {
-    return getProperty("customzip", null);
+    return getProperty("customzip", "none");
   }
 
   public static void setCustomZipUrl(String value) {

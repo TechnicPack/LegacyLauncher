@@ -27,8 +27,10 @@ public class DownloadUtils {
     tempfile.mkdirs();
     Download download = null;
     boolean areFilesIdentical = tempfile.getPath().equalsIgnoreCase(outputFile.getPath());
+    boolean isRetry = false;
     while (tries > 0) {
-      Util.logi("Starting download of '%s', with %s trie(s) remaining", url, tries);
+      String retryMsg = isRetry ? String.format(", with %s try(s) remaining", tries) : "";
+      Util.logi("Downloading '%s'%s", url, retryMsg);
       tries--;
       download = new Download(url, tempfile.getPath());
       download.setListener(listener);
@@ -44,16 +46,16 @@ public class DownloadUtils {
       } else {
         String fileMD5 = MD5Utils.getMD5(download.getOutFile());
         if (md5 == null || fileMD5.equals(md5)) {
-          Util.logi("Copying: %s to: %s", tempfile, outputFile);
           if (!areFilesIdentical) {
             GameUpdater.copy(tempfile, outputFile);
           }
-          Util.logi("File Downloaded: %s", outputFile);
+          Util.logi("Downloaded '%s'", outputFile);
           break;
         } else if (md5 != null && !fileMD5.equals(md5)) {
           Util.log("Expected MD5: %s Calculated MD5: %s", md5, fileMD5);
         }
       }
+      isRetry = true;
     }
 
     if (cacheName != null) {

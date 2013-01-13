@@ -20,7 +20,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,14 +28,16 @@ import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.progress.ProgressMonitor;
 
 import org.spoutcraft.launcher.async.DownloadListener;
 import org.spoutcraft.launcher.exception.UnsupportedOSException;
@@ -162,19 +163,9 @@ public class GameUpdater implements DownloadListener {
 
     getNatives();
 
-    stateChanged("Extracting Files...", 0);
-    // Extract Natives
-    try {
-      extractNatives(nativesDir, new File(GameUpdater.tempDir.getPath() + File.separator + "natives.zip"));
-    } catch (FileNotFoundException inUse) {
-      // If we previously loaded this dll with a failed launch, we will be
-      // unable to access the files
-      // This is because the previous classloader opened them with the
-      // parent classloader, and while the mc classloader
-      // has been gc'd, the parent classloader is still around, holding
-      // the file open. In that case, we have to assume
-      // the files are good, since they got loaded last time...
-    }
+    File nativesZip = new File(GameUpdater.tempDir.getPath() + File.separator + "natives.zip");
+    File nativesDirectory = new File(GameUpdater.binDir, "natives");
+    extractCompressedFile(nativesDirectory, nativesZip, true);
 
     MinecraftYML.setInstalledVersion(minecraftVersion);
   }
@@ -230,102 +221,54 @@ public class GameUpdater implements DownloadListener {
     ModpackBuild build = ModpackBuild.getSpoutcraftBuild();
     String installed = MinecraftYML.getInstalledVersion();
     String required = build.getMinecraftVersion();
-    
+
     if (!installed.equals(required)) {
-      Util.log("Looking for minecraft.jar version '%s'. Found '%s' Updating..", required, installed);
+      Util.log("Looking for minecraft.jar version %s Found %s Updating..", required, installed);
       return true;
     }
     return false;
   }
 
-  private void extractNatives(File nativesDir, File nativesJar) throws Exception {
-
-    if (!nativesDir.exists())
-      nativesDir.mkdir();
-
-    stateChanged(String.format("Extracting '%s'...", nativesJar.getName()), -1);
-    JarFile jar = new JarFile(nativesJar);
-    Enumeration<JarEntry> entries = jar.entries();
-
-    while (entries.hasMoreElements()) {
-      JarEntry entry = entries.nextElement();
-      String name = entry.getName();
-      if (entry.isDirectory())
-        continue;
-      if (name.startsWith("META-INF"))
-        continue;
-      InputStream inputStream = jar.getInputStream(entry);
-      File outFile = new File(nativesDir.getPath() + File.separator + name);
-      if (!outFile.exists())
-        outFile.createNewFile();
-      OutputStream out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
-
-      int read;
-      byte[] bytes = new byte[1024];
-
-      while ((read = inputStream.read(bytes)) != -1) {
-        out.write(bytes, 0, read);
-      }
-
-      inputStream.close();
-      out.flush();
-      out.close();
-    }
-    jar.close();
-    stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
+  public void extractCompressedFile(File destinationDirectory, File compressedFile) {
+    extractCompressedFile(destinationDirectory, compressedFile, false);
   }
 
-  // Extracts zip to the folder
-  protected void extractNatives2(File nativesDir, File nativesJar) {
-    String name = null;
-
-    if (!nativesDir.exists())
-      nativesDir.mkdirs();
-
+  protected void extractCompressedFile(File destinationDirectory, File compressedFile, Boolean deleteOnSuccess) {
     try {
-      JarFile jar = new JarFile(nativesJar);
-      Enumeration<JarEntry> entries = jar.entries();
-
-      float progressStep = 100F / jar.size();
-      float progress = 0;
-
-      while (entries.hasMoreElements()) {
-        JarEntry entry = entries.nextElement();
-        name = entry.getName();
-        if (entry.isDirectory()) {
-          (new File(nativesDir.getPath() + File.separator + entry.getName())).mkdirs();
-          continue;
-        }
-        InputStream inputStream = jar.getInputStream(entry);
-        File outFile = new File(nativesDir.getPath() + File.separator + name);
-        if (!outFile.exists())
-          outFile.createNewFile();
-        OutputStream out;
-        out = new FileOutputStream(new File(nativesDir.getPath() + File.separator + name));
-
-        int read;
-        byte[] bytes = new byte[1024];
-
-        while ((read = inputStream.read(bytes)) != -1) {
-          out.write(bytes, 0, read);
-        }
-
-        progress += progressStep;
-        stateChanged(String.format("Extracting '%s'...", nativesJar.getName()), progress);
-
-        inputStream.close();
-        out.flush();
-        out.close();
+      Util.log("Extracting %s to %s", compressedFile.getPath(), destinationDirectory.getPath());
+      if (!compressedFile.exists()) {
+        Util.log("[File not Found] Cannot find %s to extract", compressedFile.getPath());
+        return;
       }
-      nativesJar.delete();
-      jar.close();
-      stateChanged(String.format("Extracted '%s'...", nativesJar.getName()), 100f);
-    } catch (IOException e) {
-      // Zip failed to extract properly"
-      Util.log("'%s' failed to decompress properly for entry '%s'", nativesJar.getName(), name);
+      if (!destinationDirectory.exists()) {
+        Util.log("Creating directory %s", destinationDirectory.getPath());
+        destinationDirectory.mkdirs();
+      }
+      ZipFile zipFile = new ZipFile(compressedFile);
+      zipFile.setRunInThread(true);
+      zipFile.extractAll(destinationDirectory.getAbsolutePath());
+      ProgressMonitor monitor = zipFile.getProgressMonitor();
+      while (monitor.getState() == ProgressMonitor.STATE_BUSY) {
+        long totalProgress = monitor.getWorkCompleted() / monitor.getTotalWork();
+        stateChanged(String.format("Extracting '%s'...", monitor.getFileName()), totalProgress);
+      }
+      File metainfDirectory = new File(destinationDirectory, "META-INF");
+      if (metainfDirectory.exists()) {
+        Util.removeDirectory(metainfDirectory);
+      }
+      stateChanged(String.format("Extracted '%s'", compressedFile.getPath()), 100f);
+      if (monitor.getResult() == ProgressMonitor.RESULT_ERROR) {
+        if (monitor.getException() != null) {
+          monitor.getException().printStackTrace();
+        } else {
+          Util.log("An error occurred without any exception while extracting %s", compressedFile.getPath());
+        }
+      }
+      Util.log("Extracted %s to %s", compressedFile.getPath(), destinationDirectory.getPath());
+    } catch (ZipException e) {
+      Util.log("An error occurred while extracting %s", compressedFile.getPath());
       e.printStackTrace();
     }
-
   }
 
   private File getNatives() throws Exception {

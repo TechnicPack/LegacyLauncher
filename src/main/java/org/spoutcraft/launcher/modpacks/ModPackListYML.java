@@ -98,6 +98,8 @@ public class ModPackListYML {
       GameUpdater.copy(ORIGINAL_PROPERTIES, SettingsUtil.settingsFile);
       SettingsUtil.reload();
       SettingsUtil.setModPack(ModPackListYML.currentModPack);
+      SettingsUtil.setSelectedBuild(ModPackYML.getRecommendedBuild());
+      SettingsUtil.setCustomZipUrl("none");
       GameUpdater.copy(SettingsUtil.settingsFile, propFile);
     } else {
       GameUpdater.copy(propFile, SettingsUtil.settingsFile);

@@ -243,7 +243,9 @@ public class OptionDialog extends JDialog implements ActionListener {
     }
     memoryCombo.setSelectedIndex(memIndex);
 
-    urlText.setText(SettingsUtil.getCustomZipUrl());
+    String zipUrl = SettingsUtil.getCustomZipUrl();
+    if (zipUrl != null && !zipUrl.equals("none"))
+      urlText.setText(SettingsUtil.getCustomZipUrl());
   }
 
   public void updateBuildsList() {
@@ -300,7 +302,7 @@ public class OptionDialog extends JDialog implements ActionListener {
         reboot = true;
       }
 
-      if ((urlText.getText() != null && SettingsUtil.getCustomZipUrl() == null) || !SettingsUtil.getCustomZipUrl().equalsIgnoreCase(urlText.getText())) {
+      if ((urlText.getText() != null && SettingsUtil.getCustomZipUrl() == "none") || !SettingsUtil.getCustomZipUrl().equalsIgnoreCase(urlText.getText())) {
         SettingsUtil.setCustomZipUrl(urlText.getText());
       }
 
