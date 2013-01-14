@@ -31,7 +31,7 @@ import org.spoutcraft.launcher.FileUtils;
 import org.spoutcraft.launcher.GameUpdater;
 
 /**
- *
+ * 
  * @author creadri
  */
 public class Launcher extends Applet implements AppletStub {

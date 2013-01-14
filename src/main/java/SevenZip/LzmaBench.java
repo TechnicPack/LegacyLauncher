@@ -202,6 +202,7 @@ public class LzmaBench {
       InSize = 0;
     }
 
+    @Override
     public void SetProgress(long inSize, long outSize) {
       if (inSize >= ApprovedStart && InSize == 0) {
         Time = System.currentTimeMillis();

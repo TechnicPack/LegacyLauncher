@@ -199,9 +199,7 @@ public class ModPackListYML {
 
   public static void loadModpackLogos() {
     for (String modPack : modpackMap.keySet()) {
-      File modPackDir = new File(GameUpdater.workDir, modPack);
-      File resourcesPath = new File(modPackDir, RESOURCES_PATH);
-      File modPackLogo = new File(resourcesPath, LOGO_PNG);
+      File modPackLogo = Util.getResourceFile(LOGO_PNG, modPack);
       if (!modPackLogo.exists())
         continue;
       modpackLogoList.put(modPack, new ImageIcon(Toolkit.getDefaultToolkit().getImage(modPackLogo.getAbsolutePath())));

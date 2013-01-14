@@ -13,7 +13,11 @@ import java.util.logging.Logger;
 
 import javax.swing.JComboBox;
 
+import org.spoutcraft.launcher.modpacks.ModPackListYML;
+
 public class Util {
+
+  private static final String RESOURCES_PATH = "resources";
 
   public static void closeQuietly(Closeable closeable) {
     try {
@@ -130,5 +134,26 @@ public class Util {
     }
 
     return directory.delete();
+  }
+
+  public static File getResourceFile(String filename) {
+    return getResourceFile(filename, GameUpdater.modpackDir, ModPackListYML.currentModPackDirectory);
+  }
+
+  public static File getResourceFile(String filename, String modpack) {
+    File modpackDir = new File(GameUpdater.WORKING_DIRECTORY, modpack);
+    File defaultDir = new File(GameUpdater.workDir, modpack);
+    return getResourceFile(filename, modpackDir, defaultDir);
+  }
+
+  public static File getResourceFile(String filename, File overridePath, File defaultPath) {
+    File overridesDir = new File(overridePath, "overrides");
+    File resourcesDir = new File(overridesDir, RESOURCES_PATH);
+    File overrideIcon = new File(resourcesDir, filename);
+    if (overrideIcon.exists())
+      return overrideIcon;
+    resourcesDir = new File(defaultPath, RESOURCES_PATH);
+    overrideIcon = new File(resourcesDir, filename);
+    return overrideIcon;
   }
 }

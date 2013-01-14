@@ -298,7 +298,7 @@ public class OptionDialog extends JDialog implements ActionListener {
       int selectedMemory = memValues[selectedIndex] * 512;
       if (selectedMemory != SettingsUtil.getMemorySelection()) {
         SettingsUtil.setMemorySelection(selectedMemory);
-        //GameUpdater.copy(SettingsUtil.settingsFile, propFile);
+        // GameUpdater.copy(SettingsUtil.settingsFile, propFile);
         reboot = true;
       }
 
@@ -308,7 +308,7 @@ public class OptionDialog extends JDialog implements ActionListener {
 
       File propFile = new File(GameUpdater.modpackDir, "launcher.properties");
       GameUpdater.copy(SettingsUtil.settingsFile, propFile);
-      
+
       if (reboot)
         Main.reboot("-Xmx" + selectedMemory + "m");
 

@@ -31,6 +31,7 @@ public class HyperlinkJLabel extends JLabel implements MouseListener {
   private static final long serialVersionUID = -3801443131566852907L;
   private String            url;
 
+  @Override
   public void mouseClicked(MouseEvent arg0) {
     if (!Desktop.isDesktopSupported())
       return;
@@ -51,15 +52,19 @@ public class HyperlinkJLabel extends JLabel implements MouseListener {
     super.addMouseListener(this);
   }
 
+  @Override
   public void mouseEntered(MouseEvent arg0) {
   }
 
+  @Override
   public void mouseExited(MouseEvent arg0) {
   }
 
+  @Override
   public void mousePressed(MouseEvent arg0) {
   }
 
+  @Override
   public void mouseReleased(MouseEvent arg0) {
   }
 

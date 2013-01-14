@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.util.config.Configuration;
 import org.spoutcraft.launcher.Main;
+import org.spoutcraft.launcher.Util;
 import org.spoutcraft.launcher.YmlUtils;
 
 @SuppressWarnings("unchecked")
@@ -79,15 +80,15 @@ public class ModPackYML {
   }
 
   public static String getModPackIcon() {
-    return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + ModPackListYML.getIconName()).getAbsolutePath();
+    return Util.getResourceFile(ModPackListYML.getIconName()).getAbsolutePath();
   }
 
   public static String getModPackLogo() {
-    return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "logo.png").getAbsolutePath();
+    return Util.getResourceFile("logo.png").getAbsolutePath();
   }
 
   public static String getModPackFavIcon() {
-    return new File(ModPackListYML.currentModPackDirectory, "resources" + File.separator + "favicon.png").getAbsolutePath();
+    return Util.getResourceFile("favicon.png").getAbsolutePath();
   }
 
   public static String getLatestBuild() {

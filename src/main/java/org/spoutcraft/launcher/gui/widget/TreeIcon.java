@@ -12,14 +12,17 @@ class TreeIcon implements Icon {
   public TreeIcon() {
   }
 
+  @Override
   public int getIconWidth() {
     return SIZE;
   }
 
+  @Override
   public int getIconHeight() {
     return SIZE;
   }
 
+  @Override
   public void paintIcon(Component c, Graphics g, int x, int y) {
     // System.out.println(c.getWidth() + " " + c.getHeight() + " " + x + " "
     // + y);

@@ -38,7 +38,7 @@ import com.beust.jcommander.JCommander;
 public class Main {
 
   static String[]         args_temp;
-  public static String    build     = "1.1.0.0";
+  public static String    build     = "1.1.1.0";
   public static String    currentPack;
   static File             recursion;
   public static LoginForm loginForm;

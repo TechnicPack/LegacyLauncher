@@ -48,18 +48,17 @@ public class LauncherController {
     File customJar = new File(mcBinFolder, "custom.jar");
     int librarycount = 6;
 
-    if(!customJar.exists()) {
-    	try {
-    		FileOutputStream stream = new FileOutputStream(customJar);
-    		JarOutputStream out = new JarOutputStream(stream);
-    		JarEntry entry = new JarEntry("wee/");
-    		out.putNextEntry(entry);
-    		out.close();
-    		stream.close();
-    	}
-    	catch(IOException e) {
-    		e.printStackTrace();
-    	}
+    if (!customJar.exists()) {
+      try {
+        FileOutputStream stream = new FileOutputStream(customJar);
+        JarOutputStream out = new JarOutputStream(stream);
+        JarEntry entry = new JarEntry("wee/");
+        out.putNextEntry(entry);
+        out.close();
+        stream.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     File[] files = new File[librarycount];

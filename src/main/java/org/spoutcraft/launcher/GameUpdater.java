@@ -443,7 +443,7 @@ public class GameUpdater implements DownloadListener {
 
   public static boolean canPlayOffline(String modPackName) {
     try {
-      File path = (File) AccessController.doPrivileged(new PrivilegedExceptionAction<File>() {
+      File path = AccessController.doPrivileged(new PrivilegedExceptionAction<File>() {
         @Override
         public File run() throws Exception {
           return WORKING_DIRECTORY;

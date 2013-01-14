@@ -18,6 +18,7 @@ class BackgroundPanel extends JPanel {
     repaint(0, 0, backgroundImageIcon.getIconWidth(), backgroundImageIcon.getIconHeight());
   }
 
+  @Override
   public void paint(Graphics g) {
     // Draws the img to the BackgroundPanel.
     if (backgroundImage != null)

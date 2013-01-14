@@ -31,7 +31,7 @@ import java.util.jar.JarFile;
 public class MinecraftClassLoader extends URLClassLoader {
   private final HashMap<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>(1000);
   private File                            spoutcraft    = null;
-  private File                            custom    	= null;
+  private File                            custom        = null;
   private final File[]                    libraries;
 
   public MinecraftClassLoader(URL[] urls, ClassLoader parent, File spoutcraft, File custom, File[] libraries) {
@@ -47,10 +47,9 @@ public class MinecraftClassLoader extends URLClassLoader {
       }
     }
     try {
-    	this.addURL(custom.toURI().toURL());
-    }
-    catch(MalformedURLException e) {
-    	e.printStackTrace();
+      this.addURL(custom.toURI().toURL());
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
     }
   }
 
@@ -71,7 +70,7 @@ public class MinecraftClassLoader extends URLClassLoader {
 
     result = findClassInjar(name, custom);
     if (result != null) {
-    	return result;
+      return result;
     }
 
     for (File file : libraries) {

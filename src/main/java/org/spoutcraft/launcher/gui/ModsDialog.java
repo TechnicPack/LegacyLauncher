@@ -73,10 +73,12 @@ public class ModsDialog extends JDialog implements ActionListener {
       modList.setModel(new AbstractListModel() {
         private static final long serialVersionUID = 6496577973696318501L;
 
+        @Override
         public int getSize() {
           return modLists.length;
         }
 
+        @Override
         public JToggleButton getElementAt(int index) {
           return modLists[index];
         }
@@ -117,6 +119,7 @@ public class ModsDialog extends JDialog implements ActionListener {
 
   public List<Boolean> ModsSelected = new ArrayList<Boolean>();
 
+  @Override
   public void actionPerformed(ActionEvent evt) {
     String id = evt.getActionCommand();
     if (id.equals("OK")) {

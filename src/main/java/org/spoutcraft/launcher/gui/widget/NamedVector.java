@@ -17,6 +17,7 @@ class NamedVector<T> extends Vector<T> {
     }
   }
 
+  @Override
   public String toString() {
     return "[" + name + "]";
   }
