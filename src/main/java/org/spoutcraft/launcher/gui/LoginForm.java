@@ -177,8 +177,9 @@ public class LoginForm extends JFrame implements ActionListener, DownloadListene
     modpackList.setBounds(10, 10, 328, 100);
     ComboBoxRenderer renderer = new ComboBoxRenderer();
     renderer.setPreferredSize(new Dimension(200, 110));
+    
     modpackList.setRenderer(renderer);
-    modpackList.setMaximumRowCount(3);
+    modpackList.setMaximumRowCount(4);
     modpackList.setSelectedItem(SettingsUtil.getModPackSelection());
     modpackList.addActionListener(this);
 

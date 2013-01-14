@@ -1,6 +1,7 @@
 package org.spoutcraft.launcher.gui.widget;
 
 import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -39,6 +40,7 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
     // Set the icon and text. If icon was null, say so.
     ImageIcon icon = ModPackListYML.getModPackLogo(selectedItem);
     setIcon(icon);
+    this.setPreferredSize(new Dimension(0, icon.getIconHeight() + 4));
 
     return this;
   }
