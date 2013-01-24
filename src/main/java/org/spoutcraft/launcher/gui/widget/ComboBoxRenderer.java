@@ -40,7 +40,9 @@ public class ComboBoxRenderer extends JLabel implements ListCellRenderer {
     // Set the icon and text. If icon was null, say so.
     ImageIcon icon = ModPackListYML.getModPackLogo(selectedItem);
     setIcon(icon);
-    this.setPreferredSize(new Dimension(0, icon.getIconHeight() + 4));
+    if (icon != null) {
+      this.setPreferredSize(new Dimension(0, icon.getIconHeight() + 4));
+    }
 
     return this;
   }
